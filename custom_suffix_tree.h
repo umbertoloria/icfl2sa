@@ -13,6 +13,9 @@ typedef struct suffix_tree_node{
     //Qui viene salvato il prefisso presente in questo nodo dell'albero
     const char* suffix;
 
+    //Size del suffisso
+    int suffix_len;
+
     //Padre del nodo
     suffix_tree_node* father;
 
@@ -22,7 +25,10 @@ typedef struct suffix_tree_node{
     //Figli del nodo
     nodes_vector* sons;
 
-    //Una catena per ogni sotto albero, è importante solo quella del figlio del primo nodo
+    //Foglie del nodo, importante solo nei figli di root
+    nodes_vector* leaves;
+
+    //Una catena per ogni sotto albero, è importante solo nei figli di root
     //group_chains
     array_of_int_vector* chains_of_suffixes;
 
@@ -34,8 +40,8 @@ typedef struct suffix_tree_node{
 
 }suffix_tree_node;
 
-suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix);
-suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice);
+suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
+suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node, const char* suffix);
 void stampa_suffix_tree(suffix_tree_node* root);
 

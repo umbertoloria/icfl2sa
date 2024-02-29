@@ -26,17 +26,22 @@ bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element){
 
 //Costruttore del nodo prefix_tree_node
 
-suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix){
+suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len){
     suffix_tree_node* x= (suffix_tree_node*)malloc(sizeof(suffix_tree_node));
 
     x->father=father;
     x->suffix=suffix;
 
+    x->suffix_len=suffix_len;
+
     x->array_of_indexes = init_int_vector(0);
     x->sons=init_nodes_vector(0);
+    x->leaves=init_nodes_vector(0);
 
     x->common_chain_of_suffiexes = init_int_vector(0);
     x->chains_of_suffixes = init_array_of_int_vector(0);
+
+    
     
     return x;
 }
@@ -49,12 +54,14 @@ IN: Root,Prefix,Indice
 OUT: Bool (True se l'inserimento è andato a buon fine)
 */
 
-suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice){
+suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
 
     //Controlliamo se il suffisso che vogliamo inserire è contenuto nel nodo in cui ci troviamo
 
     if(strcmp(root->suffix,suffix)==0){
         add_in_int_vector(root->array_of_indexes,indice);
+        //cout<<root->suffix<<","<<root->suffix_len<<"\n";
+        //print_int_vector(root->array_of_indexes);
         return NULL;
     }
 
@@ -69,18 +76,21 @@ suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,i
 
     if(index_of_child_with_the_same_suffix == -1){
         //Creo un nuovo figlio del nodo root
-        suffix_tree_node* x=build_suffix_tree_node(root,suffix);
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
         add_in_int_vector(x->array_of_indexes,indice);
         add_in_nodes_vector(root->sons,x);
         x->father=root;
+        //cout<<x->suffix<<","<<x->suffix_len<<"\n";
+        //print_int_vector(x->array_of_indexes);
         return x;
     }
 
     // Il prefisso è contenuto in uno dei dei figli di root, ricorsivamente chiamiamo la funzione su tale figlio
 
-    return add_suffix_in_tree(root->sons->data[index_of_child_with_the_same_suffix],suffix,indice);
+    return add_suffix_in_tree(root->sons->data[index_of_child_with_the_same_suffix],suffix,indice,suffix_len);
 
 }
+
 
 /*
 Funzione che cerca il prefisso della stringa suffix passata in input tra i figli del nodo node passata input
@@ -103,9 +113,9 @@ int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node,const char* 
             */
            //cout<<suffix<<endl<<node->sons->data[i]->suffix<<endl;
             //cout<<LCP_with_given_strings(suffix,node->sons->data[i]->suffix)<<endl<<strlen(suffix)<<endl;
-            if(LCP_with_given_strings(suffix,node->sons->data[i]->suffix) == strlen(node->sons->data[i]->suffix)){
-                     //cout<<suffix<<endl<<node->sons->data[i]->suffix<<endl;
-                     //cout<<LCP_with_given_strings(suffix,node->sons->data[i]->suffix)<<endl<<strlen(suffix)<<endl;
+            if(LCP_with_given_strings(suffix,node->sons->data[i]->suffix) == node->sons->data[i]->suffix_len){
+                    //cout<<suffix<<endl<<node->sons->data[i]->suffix<<endl;
+                    //cout<<LCP_with_given_strings(suffix,node->sons->data[i]->suffix)<<endl<<node->sons->data[i]->suffix_len<<endl;
                 return i;
             }
     }
@@ -117,7 +127,7 @@ void stampa_suffix_tree(suffix_tree_node* root){
     if (root->sons->size==0){
         cout<<"("<<root->suffix;
         cout<<"[";
-        for(size_t j = 0; j<root->array_of_indexes->size;j++){
+        for(size_t j = 0; j<root->array_of_indexes->used;j++){
             cout<<root->array_of_indexes->data[j]<<",";
         }
         cout<<"])";
@@ -128,7 +138,7 @@ void stampa_suffix_tree(suffix_tree_node* root){
         stampa_suffix_tree(root->sons->data[i]);
     }
     cout<<"[";
-        for(size_t j = 0; j<root->array_of_indexes->size;j++){
+        for(size_t j = 0; j<root->array_of_indexes->used;j++){
             cout<<root->array_of_indexes->data[j]<<",";
         }
     cout<<"])";
