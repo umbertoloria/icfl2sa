@@ -68,18 +68,27 @@ int_vector* find_common_elements_2(suffix_tree_node* x,suffix_tree_node* y){
     //cout<<x->suffix_len<<" "<<y->suffix_len<<"\n";
 
     while (x!=y){
-        while (x->suffix_len > y->suffix_len){
-            x=x->father;
-            //cout<<x->suffix_len<<" "<<y->suffix_len<<"\n";
+        while (x->suffix_len!=y->suffix_len){
+            
+            while (x->suffix_len > y->suffix_len){
+                x=x->father;
+                //cout<<x->suffix_len<<" "<<y->suffix_len<<"\n";
+            }
+
+            while (x->suffix_len < y->suffix_len){
+                y=y->father;
+                //cout<<x->suffix_len<<" "<<y->suffix_len<<"\n";
+            }
         }
 
-        while (x->suffix_len < y->suffix_len){
+        if(x!=y){
+            x=x->father;
             y=y->father;
-            //cout<<x->suffix_len<<" "<<y->suffix_len<<"\n";
         }
     }
+    
 
-    //if(x->suffix_len==1) return get_chain_from_bit_vector(x);
+    
     
     return get_chain_from_bit_vector(x);
 }
@@ -156,6 +165,42 @@ int_vector* common_prefix_merge_2(int_vector* x, suffix_tree_node* node1,int_vec
 
 }
 
+//common_prefix_merge_3 effettua il common_prefix_merge però solo se si sanno a priori gli elementi comuni
+
+int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common_elements){
+    int_vector* res = init_int_vector(0);
+    //print_int_vector(common_elements);
+    //cout<<"b\n";
+
+    int i,j,z;
+    i=j=z=0;
+
+    while(i<x->used){
+        if(x->data[i] != common_elements->data[z]){
+            add_in_int_vector(res,x->data[i]);
+            i++;
+        }
+        else{
+            while(y->data[j] != common_elements->data[z]){
+                add_in_int_vector(res,y->data[j]);
+                j++;
+            }
+            add_in_int_vector(res,common_elements->data[z]);
+            z++;
+            i++;
+            j++;
+        }
+    }
+
+    while(j<y->used){
+        add_in_int_vector(res,y->data[j]);
+        j++;
+    }
+
+    return res;
+
+}
+
 int_vector* get_common_prefix_merge(suffix_tree_node* root){
     int_vector* res = init_int_vector(0);
 
@@ -176,6 +221,21 @@ int_vector* get_common_prefix_merge_2(suffix_tree_node* root){
         //print_int_vector(res);
     }
     //cout<<"result:";
+    //print_int_vector(res);
+    return res;
+}
+
+int_vector* get_common_prefix_merge_3(suffix_tree_node* root){
+    if(root->sons->used==0){
+        return get_chain_from_bit_vector(root);
+    }
+
+    int_vector* res = get_common_prefix_merge_3(root->sons->data[0]);
+
+    for(int i=1;i<root->sons->used;i++){
+        res = common_prefix_merge_3(res,get_common_prefix_merge_3(root->sons->data[i]),get_chain_from_bit_vector(root));
+    }
+
     //print_int_vector(res);
     return res;
 }

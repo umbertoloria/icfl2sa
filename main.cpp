@@ -22,6 +22,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word) {
 
     int lenght_of_word=strlen(word->c_str());
 
+    cout<<"Numero caratteri: "<<lenght_of_word<<endl;
+
     vector<int> icfl_list = ICFL_recursive(word, (*word).length());
 
     printVector(icfl_list, "Stampa ICFL");
@@ -129,19 +131,22 @@ aa ab ac
 
    //stampa_suffix_tree(root);
 
+    /*
+    può essere rimosso con la nuova omplementazione
     tStart = clock();
     for(int i=0;i<root->sons->used;i++){
         get_chains_3(root->sons->data[i],root->sons->data[i]);
     }
     printf("get_chains_3, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-
+    */
     //stampa_suffix_tree(root);
    
    tStart = clock();
 
     array_of_int_vector* group_ranking = init_array_of_int_vector(0);
     for(int i=0;i<root->sons->used;i++){
-        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_2(root->sons->data[i]));
+        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_3(root->sons->data[i]));
+        //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     }
 
     int_vector* SA = merge_array_of_vector(group_ranking);
@@ -198,8 +203,8 @@ char* experiment_given_word_by_input_file() {
 
     getline(&word, &len, fp);
 
-    cout<<endl<<"Stringa: "<< word;
-    cout << endl;
+    //cout<<endl<<"Stringa: "<< word;
+    //cout << endl;
 
     std::string x(word);
 
