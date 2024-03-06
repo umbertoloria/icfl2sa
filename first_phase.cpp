@@ -24,7 +24,9 @@ char** get_lyndon_words(string* word,vector<int> icfl_list){
 suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
     for(int i=0;i<max_size;i++){
-        cout<<i<<"/"<<max_size<<endl;
+        //stampa_suffix_tree(root);
+        //cout<<"\n\n";
+        //cout<<i<<"/"<<max_size<<endl;
         nodes_vector* last_added_nodes=init_nodes_vector(0);
         suffix_tree_node* temp;
         //Viene elaborato prima l'ultima stringa
@@ -34,7 +36,7 @@ suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_
             //La stringa si legge da destra verso sinistra
             //int starting_position= strlen(lyndon_word)-1-i;
             int starting_position= lenght_of_word - icfl_list[icfl_list.size()-1]-1-i;
-            temp = add_suffix_in_tree(root,lyndon_word+starting_position,icfl_list[icfl_list.size()-1]+starting_position,i+1);
+            temp = add_suffix_in_tree_2(root,lyndon_word+starting_position,icfl_list[icfl_list.size()-1]+starting_position,i+1);
             if(temp){
                 add_in_nodes_vector(last_added_nodes,temp);
             }
@@ -44,7 +46,7 @@ suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_
             if(i<icfl_list[j+1]-icfl_list[j]){
                 //La stringa si legge da destra verso sinistra
                 int starting_position= icfl_list[j+1]-icfl_list[j]-1-i;
-                temp = add_suffix_in_tree(root,lyndon_word+starting_position,icfl_list[j]+starting_position,i+1);
+                temp = add_suffix_in_tree_2(root,lyndon_word+starting_position,icfl_list[j]+starting_position,i+1);
                 if(temp){
                     add_in_nodes_vector(last_added_nodes,temp);
                 }

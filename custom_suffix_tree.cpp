@@ -91,6 +91,108 @@ suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,i
 
 }
 
+//Usa ricerca binaria per inserimento e ricerca
+
+suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
+
+    //cout<<suffix<<endl;
+
+    if(strcmp(root->suffix,suffix)==0){
+        add_in_int_vector(root->array_of_indexes,indice);
+        return NULL;
+    }
+    
+    //cout<<"Cercando...";
+    int16_t index_of_child_with_the_same_suffix = binarySearch(root,suffix,0,root->sons->used-1);
+    //cout<<" trovato\n";
+
+    if(index_of_child_with_the_same_suffix == -1){
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
+        add_in_int_vector(x->array_of_indexes,indice);
+        //root->sons = add_in_order(root->sons,x);
+        add_in_order_2(root->sons,x);
+        x->father=root;
+        //cout<<"sorting...";
+        //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
+        //cout<<" done\n";
+        return x;
+    }
+    
+    return add_suffix_in_tree_2(root->sons->data[index_of_child_with_the_same_suffix],suffix,indice,suffix_len);
+
+}
+
+//Usa ricerca binaria per inserimento e ricerca, si salva i risultati intermedi
+
+suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
+
+    //cout<<suffix<<endl;
+
+    if(strcmp(root->suffix,suffix)==0){
+        add_in_int_vector(root->array_of_indexes,indice);
+        return NULL;
+    }
+    
+    //cout<<"Cercando...";
+    int index_of_child_with_the_same_suffix = binarySearch_2(root,suffix,0,root->sons->used-1);
+    //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
+
+    if(root->sons->used == 0 || LCP_with_given_strings(suffix,root->sons->data[index_of_child_with_the_same_suffix]->suffix) != root->sons->data[index_of_child_with_the_same_suffix]->suffix_len){
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
+        add_in_int_vector(x->array_of_indexes,indice);
+        //root->sons = add_in_order(root->sons,x);
+        add_in_order_2(root->sons,x);
+        x->father=root;
+        //cout<<"sorting...";
+        //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
+        //cout<<" done\n";
+        return x;
+    }
+    
+    return add_suffix_in_tree_3(root->sons->data[index_of_child_with_the_same_suffix],suffix,indice,suffix_len);
+}
+
+int binarySearch(suffix_tree_node* root, const char* x, int low, int high) {
+  if (high >= low) {
+    int mid = (low + high) / 2;
+
+    // If found at mid, then return it
+    //cout<<"LCP_with_given_strings?"<<endl;
+    if(LCP_with_given_strings(x,root->sons->data[mid]->suffix) == root->sons->data[mid]->suffix_len){
+      //cout<<"si"<<endl;
+      return mid;
+    }
+
+    //cout<<"no"<<endl;
+
+    // Search the left half
+    if (strcmp(root->sons->data[mid]->suffix,x) > 0){
+        return binarySearch(root, x, low, mid - 1);
+    }
+
+    // Search the right half
+    return binarySearch(root, x, mid + 1, high);
+  }
+
+  return -1;
+}
+
+int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high) {
+    if (high >= low) {
+        int mid = (low + high) / 2; 
+        // If found at mid, then return it
+        //cout<<"LCP_with_given_strings?"<<endl;
+        if(high == low) return mid;
+
+        if (strcmp(root->sons->data[mid]->suffix,x) > 0){
+            return binarySearch_2(root, x, low, mid - 1);
+        }
+
+        return binarySearch_2(root, x, mid + 1, high);
+    }
+    if(high<0) return 0;
+    else return high;
+}
 
 /*
 Funzione che cerca il prefisso della stringa suffix passata in input tra i figli del nodo node passata input
@@ -172,4 +274,55 @@ int LCP_with_given_strings(const char* x,const char* y){
         i++;
     }
     return i;
+}
+
+void quicksort_of_nodes_local(nodes_vector* x, int start, int end){
+    int i, j, pivot;
+    suffix_tree_node* temp;
+    if(start<end){
+
+        pivot=end;
+        
+        i=start;
+        j=end;     
+
+        while(i<j){
+            while(strcmp(x->data[i]->suffix,x->data[pivot]->suffix)<=0 && i<end) i++;
+            while(strcmp(x->data[j]->suffix,x->data[pivot]->suffix)>0) j--;
+
+            if(i<j){   
+               temp=x->data[i];
+               x->data[i]=x->data[j];
+               x->data[j]=temp;
+            }
+        }
+
+        temp=x->data[pivot];
+        x->data[pivot]=x->data[j];
+        x->data[j]=temp;
+        quicksort_of_nodes_local(x,start,j-1);
+        quicksort_of_nodes_local(x,j+1,end);
+    }
+}
+
+nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node){
+    nodes_vector* res=init_nodes_vector(0);
+    int i=0;
+    for(;i<x->used && strcmp(x->data[i]->suffix,node->suffix) <= 0;i++){
+        add_in_nodes_vector(res,x->data[i]);
+    }
+    add_in_nodes_vector(res,node);
+    for(;i<x->used;i++){
+        add_in_nodes_vector(res,x->data[i]);
+    }
+
+    return res;
+
+}
+void add_in_order_2(nodes_vector* sons,suffix_tree_node* node){
+    int i=0;
+    while(i<sons->used && strcmp(sons->data[i]->suffix,node->suffix)<0) i++;
+    add_in_nodes_vector(sons,NULL);
+    for(int j=sons->used-1;j>i;j--) sons->data[j] = sons->data[j-1];
+    sons->data[i]=node;
 }

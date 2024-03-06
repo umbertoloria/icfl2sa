@@ -93,10 +93,10 @@ aa ab ac
 
     cout<<endl;
 
-    tStart = clock();
-    sort_sons_of_all_nodes(root);
-    printf("sort_sons_of_all_nodes, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    
+    //tStart = clock();
+    //sort_sons_of_all_nodes(root);
+    //printf("sort_sons_of_all_nodes, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
     //tStart = clock();
     //init_chains_of_prefixes(root,word->length());
     //printf("init_chains_of_prefixes, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
@@ -163,7 +163,7 @@ aa ab ac
 
 }
 
-
+/*
 // EXP 1: word given by user
 void experiment_given_word() {
     //cout<<"###################### experiment_given_word"<<endl;
@@ -191,6 +191,7 @@ void experiment_given_word_by_cli(string word) {
     return;
 }
 
+*/
 char* experiment_given_word_by_input_file() {
     //cout<<"###################### experiment_given_word"<<endl;
     char * word = NULL;

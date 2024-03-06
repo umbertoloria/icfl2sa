@@ -231,9 +231,10 @@ int_vector* get_common_prefix_merge_3(suffix_tree_node* root){
     }
 
     int_vector* res = get_common_prefix_merge_3(root->sons->data[0]);
+    int_vector* common_elements=get_chain_from_bit_vector(root);
 
     for(int i=1;i<root->sons->used;i++){
-        res = common_prefix_merge_3(res,get_common_prefix_merge_3(root->sons->data[i]),get_chain_from_bit_vector(root));
+        res = common_prefix_merge_3(res,get_common_prefix_merge_3(root->sons->data[i]),common_elements);
     }
 
     //print_int_vector(res);

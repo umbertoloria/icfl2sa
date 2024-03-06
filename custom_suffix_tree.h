@@ -42,6 +42,8 @@ typedef struct suffix_tree_node{
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
 suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
+suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
+suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node, const char* suffix);
 void stampa_suffix_tree(suffix_tree_node* root);
 
@@ -58,5 +60,12 @@ bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element);
 bool init_chains_of_prefixes(suffix_tree_node* root,int size_of_the_word);
 int LCP(char* w, int index1,int index2);
 int LCP_with_given_strings(const char* x,const char* y);
+
+//utils replicate
+void quicksort_of_nodes_local(nodes_vector* x, int start, int end);
+int binarySearch(suffix_tree_node* root, const char* x, int low, int high);
+int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high);
+nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node);
+void add_in_order_2(nodes_vector* x,suffix_tree_node* node);
 
 #endif
