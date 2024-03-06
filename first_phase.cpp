@@ -24,6 +24,7 @@ char** get_lyndon_words(string* word,vector<int> icfl_list){
 suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
     for(int i=0;i<max_size;i++){
+        cout<<i<<"/"<<max_size<<endl;
         nodes_vector* last_added_nodes=init_nodes_vector(0);
         suffix_tree_node* temp;
         //Viene elaborato prima l'ultima stringa
