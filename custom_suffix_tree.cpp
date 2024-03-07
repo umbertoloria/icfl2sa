@@ -153,15 +153,20 @@ suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix
     if(nuovo_nodo){
         suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
         add_in_int_vector(x->array_of_indexes,indice);
+
         //root->sons = add_in_order(root->sons,x);
-        if(index==-1) add_in_order_2(root->sons,x);
-        else add_in_order_3(root->sons,x,index-1);
+
+        if(index==-1) add_in_nodes_vector(root->sons,x);
+        else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
+        else add_in_order_3(root->sons,x,index);
         x->father=root;
         //cout<<"sorting...";
         //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
         //cout<<" done\n";
 
         //cout<<"Inserito suffisso: "<<suffix<<"\n";
+        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+        //cout<<"\n";
 
         //cout<<"\n";
         //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
@@ -246,7 +251,7 @@ int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suf
     //sleep(1);
 
     //Non ci sono elementi nella lista
-    if(high==-1) return 0;
+    if(high==-1) return -1;
     //cout<<"high: "<<high<<", low: "<<low<<", mid: "<<mid<<"\n";
     // If found at mid, then return it
     //cout<<"LCP_with_given_strings?"<<endl;
