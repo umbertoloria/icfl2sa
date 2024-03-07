@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unistd.h>
 #include "generic_vector.h"
 
 using namespace std;
@@ -60,12 +61,16 @@ bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element);
 bool init_chains_of_prefixes(suffix_tree_node* root,int size_of_the_word);
 int LCP(char* w, int index1,int index2);
 int LCP_with_given_strings(const char* x,const char* y);
+int LCP_with_given_strings_2(const char* x,const char* y,int max_len);
 
 //utils replicate
 void quicksort_of_nodes_local(nodes_vector* x, int start, int end);
 int binarySearch(suffix_tree_node* root, const char* x, int low, int high);
+int binarySearch_with_redundancy(suffix_tree_node* root, const char* x, int suffix_len,int low, int high);
 int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high);
+int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
 nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_2(nodes_vector* x,suffix_tree_node* node);
+void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_position);
 
 #endif

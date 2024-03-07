@@ -103,7 +103,7 @@ suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix
     }
     
     //cout<<"Cercando...";
-    int16_t index_of_child_with_the_same_suffix = binarySearch(root,suffix,0,root->sons->used-1);
+    int index_of_child_with_the_same_suffix = binarySearch(root,suffix,0,root->sons->used-1);
     //cout<<" trovato\n";
 
     if(index_of_child_with_the_same_suffix == -1){
@@ -115,6 +115,7 @@ suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix
         //cout<<"sorting...";
         //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
         //cout<<" done\n";
+
         return x;
     }
     
@@ -126,30 +127,50 @@ suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix
 
 suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
 
-    //cout<<suffix<<endl;
-
     if(strcmp(root->suffix,suffix)==0){
         add_in_int_vector(root->array_of_indexes,indice);
         return NULL;
     }
     
     //cout<<"Cercando...";
-    int index_of_child_with_the_same_suffix = binarySearch_2(root,suffix,0,root->sons->used-1);
+    //int index_of_child_with_the_same_suffix = binarySearch_2(root,suffix,0,root->sons->used-1);
+    bool nuovo_nodo=false;
+    int index=-1;
+
+    if(root->sons->used == 0) nuovo_nodo=true;
+    else{
+        index = binarySearch_2_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
+        if(LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len) != root->sons->data[index]->suffix_len){
+            nuovo_nodo=true;
+            //cout<<"Non trovato suffisso simile a "<<suffix<<" at index: "<<index<<"\n";
+            //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
+            //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+            //cout<<"\n";
+        }
+    }
     //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
 
-    if(root->sons->used == 0 || LCP_with_given_strings(suffix,root->sons->data[index_of_child_with_the_same_suffix]->suffix) != root->sons->data[index_of_child_with_the_same_suffix]->suffix_len){
+    if(nuovo_nodo){
         suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
         add_in_int_vector(x->array_of_indexes,indice);
         //root->sons = add_in_order(root->sons,x);
-        add_in_order_2(root->sons,x);
+        if(index==-1) add_in_order_2(root->sons,x);
+        else add_in_order_3(root->sons,x,index-1);
         x->father=root;
         //cout<<"sorting...";
         //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
         //cout<<" done\n";
+
+        //cout<<"Inserito suffisso: "<<suffix<<"\n";
+
+        //cout<<"\n";
+        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+        //cout<<"\n";
+
         return x;
     }
     
-    return add_suffix_in_tree_3(root->sons->data[index_of_child_with_the_same_suffix],suffix,indice,suffix_len);
+    return add_suffix_in_tree_3(root->sons->data[index],suffix,indice,suffix_len);
 }
 
 int binarySearch(suffix_tree_node* root, const char* x, int low, int high) {
@@ -177,12 +198,37 @@ int binarySearch(suffix_tree_node* root, const char* x, int low, int high) {
   return -1;
 }
 
+int binarySearch_with_redundancy(suffix_tree_node* root, const char* x, int suffix_len,int low, int high) {
+  if (high >= low) {
+    int mid = (low + high) / 2;
+
+    // If found at mid, then return it
+    //cout<<"LCP_with_given_strings?"<<endl;
+    if(LCP_with_given_strings_2(x,root->sons->data[mid]->suffix,suffix_len) == root->sons->data[mid]->suffix_len){
+      //cout<<"si"<<endl;
+      return mid;
+    }
+
+    //cout<<"no"<<endl;
+
+    // Search the left half
+    if (strcmp(root->sons->data[mid]->suffix,x) > 0){
+        return binarySearch_with_redundancy(root, x, suffix_len, low, mid - 1);
+    }
+
+    // Search the right half
+    return binarySearch_with_redundancy(root, x, suffix_len, mid + 1, high);
+  }
+
+  return -1;
+}
+
 int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high) {
     if (high >= low) {
         int mid = (low + high) / 2; 
         // If found at mid, then return it
         //cout<<"LCP_with_given_strings?"<<endl;
-        if(high == low) return mid;
+        if(high == low) return mid+1;
 
         if (strcmp(root->sons->data[mid]->suffix,x) > 0){
             return binarySearch_2(root, x, low, mid - 1);
@@ -192,6 +238,34 @@ int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high) {
     }
     if(high<0) return 0;
     else return high;
+}
+
+int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high) {
+    
+    //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
+    //sleep(1);
+
+    //Non ci sono elementi nella lista
+    if(high==-1) return 0;
+    //cout<<"high: "<<high<<", low: "<<low<<", mid: "<<mid<<"\n";
+    // If found at mid, then return it
+    //cout<<"LCP_with_given_strings?"<<endl;
+    //cout<<"Confronto: "<<root->sons->data[mid]->suffix<<", "<<x<<" at index: "<<mid<<"\n";
+
+    int mid = (low + high) / 2; 
+
+    if(high == low){
+        return mid;
+    }
+
+    if(LCP_with_given_strings_2(x,root->sons->data[mid]->suffix,suffix_len) == root->sons->data[mid]->suffix_len)
+        return mid;
+
+    if (strcmp(root->sons->data[mid]->suffix,x) > 0){
+        return binarySearch_2_with_redundancy(root, x, suffix_len, low, mid);
+    }
+    return binarySearch_2_with_redundancy(root, x, suffix_len, mid+1, high);
+    
 }
 
 /*
@@ -276,6 +350,14 @@ int LCP_with_given_strings(const char* x,const char* y){
     return i;
 }
 
+int LCP_with_given_strings_2(const char* x,const char* y,int max_len){
+    int i=0;
+    while (x[i]==y[i] && i<max_len){
+        i++;
+    }
+    return i;
+}
+
 void quicksort_of_nodes_local(nodes_vector* x, int start, int end){
     int i, j, pivot;
     suffix_tree_node* temp;
@@ -325,4 +407,10 @@ void add_in_order_2(nodes_vector* sons,suffix_tree_node* node){
     add_in_nodes_vector(sons,NULL);
     for(int j=sons->used-1;j>i;j--) sons->data[j] = sons->data[j-1];
     sons->data[i]=node;
+}
+
+void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_position){
+    add_in_nodes_vector(sons,NULL);
+    for(int j=sons->used-1;j>starting_position;j--) sons->data[j] = sons->data[j-1];
+    sons->data[starting_position]=node;
 }
