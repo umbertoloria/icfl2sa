@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
 
     experiment_given_word_by_input_file();
 
-    printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("\n\n Total time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     
 
 
