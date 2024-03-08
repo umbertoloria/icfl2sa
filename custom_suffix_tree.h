@@ -45,6 +45,7 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
 suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
+suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node, const char* suffix);
 void stampa_suffix_tree(suffix_tree_node* root);
 

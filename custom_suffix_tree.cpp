@@ -178,6 +178,61 @@ suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix
     return add_suffix_in_tree_3(root->sons->data[index],suffix,indice,suffix_len);
 }
 
+suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
+
+    if(root->suffix_len==suffix_len){
+        add_in_int_vector(root->array_of_indexes,indice);
+        return NULL;
+    }
+    
+    //cout<<"Cercando...";
+    //int index_of_child_with_the_same_suffix = binarySearch_2(root,suffix,0,root->sons->used-1);
+    bool nuovo_nodo=false;
+    int index=-1;
+
+    if(root->sons->used == 0) nuovo_nodo=true;
+    else{
+        index = binarySearch_2_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
+        if(LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len) != root->sons->data[index]->suffix_len){
+            nuovo_nodo=true;
+            //cout<<"Non trovato suffisso simile a "<<suffix<<" at index: "<<index<<"\n";
+            //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
+            //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+            //cout<<"\n";
+        }
+    }
+    //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
+
+    if(nuovo_nodo){
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
+        add_in_int_vector(x->array_of_indexes,indice);
+
+        //root->sons = add_in_order(root->sons,x);
+
+        if(index==-1) add_in_nodes_vector(root->sons,x);
+        else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
+        else add_in_order_3(root->sons,x,index);
+        x->father=root;
+        //cout<<"sorting...";
+        //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
+        //cout<<" done\n";
+
+        //cout<<"Inserito suffisso: "<<suffix<<"\n";
+        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+        //cout<<"\n";
+
+        //cout<<"\n";
+        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
+        //cout<<"\n";
+
+        return x;
+    }
+    
+    return add_suffix_in_tree_4(root->sons->data[index],suffix,indice,suffix_len);
+}
+
+
+
 int binarySearch(suffix_tree_node* root, const char* x, int low, int high) {
   if (high >= low) {
     int mid = (low + high) / 2;
