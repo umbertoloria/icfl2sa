@@ -17,10 +17,8 @@ using namespace std;
 
 
 // sorting_suffixes_via_icfl_trie
-vector<int> sorting_suffixes_via_icfl_trie(string* word) {
+vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     //cout<<"###################### sorting_suffixes_via_icfl_trie"<<endl;
-
-    int lenght_of_word=strlen(word->c_str());
 
     cout<<"Numero caratteri: "<<lenght_of_word<<endl;
 
@@ -151,11 +149,13 @@ aa ab ac
 
     int_vector* SA = merge_array_of_vector(group_ranking);
 
-    printf("common+concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     //print_int_vector(SA);
 
+    tStart = clock();
     if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
+    printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     
 
 
@@ -202,14 +202,14 @@ char* experiment_given_word_by_input_file() {
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
-    getline(&word, &len, fp);
+    int word_size = getline(&word, &len, fp);
 
     //cout<<endl<<"Stringa: "<< word;
     //cout << endl;
 
     std::string x(word);
 
-    vector<int> suffix_array = sorting_suffixes_via_icfl_trie(&x);
+    vector<int> suffix_array = sorting_suffixes_via_icfl_trie(&x,word_size);
 
     return word;
 }
