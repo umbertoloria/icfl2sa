@@ -213,15 +213,15 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
         else add_in_order_3(root->sons,x,index);
         x->father=root;
         
-        cout<<"Non trovato suffisso simile a ";
-        print_substring(suffix,suffix_len);
-        cout<<" at index: "<<index<<"\n";
+        //cout<<"Non trovato suffisso simile a ";
+        //print_substring(suffix,suffix_len);
+        //cout<<" at index: "<<index<<"\n";
         //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
-        for(int z=0;z<root->sons->used;z++){
-            print_substring(root->sons->data[z]->suffix,root->sons->data[z]->suffix_len);
-            cout<<", ";
-        }
-        cout<<"\n";
+        //for(int z=0;z<root->sons->used;z++){
+        //    print_substring(root->sons->data[z]->suffix,root->sons->data[z]->suffix_len);
+        //    cout<<", ";
+        //}
+        //cout<<"\n";
 
         return x;
     }

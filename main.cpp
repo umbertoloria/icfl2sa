@@ -50,7 +50,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     cout<<endl;
 
     //Le parole di Lyndon ne possono essere al più una per ogni lettera della stringa in input
-    char** list_of_lyndon_words= get_lyndon_words(word,icfl_list);
+    //char** list_of_lyndon_words= get_lyndon_words(word,icfl_list);
 
     /*
     for(int i=0;i<icfl_list.size();i++){
@@ -61,12 +61,9 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
     
 
-    int max_size=0;
-    for(int i=0;i<icfl_list.size();i++){
-        if (strlen(list_of_lyndon_words[i])>max_size){
-            max_size=strlen(list_of_lyndon_words[i]);
-        } 
-    }
+    int max_size=get_max_size(icfl_list,lenght_of_word);
+
+    //cout<<max_size<<endl;
 
     clock_t tStart = clock();
     //cout<<"\nCREAZIONE ALBERO\n";
@@ -82,7 +79,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     suffix_tree_node* root = creazione_albero_2(icfl_list,word->c_str(),lenght_of_word,max_size);
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     */
-    stampa_suffix_tree(root);
+    //stampa_suffix_tree(root);
 
     //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);

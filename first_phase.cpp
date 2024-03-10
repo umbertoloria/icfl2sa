@@ -21,6 +21,17 @@ char** get_lyndon_words(string* word,vector<int> icfl_list){
     return list_of_lyndon_words;
 }
 
+int get_max_size(vector<int> icfl_list,int lenght_of_word){
+    int max_size=-1;
+    for(int i=1;i<icfl_list.size();i++){
+        if (icfl_list[i]-icfl_list[i-1] > max_size){
+            max_size=icfl_list[i]-icfl_list[i-1];
+        } 
+    }
+    if(lenght_of_word-icfl_list[icfl_list.size()-1] > max_size) return lenght_of_word-icfl_list[icfl_list.size()-1];
+    return lenght_of_word;
+}
+
 suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
     for(int i=0;i<max_size;i++){
@@ -70,8 +81,8 @@ suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_
 suffix_tree_node* creazione_albero_2(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
     for(int i=0;i<max_size;i++){
-        stampa_suffix_tree(root);
-        cout<<"\n\n";
+        //stampa_suffix_tree(root);
+        //cout<<"\n\n";
         //cout<<i<<"/"<<max_size<<endl;
         nodes_vector* last_added_nodes=init_nodes_vector(0);
         suffix_tree_node* temp;
