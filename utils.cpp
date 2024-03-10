@@ -83,3 +83,10 @@ void quicksort_of_nodes(nodes_vector* x, int start, int end){
         quicksort_of_nodes(x,j+1,end);
     }
 }
+
+
+void print_substring(const char* str,int n){
+    for (int i = 0; i < n; ++i) {
+        putchar(str[i]);
+    }
+}

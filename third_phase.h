@@ -18,3 +18,4 @@ int_vector* common_prefix_merge_2(int_vector* x, suffix_tree_node* node1,int_vec
 int_vector* find_common_elements_2(suffix_tree_node* x,suffix_tree_node* y);
 int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common_elements);
 int_vector* get_common_prefix_merge_3(suffix_tree_node* root);
+int_vector* get_common_prefix_merge_4(suffix_tree_node* root);

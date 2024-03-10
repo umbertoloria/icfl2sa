@@ -63,6 +63,7 @@ bool init_chains_of_prefixes(suffix_tree_node* root,int size_of_the_word);
 int LCP(char* w, int index1,int index2);
 int LCP_with_given_strings(const char* x,const char* y);
 int LCP_with_given_strings_2(const char* x,const char* y,int max_len);
+int LCP_from_same_string(const char* piccola,const char* grande,int n);
 
 //utils replicate
 void quicksort_of_nodes_local(nodes_vector* x, int start, int end);

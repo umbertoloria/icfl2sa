@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <string.h>
 #include "custom_suffix_tree.h"
+#include "utils.h"
 using namespace std;
 
 nodes_vector* init_nodes_vector(size_t size){
@@ -193,12 +194,10 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
     if(root->sons->used == 0) nuovo_nodo=true;
     else{
         index = binarySearch_2_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
-        if(LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len) != root->sons->data[index]->suffix_len){
+        if(strncmp(root->sons->data[index]->suffix,suffix,root->sons->data[index]->suffix_len)){
             nuovo_nodo=true;
-            //cout<<"Non trovato suffisso simile a "<<suffix<<" at index: "<<index<<"\n";
             //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
-            //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
-            //cout<<"\n";
+
         }
     }
     //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
@@ -213,17 +212,16 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
         else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
         else add_in_order_3(root->sons,x,index);
         x->father=root;
-        //cout<<"sorting...";
-        //quicksort_of_nodes_local(root->sons, 0, root->sons->used-1);
-        //cout<<" done\n";
-
-        //cout<<"Inserito suffisso: "<<suffix<<"\n";
-        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
-        //cout<<"\n";
-
-        //cout<<"\n";
-        //for(int z=0;z<root->sons->used;z++) cout<<root->sons->data[z]->suffix<<", ";
-        //cout<<"\n";
+        
+        cout<<"Non trovato suffisso simile a ";
+        print_substring(suffix,suffix_len);
+        cout<<" at index: "<<index<<"\n";
+        //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
+        for(int z=0;z<root->sons->used;z++){
+            print_substring(root->sons->data[z]->suffix,root->sons->data[z]->suffix_len);
+            cout<<", ";
+        }
+        cout<<"\n";
 
         return x;
     }
@@ -360,8 +358,10 @@ int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node,const char* 
 
 
 void stampa_suffix_tree(suffix_tree_node* root){
+
     if (root->sons->size==0){
-        cout<<"("<<root->suffix;
+        cout<<"(";
+        print_substring(root->suffix,root->suffix_len);
         cout<<"[";
         for(size_t j = 0; j<root->array_of_indexes->used;j++){
             cout<<root->array_of_indexes->data[j]<<",";
@@ -369,7 +369,8 @@ void stampa_suffix_tree(suffix_tree_node* root){
         cout<<"])";
         return;
     }
-    cout<<root->suffix<<"(";
+    print_substring(root->suffix,root->suffix_len);
+    cout<<"(";
     for(size_t i = 0; i<root->sons->used;i++){
         stampa_suffix_tree(root->sons->data[i]);
     }
@@ -416,6 +417,11 @@ int LCP_with_given_strings_2(const char* x,const char* y,int max_len){
         i++;
     }
     return i;
+}
+
+int LCP_from_same_string(const char* piccola,const char* grande,int n){
+    if(!strncmp(piccola,grande,n)) return n;
+    return -1;
 }
 
 void quicksort_of_nodes_local(nodes_vector* x, int start, int end){

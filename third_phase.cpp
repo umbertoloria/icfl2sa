@@ -236,7 +236,24 @@ int_vector* get_common_prefix_merge_3(suffix_tree_node* root){
     for(int i=1;i<root->sons->used;i++){
         res = common_prefix_merge_3(res,get_common_prefix_merge_3(root->sons->data[i]),common_elements);
     }
+    //print_int_vector(res);
+    return res;
+}
 
+//UTILIZZZA ARRAY DI APPOGGIO
+
+int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
+    if(root->sons->used==0){
+        return get_chain_from_bit_vector_2(root);
+    }
+
+    int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
+    int_vector* common_elements=get_chain_from_bit_vector_2(root);
+
+    for(int i=1;i<root->sons->used;i++){
+        res = common_prefix_merge_3(res,get_common_prefix_merge_4(root->sons->data[i]),common_elements);
+        free(root->sons->data[i]);
+    }
     //print_int_vector(res);
     return res;
 }

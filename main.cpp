@@ -11,6 +11,8 @@
 #include "check.h"
 #include <string.h>
 
+#define CONTROLLO_OUTPUT 1
+
 using namespace std;
 
 // STEP 1: COSTRUZIONE PREFIX TREE (in-prefix merge)
@@ -69,11 +71,18 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     clock_t tStart = clock();
     //cout<<"\nCREAZIONE ALBERO\n";
     //La root è la stringa vuota
-    suffix_tree_node* root = creazione_albero(list_of_lyndon_words,icfl_list,word->c_str(),lenght_of_word,max_size);
-    
+    //suffix_tree_node* root = creazione_albero(list_of_lyndon_words,icfl_list,word->c_str(),lenght_of_word,max_size);
+    suffix_tree_node* root = creazione_albero_2(icfl_list,word->c_str(),lenght_of_word,max_size);
+
+
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
-    //stampa_suffix_tree(root);
+    /*
+    clock_t tStart = clock();
+    suffix_tree_node* root = creazione_albero_2(icfl_list,word->c_str(),lenght_of_word,max_size);
+    printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    */
+    stampa_suffix_tree(root);
 
     //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);
@@ -89,6 +98,7 @@ aa ab ac
 */
 
 
+    if (!CONTROLLO_OUTPUT) word->clear();
     cout<<endl;
 
     //tStart = clock();
@@ -143,7 +153,7 @@ aa ab ac
 
     array_of_int_vector* group_ranking = init_array_of_int_vector(0);
     for(int i=0;i<root->sons->used;i++){
-        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_3(root->sons->data[i]));
+        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
         //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     }
 
@@ -151,12 +161,12 @@ aa ab ac
 
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
-    //print_int_vector(SA);
-
-    tStart = clock();
-    if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
-    printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    
+    if(CONTROLLO_OUTPUT){
+        //print_int_vector(SA);
+        tStart = clock();
+        if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
+        printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    }
 
 
     return icfl_list;
