@@ -193,12 +193,20 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
 
     if(root->sons->used == 0) nuovo_nodo=true;
     else{
-        index = binarySearch_2_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
+        index = binarySearch_3_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
         if(strncmp(root->sons->data[index]->suffix,suffix,root->sons->data[index]->suffix_len)){
+        //    cout<<"Non trovato suffisso simile a ";
+        //    print_substring(suffix,suffix_len);
+        //    cout<<" at index: "<<index<<"\n";
             nuovo_nodo=true;
             //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
 
         }
+        //else{
+        //    cout<<"Trovato suffisso simile a ";
+        //    print_substring(suffix,suffix_len);
+        //    cout<<" at index: "<<index<<"\n";
+        //}
     }
     //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
 
@@ -212,10 +220,7 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
         else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
         else add_in_order_3(root->sons,x,index);
         x->father=root;
-        
-        //cout<<"Non trovato suffisso simile a ";
-        //print_substring(suffix,suffix_len);
-        //cout<<" at index: "<<index<<"\n";
+
         //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
         //for(int z=0;z<root->sons->used;z++){
         //    print_substring(root->sons->data[z]->suffix,root->sons->data[z]->suffix_len);
@@ -324,6 +329,40 @@ int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suf
     }
     return binarySearch_2_with_redundancy(root, x, suffix_len, mid+1, high);
     
+}
+
+int binarySearch_3_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high) {
+    
+    //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
+    //sleep(1);
+
+    //Non ci sono elementi nella lista
+    if(high==-1) return -1;
+    int mid = (low + high) / 2;
+
+    //cout<<"high: "<<high<<", low: "<<low<<", mid: "<<mid<<"\n";
+    // If found at mid, then return it
+    //cout<<"LCP_with_given_strings?"<<endl;
+    //cout<<"Confronto: ";
+    //print_substring(root->sons->data[mid]->suffix,root->sons->data[mid]->suffix_len);
+    //cout<<", ";
+    //print_substring(x,suffix_len);
+    //cout<<" at index: "<<mid<<"\n";
+
+
+    if(high == low){
+        return mid;
+    }
+
+    int res_of_strncmp=strncmp(x,root->sons->data[mid]->suffix,root->sons->data[mid]->suffix_len);
+
+    if(res_of_strncmp==0)
+        return mid;
+
+    if (res_of_strncmp < 0){
+        return binarySearch_3_with_redundancy(root, x, suffix_len, low, mid);
+    }
+    return binarySearch_3_with_redundancy(root, x, suffix_len, mid+1, high);
 }
 
 /*

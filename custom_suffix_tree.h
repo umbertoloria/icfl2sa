@@ -71,6 +71,7 @@ int binarySearch(suffix_tree_node* root, const char* x, int low, int high);
 int binarySearch_with_redundancy(suffix_tree_node* root, const char* x, int suffix_len,int low, int high);
 int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high);
 int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
+int binarySearch_3_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
 nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_2(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_position);

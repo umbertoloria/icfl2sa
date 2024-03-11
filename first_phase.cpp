@@ -112,7 +112,7 @@ suffix_tree_node* creazione_albero_2(vector<int> icfl_list,const char* S,int len
         //cout<<last_added_nodes->used<<endl;
         for(int i=0;i<last_added_nodes->used;i++){
             //cout<<"i: "<<i<<endl;
-            create_bit_vector(S,icfl_list,last_added_nodes->data[i]);
+            create_bit_vector_2(S,icfl_list,last_added_nodes->data[i]);
             //cout<<last_added_nodes->data[i]->suffix<<endl;
             //print_bit_vector(last_added_nodes->data[i]->bit_vec);
         }

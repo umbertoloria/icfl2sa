@@ -19,4 +19,5 @@ void add_chain_to_root(suffix_tree_node* root,int_vector* common_chain_of_suffie
 int_vector* get_chain_from_bit_vector(suffix_tree_node* root);
 int_vector* get_chain_from_bit_vector_2(suffix_tree_node* root);
 void create_bit_vector(const char* S,vector<int> icfl_list, suffix_tree_node* root);
+void create_bit_vector_2(const char* S,vector<int> icfl_list, suffix_tree_node* root);
 void get_chains_3(suffix_tree_node* root,suffix_tree_node* node);
