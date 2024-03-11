@@ -244,7 +244,10 @@ int_vector* get_common_prefix_merge_3(suffix_tree_node* root){
 
 int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     if(root->sons->used==0){
-        return get_chain_from_bit_vector_2(root);
+        //Senza array d'appoggio
+        return get_chain_from_bit_vector(root);
+        //Con array d'appoggio
+        //return get_chain_from_bit_vector_2(root);
     }
 
     int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
