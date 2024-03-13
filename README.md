@@ -18,3 +18,12 @@ Per esegire il **testing** invece:
 ```
 valgrind --leak-check=full--show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main
 ```
+
+Per creare un file di input tramite linea di comando è stato implementato lo script `python_string_generator.py`.
+Per lanciarlo basta lanciare il comando qui sotto e creerà il file in modalità di **scrittura** il file `input_file.txt`
+
+```
+python3 python_string_generator.py N
+es.
+python3 python_string_generator.py 1000000
+```
