@@ -47,6 +47,13 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     return x;
 }
 
+void free_node(suffix_tree_node* root){
+    free(root->array_of_indexes->data);
+    free(root->bit_vec->data);
+    free(root->chains_of_suffixes->data);
+    free(root->common_chain_of_suffiexes->data);
+}
+
 /*
 La funzione aggiunge nel sottoalbero dettato da root il prefisso prefix.
 Se viene trovato gli viene aggiunto l'indice alla lista degli indici.

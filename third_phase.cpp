@@ -168,7 +168,7 @@ int_vector* common_prefix_merge_2(int_vector* x, suffix_tree_node* node1,int_vec
 //common_prefix_merge_3 effettua il common_prefix_merge però solo se si sanno a priori gli elementi comuni
 
 int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common_elements){
-    int_vector* res = init_int_vector(0);
+    int_vector* res = init_int_vector(x->used+y->used);
     //print_int_vector(common_elements);
     //cout<<"b\n";
 
@@ -245,21 +245,28 @@ int_vector* get_common_prefix_merge_3(suffix_tree_node* root){
 int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     if(root->sons->used==0){
         //Senza array d'appoggio
-        return get_chain_from_bit_vector(root);
+        //return get_chain_from_bit_vector(root);
         //Con array d'appoggio
-        //return get_chain_from_bit_vector_2(root);
+        return get_chain_from_bit_vector_2(root);
     }
 
     int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
+    int_vector* temp_res;
     //Senza array d'appoggio
     //int_vector* common_elements=get_chain_from_bit_vector(root);
     //Con array d'appoggio
     int_vector* common_elements=get_chain_from_bit_vector_2(root);
 
     for(int i=1;i<root->sons->used;i++){
-        res = common_prefix_merge_3(res,get_common_prefix_merge_4(root->sons->data[i]),common_elements);
-        free(root->sons->data[i]);
+        int_vector* temp_son_common_prefix_merge = get_common_prefix_merge_4(root->sons->data[i]);
+        temp_res = common_prefix_merge_3(res,temp_son_common_prefix_merge,common_elements);
+        free(res->data);
+        res=temp_res;
+        free(temp_son_common_prefix_merge->data);
+        free_node(root->sons->data[i]);
     }
+
+    free(common_elements->data);
     //print_int_vector(res);
     return res;
 }
