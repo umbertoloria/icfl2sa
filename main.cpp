@@ -159,7 +159,9 @@ aa ab ac
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     if(CONTROLLO_OUTPUT){
-        //print_int_vector(SA);
+        cout<<"\n\n";
+        print_int_vector(SA);
+        cout<<"\n\n";
         tStart = clock();
         if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
         printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);

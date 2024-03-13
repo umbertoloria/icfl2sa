@@ -174,8 +174,11 @@ int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common
 
     int i,j,z;
     i=j=z=0;
+    
 
     while(i<x->used){
+        if(z == common_elements->used) break;
+
         if(x->data[i] != common_elements->data[z]){
             add_in_int_vector(res,x->data[i]);
             i++;
@@ -191,6 +194,12 @@ int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common
             j++;
         }
     }
+
+    while(i<x->used){
+        add_in_int_vector(res,x->data[i]);
+        i++;
+    }
+
 
     while(j<y->used){
         add_in_int_vector(res,y->data[j]);
@@ -247,18 +256,33 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
         //Senza array d'appoggio
         //return get_chain_from_bit_vector(root);
         //Con array d'appoggio
-        return get_chain_from_bit_vector_2(root);
+        return get_chain_from_bit_vector(root);
     }
 
     int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
+
+    if(root->sons->data[0]->array_of_indexes->data[0]==0){
+        cout<<"\n\nCommon prefix merge in nodo 'SG': ";
+        print_int_vector(res);
+        cout<<"\n\n";
+    }
+
     int_vector* temp_res;
     //Senza array d'appoggio
     //int_vector* common_elements=get_chain_from_bit_vector(root);
     //Con array d'appoggio
-    int_vector* common_elements=get_chain_from_bit_vector_2(root);
+    int_vector* common_elements=get_chain_from_bit_vector(root);
 
     for(int i=1;i<root->sons->used;i++){
         int_vector* temp_son_common_prefix_merge = get_common_prefix_merge_4(root->sons->data[i]);
+
+        if(root->sons->data[i]->array_of_indexes->data[0]==47){
+            cout<<"\n\nCommon prefix merge in nodo 'SY...': ";
+            print_int_vector(temp_son_common_prefix_merge);
+            cout<<"\n\n";
+        }
+
+
         temp_res = common_prefix_merge_3(res,temp_son_common_prefix_merge,common_elements);
         free(res->data);
         res=temp_res;
@@ -268,5 +292,12 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
 
     free(common_elements->data);
     //print_int_vector(res);
+    if(root->array_of_indexes->data[0]==99){
+        cout<<"\n\nCommon prefix merge in nodo 'S': ";
+        print_int_vector(res);
+        cout<<"\n\n";
+    }
+        
+
     return res;
 }
