@@ -1,10 +1,10 @@
 # ICFL2SA
 
-Alcune cose state implementate ma ho deciso di non pubblicarle qui, tipo tutte quelle scritto nel .gitignore.
+Alcune cose state implementate ma ho deciso di non pubblicarle qui, tipo tutte quelle scritto nel `.gitignore`.
 
 Ad esempio i risultati ottenuti con Valgrid e le analisi ottenibili da chiunque tramite comando.
 
-È importante creare un file *input_file.txt* dove andrà inserita la stringa da immettere come input.
+È importante creare un file `input_file.txt` dove andrà inserita la stringa da immettere come input.
 
 una volta inserita bisogna compilare ed eseguire. Non ho usato ottimizzazioni di compilazione ma se volete farlo, potete modificare il comando liberamente.
 
