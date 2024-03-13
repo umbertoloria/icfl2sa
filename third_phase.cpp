@@ -210,6 +210,32 @@ int_vector* common_prefix_merge_3(int_vector* x,int_vector* y, int_vector*common
 
 }
 
+int_vector* common_prefix_merge_4(int_vector* x,int_vector* y, int_vector*common_elements){
+    int_vector* res = init_int_vector(x->used+y->used);
+    //print_int_vector(x);
+    //print_int_vector(y);
+    //print_int_vector(common_elements);
+    //cout<<"b\n";
+
+    int i,j,z;
+    i=j=z=0;
+    
+
+    while(z != common_elements->used){
+        while(x->data[i] != common_elements->data[z]) add_in_int_vector(res,x->data[i++]);
+        i++;
+        while(y->data[j] != common_elements->data[z]) add_in_int_vector(res,y->data[j++]);
+        j++;
+        add_in_int_vector(res,common_elements->data[z++]);
+    }
+
+    while(i<x->used) add_in_int_vector(res,x->data[i++]);
+    while(j<y->used) add_in_int_vector(res,y->data[j++]);
+
+    return res;
+
+}
+
 int_vector* get_common_prefix_merge(suffix_tree_node* root){
     int_vector* res = init_int_vector(0);
 
@@ -256,7 +282,7 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
         //Senza array d'appoggio
         //return get_chain_from_bit_vector(root);
         //Con array d'appoggio
-        return get_chain_from_bit_vector(root);
+        return get_chain_from_bit_vector_2(root);
     }
 
     int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
@@ -264,11 +290,11 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     //Senza array d'appoggio
     //int_vector* common_elements=get_chain_from_bit_vector(root);
     //Con array d'appoggio
-    int_vector* common_elements=get_chain_from_bit_vector(root);
+    int_vector* common_elements=get_chain_from_bit_vector_2(root);
 
     for(int i=1;i<root->sons->used;i++){
         int_vector* temp_son_common_prefix_merge = get_common_prefix_merge_4(root->sons->data[i]);
-        temp_res = common_prefix_merge_3(res,temp_son_common_prefix_merge,common_elements);
+        temp_res = common_prefix_merge_4(res,temp_son_common_prefix_merge,common_elements);
         free(res->data);
         res=temp_res;
         free(temp_son_common_prefix_merge->data);

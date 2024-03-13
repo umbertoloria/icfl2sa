@@ -95,6 +95,16 @@ int_vector* merge_array_of_vector(array_of_int_vector* x){
     return res;
 }
 
+int_vector* merge_array_of_vector_2(array_of_int_vector* x,int size){
+    int_vector* res = init_int_vector(size);
+    for(int i=0;i<x->used;i++){
+        for(int j=0;j<x->data[i]->used;j++){
+            add_in_int_vector(res,x->data[i]->data[j]);
+        }
+    }
+    return res;
+}
+
 int* intdup(int* src, size_t len){
    int* p = (int*)malloc(len * sizeof(int));
    memcpy(p, src, len * sizeof(int));

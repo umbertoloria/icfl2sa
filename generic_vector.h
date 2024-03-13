@@ -32,6 +32,7 @@ bool element_in_int_vector(int_vector* x,int element);
 void print_int_vector(int_vector* x);
 void print_array_of_vector(array_of_int_vector* x);
 int_vector* merge_array_of_vector(array_of_int_vector* x);
+int_vector* merge_array_of_vector_2(array_of_int_vector* x,int size);
 
 int* intdup(int* src, size_t len);
 

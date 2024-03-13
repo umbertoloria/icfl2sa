@@ -154,7 +154,7 @@ aa ab ac
         //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     }
 
-    int_vector* SA = merge_array_of_vector(group_ranking);
+    int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);
 
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
