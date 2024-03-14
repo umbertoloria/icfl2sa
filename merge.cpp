@@ -1,18 +1,15 @@
 #include "merge.h"
 
 int get_factor(vector<int> icfl_list,int index){
+    int max_factor=icfl_list.size()-1;
 
-    if(index >= icfl_list[icfl_list.size()-1]){
-        return icfl_list.size()-1;
-    }
-
-    for(int i=0;i<icfl_list.size()-1;i++){
+    for(int i=0;i<max_factor;i++){
         if(index >= icfl_list.at(i) && index < icfl_list.at(i+1)){
             return i;
         }
     }
 
-    return -1;
+    return max_factor;
 
 }
 
@@ -238,11 +235,11 @@ bit_vector* in_prefix_merge_bit_vector(const char* S, vector<int> icfl_list, int
 }
 
 bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child){
-
+    int icfl_list_size=icfl_list.size();
     //FATHER = 1
     //CHILD = 0
 
-    bit_vector* result = init_bit_vector(0);
+    bit_vector* result = init_bit_vector(father->used+child->used);
 
     int i=0;
     int j=0;
@@ -256,7 +253,7 @@ bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, i
 
         //A
 
-        if(element_of_e >= icfl_list[icfl_list.size()-1] && element_of_g >= icfl_list[icfl_list.size()-1]){
+        if(element_of_e >= icfl_list[icfl_list_size-1] && element_of_g >= icfl_list[icfl_list_size-1]){
             add_in_bit_vector(result,true);
             i++;
         }
@@ -274,7 +271,7 @@ bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, i
 
             //1)
 
-            if(element_of_e >= icfl_list[icfl_list.size()-1]){
+            if(element_of_e >= icfl_list[icfl_list_size-1]){
 
                 add_in_bit_vector(result,true);
                 i++;
@@ -282,7 +279,7 @@ bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, i
 
             //2)
 
-            else if(element_of_g >= icfl_list[icfl_list.size()-1]){
+            else if(element_of_g >= icfl_list[icfl_list_size-1]){
                 
                 if(strcmp(S+element_of_g,S+element_of_e)<0){
                     add_in_bit_vector(result,false);
@@ -337,6 +334,8 @@ bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, i
 }
 
 bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child,int common_prefix_len){
+    //common_prefix_len=0;
+    int icfl_list_size=icfl_list.size();
     //FATHER = 1
     //CHILD = 0
 
@@ -353,14 +352,14 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
         int element_of_e=father->data[i];
         int element_of_g=child->data[j];
 
-        //cout<<"\nConfrontando: "<<element_of_e<<" e "<<element_of_g<<" , fattore: "<<get_factor(icfl_list,element_of_e)<<" e "<<get_factor(icfl_list,element_of_g)<<"\n";
+        cout<<"\nConfrontando: "<<element_of_e<<" e "<<element_of_g<<" , fattore: "<<get_factor(icfl_list,element_of_e)<<" e "<<get_factor(icfl_list,element_of_g)<<"\n";
 
         //A
 
-        if(element_of_e >= icfl_list[icfl_list.size()-1] && element_of_g >= icfl_list[icfl_list.size()-1]){
+        if(element_of_e >= icfl_list[icfl_list_size-1] && element_of_g >= icfl_list[icfl_list_size-1]){
             add_in_bit_vector(result,true);
             i++;
-            //cout<<"\nA\n";
+            cout<<"\nA\n";
         }
 
         //B
@@ -368,7 +367,7 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
         else if(get_factor(icfl_list,element_of_e)==get_factor(icfl_list,element_of_g)){
             add_in_bit_vector(result,false);
             j++;
-            //cout<<"\nB\n";
+            cout<<"\nB\n";
         }
 
         //C
@@ -377,26 +376,29 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
 
             //1)
 
-            if(element_of_e >= icfl_list[icfl_list.size()-1]){
+            if(element_of_e >= icfl_list[icfl_list_size-1]){
                 add_in_bit_vector(result,true);
                 i++;
-                //cout<<"\nC1\n";
+                cout<<"\nC1\n";
             }
 
             //2)
 
-            else if(element_of_g >= icfl_list[icfl_list.size()-1]){
+            else if(element_of_g >= icfl_list[icfl_list_size-1]){
+
+                cout<<S+element_of_e+common_prefix_len<<"\n";
+                cout<<S+element_of_g+common_prefix_len<<"\n";
                 
                 if(strcmp(S+element_of_g+common_prefix_len,S+element_of_e+common_prefix_len)<0){
                     add_in_bit_vector(result,false);
                     j++;
-                    //cout<<"\nC2.1\n";
+                    cout<<"\nC2.1\n";
                 }
 
                 else{
                     add_in_bit_vector(result,true);
                     i++;
-                    //cout<<"\nC2.2\n";
+                    cout<<"\nC2.2\n";
                 }
             }
 
@@ -407,7 +409,7 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
                 if(element_of_e > element_of_g){
                     add_in_bit_vector(result,false);
                     j++;
-                    //cout<<"\nC3.1\n";
+                    cout<<"\nC3.1\n";
                 }
 
                 else{
@@ -415,13 +417,13 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
                     if(strcmp(S+element_of_g+common_prefix_len,S+element_of_e+common_prefix_len)<0){
                         add_in_bit_vector(result,false);
                         j++;
-                        //cout<<"\nC3.2.1\n";
+                        cout<<"\nC3.2.1\n";
                     }
 
                     else{
                         add_in_bit_vector(result,true);
                         i++;
-                        //cout<<"\nC3.2.2\n";
+                        cout<<"\nC3.2.2\n";
                     }
 
                 }
