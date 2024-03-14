@@ -49,7 +49,7 @@ void print_bit_vector(bit_vector* x);
 
 typedef struct common_elements_vector
 {
-    int_vector* chain;
+    bit_vector* chain;
     int_vector* distance_from_father;
 }common_elements_vector;
 

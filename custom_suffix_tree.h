@@ -39,6 +39,9 @@ typedef struct suffix_tree_node{
     //bit_vector del nodo
     bit_vector* bit_vec;
 
+    //versione migiore del bit vector per common prefix merge
+    common_elements_vector* common_elements_vec;
+
 }suffix_tree_node;
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);

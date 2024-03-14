@@ -7,3 +7,4 @@ int_vector* in_prefix_merge(const char* S, vector<int> icfl_list, int_vector* e,
 bit_vector* in_prefix_merge_bit_vector(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child);
 bit_vector* in_prefix_merge_bit_vector_2(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child);
 bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child,int common_prefix_len);
+common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child);
