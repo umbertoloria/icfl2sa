@@ -149,6 +149,11 @@ void create_bit_vector_2(const char* S,vector<int> icfl_list, suffix_tree_node* 
     root->bit_vec=in_prefix_merge_bit_vector_2(S,icfl_list,father_chain,root->array_of_indexes);
 }
 
+void create_bit_vector_3(const char* S,vector<int> icfl_list, suffix_tree_node* root){
+    int_vector* father_chain = get_chain_from_bit_vector(root->father);
+    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,father_chain,root->array_of_indexes,root->father->suffix_len);
+}
+
 void get_chains_3(suffix_tree_node* root,suffix_tree_node* node){
     if(node->sons->used==0){
         add_in_array_of_int_vector(root->chains_of_suffixes,get_chain_from_bit_vector(node));
