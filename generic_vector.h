@@ -47,4 +47,13 @@ bit_vector* init_bit_vector(size_t size);
 bool add_in_bit_vector(bit_vector* x,bool element);
 void print_bit_vector(bit_vector* x);
 
+typedef struct common_elements_vector
+{
+    int_vector* chain;
+    int_vector* distance_from_father;
+}common_elements_vector;
+
+common_elements_vector* init_common_elements_vector();
+common_elements_vector* init_common_elements_vector_2(size_t size);
+
 #endif

@@ -140,3 +140,19 @@ void print_bit_vector(bit_vector* x){
     cout<<endl;
 
 }
+
+common_elements_vector* init_common_elements_vector(){
+    common_elements_vector* temp = (common_elements_vector*)malloc(sizeof(common_elements_vector));
+    temp->chain=init_int_vector(0);
+    temp->distance_from_father=init_int_vector(0);
+
+    return temp;
+}
+
+common_elements_vector* init_common_elements_vector_2(size_t size){
+    common_elements_vector* temp = (common_elements_vector*)malloc(sizeof(common_elements_vector));
+    temp->chain=init_int_vector(size);
+    temp->distance_from_father=init_int_vector(0);
+
+    return temp;
+}
