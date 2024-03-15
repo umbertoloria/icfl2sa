@@ -63,7 +63,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
     int max_size=get_max_size(icfl_list,lenght_of_word);
 
-    //cout<<max_size<<endl;
+    cout<<"Max size: "<<max_size<<endl;
 
     clock_t tStart = clock();
     //cout<<"\nCREAZIONE ALBERO\n";
@@ -81,8 +81,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     */
     //stampa_suffix_tree(root);
 
-    //cout<<"\nALBERO OTTENUTO\n";
-    //stampa_suffix_tree(root);
+    cout<<"\nALBERO OTTENUTO\n";
+    stampa_suffix_tree(root);
 
 /*
     a
@@ -150,7 +150,7 @@ aa ab ac
 
     array_of_int_vector* group_ranking = init_array_of_int_vector(0);
     for(int i=0;i<root->sons->used;i++){
-        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
+        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
         //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     }
 
@@ -159,9 +159,9 @@ aa ab ac
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     if(CONTROLLO_OUTPUT){
-        //cout<<"\n\n";
-        //print_int_vector(SA);
-        //cout<<"\n\n";
+        cout<<"\n\n";
+        print_int_vector(SA);
+        cout<<"\n\n";
         tStart = clock();
         if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
         printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);

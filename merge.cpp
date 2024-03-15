@@ -446,11 +446,9 @@ bit_vector* in_prefix_merge_bit_vector_3(const char* S, vector<int> icfl_list, i
     return result;
 }
 
-common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> icfl_list, int_vector* father, int_vector* child){
+common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> icfl_list,int icfl_list_size,int_vector* father, int_vector* child){
 
     common_elements_vector* result = init_common_elements_vector_2(father->used+child->used);
-
-    int icfl_list_size=icfl_list.size();
     //FATHER = 1
     //CHILD = 0
 
@@ -469,7 +467,7 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
         //A
 
         if(element_of_e >= icfl_list[icfl_list_size-1] && element_of_g >= icfl_list[icfl_list_size-1]){
-            add_in_bit_vector(result->chain,true);
+            add_in_bit_vector(result->bit_vec,true);
             i++;
             add_in_int_vector(result->distance_from_father,until_next_common_element);
             until_next_common_element=0;
@@ -478,7 +476,7 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
         //B
 
         else if(get_factor(icfl_list,element_of_e)==get_factor(icfl_list,element_of_g)){
-            add_in_bit_vector(result->chain,false);
+            add_in_bit_vector(result->bit_vec,false);
             j++;
             until_next_common_element++;
         }
@@ -491,7 +489,7 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
 
             if(element_of_e >= icfl_list[icfl_list_size-1]){
 
-                add_in_bit_vector(result->chain,true);
+                add_in_bit_vector(result->bit_vec,true);
                 i++;
                 add_in_int_vector(result->distance_from_father,until_next_common_element);
                 until_next_common_element=0;
@@ -502,13 +500,13 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
             else if(element_of_g >= icfl_list[icfl_list_size-1]){
                 
                 if(strcmp(S+element_of_g,S+element_of_e)<0){
-                    add_in_bit_vector(result->chain,false);
+                    add_in_bit_vector(result->bit_vec,false);
                     j++;
                     until_next_common_element++;
                 }
 
                 else{
-                    add_in_bit_vector(result->chain,true);
+                    add_in_bit_vector(result->bit_vec,true);
                     i++;
                     add_in_int_vector(result->distance_from_father,until_next_common_element);
                     until_next_common_element=0;
@@ -520,7 +518,7 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
             else{
 
                 if(element_of_e > element_of_g){
-                    add_in_bit_vector(result->chain,false);
+                    add_in_bit_vector(result->bit_vec,false);
                     j++;
                     until_next_common_element++;
                 }
@@ -528,13 +526,13 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
                 else{
 
                     if(strcmp(S+element_of_g,S+element_of_e)<0){
-                        add_in_bit_vector(result->chain,false);
+                        add_in_bit_vector(result->bit_vec,false);
                         j++;
                         until_next_common_element++;
                     }
 
                     else{
-                        add_in_bit_vector(result->chain,true);
+                        add_in_bit_vector(result->bit_vec,true);
                         i++;
                         add_in_int_vector(result->distance_from_father,until_next_common_element);
                         until_next_common_element=0;
@@ -548,13 +546,13 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
     }
 
     while(j<child->used){
-        add_in_bit_vector(result->chain,false);
+        add_in_bit_vector(result->bit_vec,false);
         j++;
         until_next_common_element++;
     }
 
     while(i<father->used){
-        add_in_bit_vector(result->chain,true);
+        add_in_bit_vector(result->bit_vec,true);
         i++;
         add_in_int_vector(result->distance_from_father,until_next_common_element);
         until_next_common_element=0;

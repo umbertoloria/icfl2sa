@@ -42,7 +42,7 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     x->common_chain_of_suffiexes = init_int_vector(0);
     x->chains_of_suffixes = init_array_of_int_vector(0);
 
-    
+    x->common_elements_vec=init_common_elements_vector();
     
     return x;
 }
@@ -52,7 +52,22 @@ void free_node(suffix_tree_node* root){
     free(root->bit_vec->data);
     free(root->chains_of_suffixes->data);
     free(root->common_chain_of_suffiexes->data);
+
+    //free(root->common_elements_vec->chain->data);
+    //free(root->common_elements_vec->bit_vec->data);
+    //free(root->common_elements_vec->distance_from_father->data);
 }
+
+void free_node_2(suffix_tree_node* root){
+    free(root->array_of_indexes->data);
+    free(root->chains_of_suffixes->data);
+    free(root->common_chain_of_suffiexes->data);
+
+    free(root->common_elements_vec->chain->data);
+    free(root->common_elements_vec->bit_vec->data);
+    free(root->common_elements_vec->distance_from_father->data);
+}
+
 
 /*
 La funzione aggiunge nel sottoalbero dettato da root il prefisso prefix.

@@ -236,6 +236,48 @@ int_vector* common_prefix_merge_4(int_vector* x,int_vector* y, int_vector*common
 
 }
 
+common_elements_vector* common_prefix_merge_with_common_elements_vector(int_vector* chain1,int_vector* common1,int_vector* chain2,int_vector* common2, int_vector*common_elements){
+    common_elements_vector* res = init_common_elements_vector_3(chain1->used+chain2->used,common_elements->used);
+
+    int tot_len,local_tot1,local_tot2,common1_distance,common2_distance,offset_elements;
+    tot_len=local_tot1=local_tot2=0;
+    
+    for(int i=0;i<common_elements->used;i++){
+
+        common1_distance=common1->data[i];
+        memcpy(res->chain->data+tot_len,chain1->data+local_tot1,common1_distance * sizeof(int));
+        local_tot1+=common1_distance + 1;
+        tot_len+=common1_distance;
+
+        common2_distance=common2->data[i];
+        memcpy(res->chain->data+tot_len,chain2->data+local_tot2,common2->data[i] * sizeof(int));
+        local_tot2+=common2->data[i] + 1;
+        tot_len+=common2_distance;
+
+        res->chain->data[tot_len]=common_elements->data[i];
+        tot_len++;
+
+        add_in_int_vector(res->distance_from_father,common1_distance+common2_distance);
+    }
+
+    if(local_tot1<chain1->used){
+        offset_elements=chain1->used - local_tot1;
+        memcpy(res->chain->data+tot_len,chain1->data+local_tot1,offset_elements * sizeof(int));
+        tot_len+=offset_elements;
+    }
+    if(local_tot2<chain2->used){
+        offset_elements=chain2->used - local_tot2;
+        memcpy(res->chain->data+tot_len,chain2->data+local_tot2,offset_elements * sizeof(int));
+        tot_len+=offset_elements;
+    }
+
+    res->chain->used=tot_len;
+
+
+    return res;
+
+}
+
 int_vector* get_common_prefix_merge(suffix_tree_node* root){
     int_vector* res = init_int_vector(0);
 
@@ -302,6 +344,54 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     }
 
     free(common_elements->data);
+    //print_int_vector(res);
+    return res;
+}
+
+//usa i common elements
+common_elements_vector* get_common_prefix_merge_5(suffix_tree_node* root){
+    if(root->sons->used==0){
+        //Senza array d'appoggio
+        //return get_chain_from_bit_vector(root);
+        //Con array d'appoggio
+        root->common_elements_vec->chain=get_chain_from_common_elements_vector(root);
+        return root->common_elements_vec;
+    }
+
+    common_elements_vector* res = get_common_prefix_merge_5(root->sons->data[0]);
+    cout<<"figlio0: ";
+    print_int_vector(res->chain);
+    cout<<"distance_from_father: ";
+    print_int_vector(res->distance_from_father);
+
+
+
+    common_elements_vector* temp_res;
+    //Senza array d'appoggio
+    //int_vector* common_elements=get_chain_from_bit_vector(root);
+    //Con array d'appoggio
+    int_vector* common_elements=get_chain_from_common_elements_vector(root);
+
+    for(int i=1;i<root->sons->used;i++){
+        common_elements_vector* temp_son_common_prefix_merge = get_common_prefix_merge_5(root->sons->data[i]);
+        cout<<"figlio"<<i<<": ";
+        print_int_vector(temp_son_common_prefix_merge->chain);
+        cout<<"distance_from_father: ";
+        print_int_vector(temp_son_common_prefix_merge->distance_from_father);
+        temp_res = common_prefix_merge_with_common_elements_vector(res->chain,res->distance_from_father,temp_son_common_prefix_merge->chain,temp_son_common_prefix_merge->distance_from_father,common_elements);
+        free(res->chain->data);
+        free(res->bit_vec->data);
+        free(res->distance_from_father->data);
+        res=temp_res;
+        free_node_2(root->sons->data[i]);
+    }
+
+    free(common_elements->data);
+
+    cout<<"Risultato per nodo ";
+    print_substring(root->suffix,root->suffix_len);
+    cout<<": ";
+    print_int_vector(res->chain);
     //print_int_vector(res);
     return res;
 }

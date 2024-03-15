@@ -49,11 +49,13 @@ void print_bit_vector(bit_vector* x);
 
 typedef struct common_elements_vector
 {
-    bit_vector* chain;
+    bit_vector* bit_vec;
+    int_vector* chain;
     int_vector* distance_from_father;
 }common_elements_vector;
 
 common_elements_vector* init_common_elements_vector();
 common_elements_vector* init_common_elements_vector_2(size_t size);
+common_elements_vector* init_common_elements_vector_3(size_t size,size_t size2);
 
 #endif
