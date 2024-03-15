@@ -148,10 +148,10 @@ int_vector* get_chain_from_common_elements_vector(suffix_tree_node* root){
     //Si assume a questo punto che il bit_vector il padre già lo tenga
     int_vector* father_chain = get_chain_from_common_elements_vector(root->father);
     root->common_elements_vec->chain = join_int_vector_with_bit_vector(father_chain,root->array_of_indexes,root->common_elements_vec->bit_vec);
-    cout<<"Catena del nodo ";
-    print_substring(root->suffix,root->suffix_len);
-    cout<<": ";
-    print_int_vector(root->common_elements_vec->chain);
+    //cout<<"Catena del nodo ";
+    //print_substring(root->suffix,root->suffix_len);
+    //cout<<": ";
+    //print_int_vector(root->common_elements_vec->chain);
     return root->common_elements_vec->chain;
 }
 
@@ -176,7 +176,7 @@ void create_bit_vector_3(const char* S,vector<int> icfl_list, suffix_tree_node* 
 void create_bit_vector_4(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 
     int_vector* father_chain = get_chain_from_common_elements_vector(root->father);
-    cout<<"\nottenuta catena del padre\n";
+    //cout<<"\nottenuta catena del padre\n";
     root->common_elements_vec=in_prefix_merge_bit_vector_4(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes);
 
 }

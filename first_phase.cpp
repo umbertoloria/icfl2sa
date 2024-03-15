@@ -79,13 +79,11 @@ suffix_tree_node* creazione_albero(char** list_of_lyndon_words,vector<int> icfl_
 }
 
 suffix_tree_node* creazione_albero_2(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
-    cout<<"a\n";
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
-    cout<<"a\n";
     int icfl_Size=icfl_list.size();
     for(int i=0;i<max_size;i++){
-        stampa_suffix_tree(root);
-        cout<<"\n\n";
+        //stampa_suffix_tree(root);
+        //cout<<"\n\n";
         //cout<<i<<"/"<<max_size<<endl;
         nodes_vector* last_added_nodes=init_nodes_vector(icfl_Size);
         suffix_tree_node* temp;
@@ -116,11 +114,11 @@ suffix_tree_node* creazione_albero_2(vector<int> icfl_list,const char* S,int len
         for(int i=0;i<last_added_nodes->used;i++){
             //cout<<"i: "<<i<<endl;
             //create_bit_vector_2(S,icfl_list,last_added_nodes->data[i]);
-            cout<<"Da inserire nodo: ";
-            print_substring(last_added_nodes->data[i]->suffix,last_added_nodes->data[i]->suffix_len);
-            cout<<"\n";
+            //cout<<"Da inserire nodo: ";
+            //print_substring(last_added_nodes->data[i]->suffix,last_added_nodes->data[i]->suffix_len);
+            //cout<<"\n";
             create_bit_vector_4(S,icfl_list,icfl_Size,last_added_nodes->data[i]);
-            cout<<"Inserito.\n";
+            //cout<<"Inserito.\n";
             //cout<<last_added_nodes->data[i]->suffix<<endl;
             //print_bit_vector(last_added_nodes->data[i]->bit_vec);
         }
