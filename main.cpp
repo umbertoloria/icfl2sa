@@ -150,7 +150,8 @@ aa ab ac
 
     array_of_int_vector* group_ranking = init_array_of_int_vector(0);
     for(int i=0;i<root->sons->used;i++){
-        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
+        //add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
+        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
         //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     }
 

@@ -351,47 +351,64 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
 //usa i common elements
 common_elements_vector* get_common_prefix_merge_5(suffix_tree_node* root){
     if(root->sons->used==0){
-        //Senza array d'appoggio
-        //return get_chain_from_bit_vector(root);
-        //Con array d'appoggio
+        cout<<"\n";
         root->common_elements_vec->chain=get_chain_from_common_elements_vector(root);
+        cout<<"Risultato per nodo ";
+        print_substring(root->suffix,root->suffix_len);
+        cout<<": ";
+        print_int_vector(root->common_elements_vec->chain);
+        cout<<"distance_from_father: ";
+        print_int_vector(root->common_elements_vec->distance_from_father);
+        cout<<"\n";
         return root->common_elements_vec;
     }
+;
+    int_vector* temp_distance_from_father = duplicate_int_vector(root->common_elements_vec->distance_from_father);
 
     common_elements_vector* res = get_common_prefix_merge_5(root->sons->data[0]);
-    //cout<<"figlio0: ";
-    //print_int_vector(res->chain);
-    //cout<<"distance_from_father: ";
-    //print_int_vector(res->distance_from_father);
 
+    cout<<"\n";
 
+    cout<<"figlio ";
+    print_substring(root->sons->data[0]->suffix,root->sons->data[0]->suffix_len);
+    cout<<": ";
+    print_int_vector(res->chain);
+    cout<<"distance_from_father: ";
+    print_int_vector(res->distance_from_father);
 
     common_elements_vector* temp_res;
-    //Senza array d'appoggio
-    //int_vector* common_elements=get_chain_from_bit_vector(root);
-    //Con array d'appoggio
     int_vector* common_elements=get_chain_from_common_elements_vector(root);
 
     for(int i=1;i<root->sons->used;i++){
         common_elements_vector* temp_son_common_prefix_merge = get_common_prefix_merge_5(root->sons->data[i]);
-        //cout<<"figlio"<<i<<": ";
-        //print_int_vector(temp_son_common_prefix_merge->chain);
-        //cout<<"distance_from_father: ";
-        //print_int_vector(temp_son_common_prefix_merge->distance_from_father);
+        cout<<"figlio ";
+        print_substring(root->sons->data[i]->suffix,root->sons->data[i]->suffix_len);
+        cout<<": ";
+        print_int_vector(temp_son_common_prefix_merge->chain);
+        cout<<"distance_from_father: ";
+        print_int_vector(temp_son_common_prefix_merge->distance_from_father);
         temp_res = common_prefix_merge_with_common_elements_vector(res->chain,res->distance_from_father,temp_son_common_prefix_merge->chain,temp_son_common_prefix_merge->distance_from_father,common_elements);
         free(res->chain->data);
         free(res->bit_vec->data);
         free(res->distance_from_father->data);
         res=temp_res;
-        free_node_2(root->sons->data[i]);
+        //free_node_2(root->sons->data[i]);
     }
+
 
     free(common_elements->data);
 
-    //cout<<"Risultato per nodo ";
-    //print_substring(root->suffix,root->suffix_len);
-    //cout<<": ";
-    //print_int_vector(res->chain);
+    root->common_elements_vec->chain=res->chain;
+
+    cout<<"Risultato per nodo ";
+    print_substring(root->suffix,root->suffix_len);
+    cout<<": ";
+    print_int_vector(root->common_elements_vec->chain);
+    cout<<"distance_from_father: ";
+    print_int_vector(root->common_elements_vec->distance_from_father);
     //print_int_vector(res);
-    return res;
+
+    cout<<"\n";
+
+    return root->common_elements_vec;
 }

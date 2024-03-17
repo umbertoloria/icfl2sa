@@ -140,11 +140,9 @@ int_vector* get_chain_from_bit_vector_2(suffix_tree_node* root){
 }
 
 int_vector* get_chain_from_common_elements_vector(suffix_tree_node* root){
-    if(root->father==NULL){
-        return root->array_of_indexes;
-    }
-
+    if(root->father==NULL) return root->array_of_indexes;
     if(root->common_elements_vec->chain->used) return root->common_elements_vec->chain;
+
     //Si assume a questo punto che il bit_vector il padre già lo tenga
     int_vector* father_chain = get_chain_from_common_elements_vector(root->father);
     root->common_elements_vec->chain = join_int_vector_with_bit_vector(father_chain,root->array_of_indexes,root->common_elements_vec->bit_vec);
@@ -166,10 +164,10 @@ void create_bit_vector_2(const char* S,vector<int> icfl_list, suffix_tree_node* 
     root->bit_vec=in_prefix_merge_bit_vector_2(S,icfl_list,father_chain,root->array_of_indexes);
 }
 
-void create_bit_vector_3(const char* S,vector<int> icfl_list, suffix_tree_node* root){
+void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 
     int_vector* father_chain = get_chain_from_bit_vector(root->father);
-    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,father_chain,root->array_of_indexes,root->father->suffix_len);
+    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes,root->father->suffix_len);
 }
 
 //Utilizza i common elements
