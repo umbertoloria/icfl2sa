@@ -343,7 +343,7 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
         free_node(root->sons->data[i]);
     }
 
-    free(common_elements->data);
+    //free(common_elements->data);
     //print_int_vector(res);
     return res;
 }

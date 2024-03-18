@@ -27,40 +27,10 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     vector<int> icfl_list = ICFL_recursive(word, (*word).length());
 
     printVector(icfl_list, "Stampa ICFL");
-
-    /*
-    for(int i=0;i<icfl_list.size()-1;i++){
-        for (int j=icfl_list[i];j<icfl_list[i+1];j++){
-            cout<<word->at(j);
-        }
-        cout<<", ";
-
-    }
-    */
-    
-
-    /*
-    for(int i=icfl_list[icfl_list.size()-1];i<word->length();i++){
-        cout<<word->at(i);
-    }
-    */
-
     
 
     cout<<endl;
-
-    //Le parole di Lyndon ne possono essere al più una per ogni lettera della stringa in input
-    //char** list_of_lyndon_words= get_lyndon_words(word,icfl_list);
-
-    /*
-    for(int i=0;i<icfl_list.size();i++){
-        cout<<list_of_lyndon_words[i]<<" ";
-    }
-    cout<<endl;
-    */
-
     
-
     int max_size=get_max_size(icfl_list,lenght_of_word);
 
     //cout<<"Max size: "<<max_size<<endl;
@@ -73,78 +43,9 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
 
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-
-    /*
-    clock_t tStart = clock();
-    suffix_tree_node* root = creazione_albero_2(icfl_list,word->c_str(),lenght_of_word,max_size);
-    printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    */
-    //stampa_suffix_tree(root);
-
-    //cout<<"\nALBERO OTTENUTO\n";
-    //stampa_suffix_tree(root);
-
-/*
-    a
-ac aa  ab
-
-    a
-aa ab ac
-
-
-*/
-
-
+    
     if (!CONTROLLO_OUTPUT) word->clear();
     cout<<endl;
-
-    //tStart = clock();
-    //sort_sons_of_all_nodes(root);
-    //printf("sort_sons_of_all_nodes, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-
-    //tStart = clock();
-    //init_chains_of_prefixes(root,word->length());
-    //printf("init_chains_of_prefixes, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    
-    /*
-    array_of_int_vector* array_of_chains = init_array_of_int_vector(strlen(word->c_str()));
-
-    get_chains(array_of_chains,root,word->c_str(),icfl_list);
-    cout<<"a"<<endl;
-    print_array_of_vector(array_of_chains);
-    */
-
-//LA FUNZIONE GET_CHAINS PERMETTE DI COMPUTARE LE GROUP_CHAINS E SALVARLE NEL NODO FIGLIO DI ROOT,
-//QUESTA IMPLEMENTAZIONE PERÒ NON FA CONTO DELLA MEMORIA USATA IN QUANTO PER OGNI NODO
-//VIENE USATO SOLO L'ARRAY DI INDICI OTTENUTO DURANTE LA CRAZIONE DELL'ALBERO
-    //tStart = clock();
-    //get_chains(root,word->c_str(),icfl_list);
-    //printf("get_chains, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-
-//LA FUNZIONE GET_CHAINS_2 PERMETTE DI COMPUTARE ANCHE LE COMMON_CHAINS, SALVANDO QUINDI I RISULTATI
-//PARZIALI E FARLO DIVENTARE UN PROBLEMA DI PROGRAMMAZIONE DINAMICA.
-//QUESTO OVVIAMENTE A DISCAPITO DELLA MEMORIA USATA
-    //tStart = clock();
-    //get_chains_2(word->c_str(),icfl_list,root,root->common_chain_of_suffiexes);
-    //printf("get_chains_2, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-
-    /*
-    for(int i=0;i<root->sons->used;i++){
-        print_array_of_vector(root->sons->data[i]->chains_of_suffixes);
-    }
-    */
-
-   //stampa_suffix_tree(root);
-
-    /*
-    può essere rimosso con la nuova omplementazione
-    tStart = clock();
-    for(int i=0;i<root->sons->used;i++){
-        get_chains_3(root->sons->data[i],root->sons->data[i]);
-    }
-    printf("get_chains_3, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    */
-    //stampa_suffix_tree(root);
    
    tStart = clock();
 

@@ -167,7 +167,7 @@ void create_bit_vector_2(const char* S,vector<int> icfl_list, suffix_tree_node* 
 void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 
     int_vector* father_chain = get_chain_from_bit_vector(root->father);
-    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes,root->father->suffix_len);
+    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes);
 }
 
 //Utilizza i common elements
