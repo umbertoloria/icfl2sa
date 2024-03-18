@@ -236,6 +236,30 @@ int_vector* common_prefix_merge_4(int_vector* x,int_vector* y, int_vector*common
 
 }
 
+void common_prefix_merge_4_multithreading(int_vector* x,int_vector* y, int_vector*common_elements,int_vector** res){
+    //print_int_vector(x);
+    //print_int_vector(y);
+    //print_int_vector(common_elements);
+    //cout<<"b\n";
+
+    int i,j,z;
+    i=j=z=0;
+    
+
+    while(z != common_elements->used){
+        while(x->data[i] != common_elements->data[z]) add_in_int_vector(*res,x->data[i++]);
+        i++;
+        while(y->data[j] != common_elements->data[z]) add_in_int_vector(*res,y->data[j++]);
+        j++;
+        add_in_int_vector(*res,common_elements->data[z++]);
+    }
+
+    while(i<x->used) add_in_int_vector(*res,x->data[i++]);
+    while(j<y->used) add_in_int_vector(*res,y->data[j++]);
+
+}
+
+
 common_elements_vector* common_prefix_merge_with_common_elements_vector(int_vector* chain1,int_vector* common1,int_vector* chain2,int_vector* common2, int_vector*common_elements){
     common_elements_vector* res = init_common_elements_vector_3(chain1->used+chain2->used,common_elements->used);
 
@@ -346,6 +370,55 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     //free(common_elements->data);
     //print_int_vector(res);
     return res;
+}
+
+void get_common_prefix_merge_4_multihreading(suffix_tree_node* root,int_vector** res){
+    //cout<<"Nodo :";
+    //print_substring(root->suffix,root->suffix_len);
+    //cout<<"\n";
+    if(root->sons->used==0){
+        *res = get_chain_from_bit_vector_3(root);
+        //cout<<"\nOttenuta chain\n";
+        return;
+    }  
+    int k=root->sons->used,next_k;
+
+    int_vector* common_elements=get_chain_from_bit_vector_3(root);
+    int_vector** common_prefix_of_sons=(int_vector**)malloc(sizeof(int_vector*)*k);
+
+    for(int z=0;z<k;z++)
+        get_common_prefix_merge_4_multihreading(root->sons->data[z],&common_prefix_of_sons[z]);
+
+    if(k==1){
+        *res=common_prefix_of_sons[0];
+        return;
+    }
+
+    while(k>1){
+        if (k%2==1) next_k=k/2+1;
+        else next_k=k/2;
+        int_vector** temp_res=(int_vector**)malloc(sizeof(int_vector*)*next_k);
+        for (int ii=0;ii<next_k;ii++) temp_res[ii]=init_int_vector(0);
+
+        //cout<<"Comincio ad elaborare tutti i figli di ";
+        //print_substring(root->suffix,root->suffix_len);
+        //cout<<"\n";
+        //print_int_vector(common_prefix_of_sons[0]);
+        //print_int_vector(common_prefix_of_sons[1]);
+
+        for(int j=0;j<k/2;j++)
+            common_prefix_merge_4_multithreading(common_prefix_of_sons[j*2],common_prefix_of_sons[(j*2)+1],common_elements,&temp_res[j]);
+        
+        if(k%2==1) temp_res[next_k-1]=duplicate_int_vector(common_prefix_of_sons[k-1]);
+
+        //Da fare alla fine
+        common_prefix_of_sons=temp_res;
+        *res=temp_res[0];
+        k=next_k;
+    }
+
+
+
 }
 
 //usa i common elements

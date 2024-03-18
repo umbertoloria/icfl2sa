@@ -39,12 +39,12 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     //cout<<"\nCREAZIONE ALBERO\n";
     //La root è la stringa vuota
     //suffix_tree_node* root = creazione_albero(list_of_lyndon_words,icfl_list,word->c_str(),lenght_of_word,max_size);
-    suffix_tree_node* root = creazione_albero_2(icfl_list,word->c_str(),lenght_of_word,max_size);
+    suffix_tree_node* root = creazione_albero_2_multithread(icfl_list,word->c_str(),lenght_of_word,max_size);
 
 
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
-    //cout<<"\ALBERO OTTENU\n";
+    //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);
     
     if (!CONTROLLO_OUTPUT) word->clear();
@@ -52,12 +52,21 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
    
    tStart = clock();
 
-    array_of_int_vector* group_ranking = init_array_of_int_vector(0);
+    array_of_int_vector* group_ranking = init_array_of_int_vector(root->sons->used);
+    //for(int i=0;i<root->sons->used;i++){
+    //    //add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
+    //    add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
+    //    //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
+    //}
+
     for(int i=0;i<root->sons->used;i++){
-        //add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
-        add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
-        //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
+        get_common_prefix_merge_4_multihreading(root->sons->data[i],&group_ranking->data[i]);
+        //cout<<"Group chain: ";
+        //print_int_vector(group_ranking->data[i]);
+        //cout<<"\n";
+        add_in_array_of_int_vector(group_ranking,group_ranking->data[i]);
     }
+
 
     int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);
 
