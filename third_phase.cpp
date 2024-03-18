@@ -324,7 +324,7 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
         //Senza array d'appoggio
         //return get_chain_from_bit_vector(root);
         //Con array d'appoggio
-        return get_chain_from_bit_vector_2(root);
+        return get_chain_from_bit_vector_3(root);
     }
 
     int_vector* res = get_common_prefix_merge_4(root->sons->data[0]);
@@ -332,7 +332,7 @@ int_vector* get_common_prefix_merge_4(suffix_tree_node* root){
     //Senza array d'appoggio
     //int_vector* common_elements=get_chain_from_bit_vector(root);
     //Con array d'appoggio
-    int_vector* common_elements=get_chain_from_bit_vector_2(root);
+    int_vector* common_elements=get_chain_from_bit_vector_3(root);
 
     for(int i=1;i<root->sons->used;i++){
         int_vector* temp_son_common_prefix_merge = get_common_prefix_merge_4(root->sons->data[i]);

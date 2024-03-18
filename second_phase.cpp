@@ -139,6 +139,15 @@ int_vector* get_chain_from_bit_vector_2(suffix_tree_node* root){
     return join_int_vector_with_bit_vector(get_chain_from_bit_vector_2(root->father),root->array_of_indexes,root->bit_vec);
 }
 
+//O usiamo qusta ovunque, oppure no
+//Fa affidamento sul fatto che gli array vengono duplicati quindi non si possono fare determinate assunzioni
+//Tipo fare attenzione a quando si usa la free()
+int_vector* get_chain_from_bit_vector_3(suffix_tree_node* root){
+    if(root->father==NULL) return duplicate_int_vector(root->array_of_indexes);
+    if(root->common_chain_of_suffiexes->used) return duplicate_int_vector(root->common_chain_of_suffiexes);
+    return join_int_vector_with_bit_vector(get_chain_from_bit_vector_3(root->father),root->array_of_indexes,root->bit_vec);
+}
+
 int_vector* get_chain_from_common_elements_vector(suffix_tree_node* root){
     if(root->father==NULL) return root->array_of_indexes;
     if(root->common_elements_vec->chain->used) return root->common_elements_vec->chain;
@@ -168,6 +177,12 @@ void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size,
 
     int_vector* father_chain = get_chain_from_bit_vector(root->father);
     root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes);
+}
+
+void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
+
+    root->father->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root->father);
+    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,root->father->common_chain_of_suffiexes,root->array_of_indexes);
 }
 
 //Utilizza i common elements

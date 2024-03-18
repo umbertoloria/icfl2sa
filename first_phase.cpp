@@ -105,7 +105,7 @@ suffix_tree_node* creazione_albero_2(vector<int> icfl_list,const char* S,int len
             }
         }
         for(int i=0;i<last_added_nodes->used;i++)
-            create_bit_vector_3(S,icfl_list,icfl_Size,last_added_nodes->data[i]);
+            create_bit_vector_3_redundancy(S,icfl_list,icfl_Size,last_added_nodes->data[i]);
 
         free(last_added_nodes);
     }

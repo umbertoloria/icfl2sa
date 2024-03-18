@@ -20,6 +20,7 @@ bool check_suffix_array(const char* S,int_vector* SA){
     if(!ord_bool) cout<<"\nNon tutti i suffissi sono ordinati. \n";
     for(int i=0;i<strlen(S)-1;i++){
         if(!element_in_int_vector(SA,i)){
+            cout<<i<<endl;
             pres_bool = false;
         }
     }

@@ -43,6 +43,9 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
 
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
+    //cout<<"\ALBERO OTTENU\n";
+    //stampa_suffix_tree(root);
     
     if (!CONTROLLO_OUTPUT) word->clear();
     cout<<endl;
