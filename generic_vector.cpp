@@ -123,7 +123,7 @@ bit_vector* init_bit_vector(size_t size){
 
 bool add_in_bit_vector(bit_vector* x,bool element){
         if (x->size==x->used){
-        x->size += 1;
+        x->size *= 1000;
         x->data = (bool*)realloc(x->data,sizeof(bool)*x->size);
     }
     x->data[x->used++]=element;
