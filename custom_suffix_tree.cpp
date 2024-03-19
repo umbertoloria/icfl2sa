@@ -35,12 +35,12 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
 
     x->suffix_len=suffix_len;
 
-    x->array_of_indexes = init_int_vector(0);
-    x->sons=init_nodes_vector(0);
-    x->leaves=init_nodes_vector(0);
+    x->array_of_indexes = init_int_vector(1);
+    x->sons=init_nodes_vector(1);
+    x->leaves=init_nodes_vector(1);
 
-    x->common_chain_of_suffiexes = init_int_vector(0);
-    x->chains_of_suffixes = init_array_of_int_vector(0);
+    x->common_chain_of_suffiexes = init_int_vector(1);
+    x->chains_of_suffixes = init_array_of_int_vector(1);
 
     x->common_elements_vec=init_common_elements_vector();
     
@@ -254,6 +254,63 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
     }
     
     return add_suffix_in_tree_4(root->sons->data[index],suffix,indice,suffix_len);
+}
+
+ void add_suffix_in_tree_5(suffix_tree_node* root,const char* suffix,int indice,int suffix_len,suffix_tree_node** res){
+
+    if(root->suffix_len==suffix_len){
+        add_in_int_vector(root->array_of_indexes,indice);
+        *res = NULL;
+        return;
+    }
+    
+    //cout<<"Cercando...";
+    //int index_of_child_with_the_same_suffix = binarySearch_2(root,suffix,0,root->sons->used-1);
+    bool nuovo_nodo=false;
+    int index=-1;
+
+    if(root->sons->used == 0) nuovo_nodo=true;
+    else{
+        index = binarySearch_3_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
+        if(strncmp(root->sons->data[index]->suffix,suffix,root->sons->data[index]->suffix_len)){
+        //    cout<<"Non trovato suffisso simile a ";
+        //    print_substring(suffix,suffix_len);
+        //    cout<<" at index: "<<index<<"\n";
+            nuovo_nodo=true;
+            //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
+
+        }
+        //else{
+        //    cout<<"Trovato suffisso simile a ";
+        //    print_substring(suffix,suffix_len);
+        //    cout<<" at index: "<<index<<"\n";
+        //}
+    }
+    //cout<<" trovato a "<<index_of_child_with_the_same_suffix<<"\n";
+
+    if(nuovo_nodo){
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
+        add_in_int_vector(x->array_of_indexes,indice);
+
+        //root->sons = add_in_order(root->sons,x);
+
+        if(index==-1) add_in_nodes_vector(root->sons,x);
+        else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
+        else add_in_order_3(root->sons,x,index);
+        x->father=root;
+
+        //cout<<"LCP: "<<LCP_with_given_strings_2(suffix,root->sons->data[index]->suffix,suffix_len)<<", suffix_len: "<<root->sons->data[index]->suffix_len<<"\n";
+        //for(int z=0;z<root->sons->used;z++){
+        //    print_substring(root->sons->data[z]->suffix,root->sons->data[z]->suffix_len);
+        //    cout<<", ";
+        //}
+        //cout<<"\n";
+
+        *res=x;
+        return;
+    }
+    
+    add_suffix_in_tree_5(root->sons->data[index],suffix,indice,suffix_len,res);
 }
 
 

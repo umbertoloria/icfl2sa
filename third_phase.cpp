@@ -398,7 +398,7 @@ void get_common_prefix_merge_4_multihreading(suffix_tree_node* root,int_vector**
         if (k%2==1) next_k=k/2+1;
         else next_k=k/2;
         int_vector** temp_res=(int_vector**)malloc(sizeof(int_vector*)*next_k);
-        for (int ii=0;ii<next_k;ii++) temp_res[ii]=init_int_vector(0);
+        for (int ii=0;ii<next_k;ii++) temp_res[ii]=init_int_vector(1);
 
         //cout<<"Comincio ad elaborare tutti i figli di ";
         //print_substring(root->suffix,root->suffix_len);
