@@ -18,7 +18,7 @@ int_vector* init_int_vector(size_t size){
 
 bool add_in_int_vector(int_vector* x,int element){
     if (x->size==x->used){
-        x->size *=1000;
+        x->size += 11;
         x->data = (int*)realloc(x->data,sizeof(int)*x->size);
     }
     x->data[x->used++]=element;
@@ -123,7 +123,7 @@ bit_vector* init_bit_vector(size_t size){
 
 bool add_in_bit_vector(bit_vector* x,bool element){
         if (x->size==x->used){
-        x->size *= 1000;
+        x->size += 1;
         x->data = (bool*)realloc(x->data,sizeof(bool)*x->size);
     }
     x->data[x->used++]=element;

@@ -17,7 +17,7 @@ nodes_vector* init_nodes_vector(size_t size){
 
 bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element){
     if (x->size==x->used){
-        x->size *= 1000;
+        x->size += 1;
         x->data = (suffix_tree_node**)realloc(x->data,sizeof(suffix_tree_node*)*x->size);
     }
     x->data[x->used++]=element;
