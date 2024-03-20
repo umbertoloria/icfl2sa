@@ -12,5 +12,7 @@ suffix_tree_node* creazione_albero_3_multithread(vector<int> icfl_list,const cha
 suffix_tree_node* creazione_albero_3(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size);
 
 void compute_i_phase(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i);
+void compute_i_phase_multithreding(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i);
 
 void add_node_in_suffix_tree(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j);
+void add_node_in_suffix_tree_multithreding(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j);

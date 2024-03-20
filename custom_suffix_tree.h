@@ -5,6 +5,8 @@
 #include <vector>
 #include <unistd.h>
 #include "generic_vector.h"
+#include <mutex>
+#include <pthread.h>
 
 using namespace std;
 
@@ -42,6 +44,9 @@ typedef struct suffix_tree_node{
     //versione migiore del bit vector per common prefix merge
     common_elements_vector* common_elements_vec;
 
+    //Lock per il nodo
+    mutex node_lock;
+
 }suffix_tree_node;
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
@@ -51,6 +56,7 @@ suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,i
 suffix_tree_node* add_suffix_in_tree_2(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 suffix_tree_node* add_suffix_in_tree_3(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
+void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
 //Non fa i return(cosa bella)
 void add_suffix_in_tree_5(suffix_tree_node* root,const char* suffix,int indice,int suffix_len,suffix_tree_node** res);
 int16_t find_index_of_child_a_is_prefix_of_b(suffix_tree_node* node, const char* suffix);

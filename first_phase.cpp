@@ -172,7 +172,8 @@ suffix_tree_node* creazione_albero_3_multithread(vector<int> icfl_list,const cha
     for(int i=0;i<max_size;i++){
         tStart = clock();
 
-        compute_i_phase(S,lenght_of_word,icfl_list,icfl_size,root,i);
+        //compute_i_phase(S,lenght_of_word,icfl_list,icfl_size,root,i);
+        compute_i_phase_multithreding(S,lenght_of_word,icfl_list,icfl_size,root,i);
 
         tot_inserimento+=clock()-tStart;
     }
@@ -254,9 +255,25 @@ void compute_i_phase(const char*S,int lenght_of_word,vector<int>icfl_list,int ic
         add_node_in_suffix_tree(S,icfl_list,icfl_size,root,i,j);
 }
 
+void compute_i_phase_multithreding(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
+    //I nodi nell'ultimo fattore, statisticamente e la maggior parte delle volte i< lenght_of_word - icfl_list[icfl_Size-1] è sempre vero, ma è sempre bene controllare che non si sa mai
+    std::thread gruppo_di_threads[icfl_size];
+    if(i< lenght_of_word - icfl_list[icfl_size-1])
+        add_suffix_in_tree_4_multithreading(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
+    for(int j=0;j<icfl_size-1;j++){
+        gruppo_di_threads[j] = std::thread(add_node_in_suffix_tree_multithreding,S,icfl_list,icfl_size,root,i,j);
+        gruppo_di_threads[j].join();
+    }
+}
+
 //root,S + icfl_list[j] +starting_position,icfl_list[j]+starting_position,i+1
 void add_node_in_suffix_tree(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j){
     if(i<icfl_list[j+1]-icfl_list[j]){
         add_suffix_in_tree_4(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,i+1);
     }
+}
+
+void add_node_in_suffix_tree_multithreding(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j){
+    if(i<icfl_list[j+1]-icfl_list[j])
+        add_suffix_in_tree_4_multithreading(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,i+1);
 }

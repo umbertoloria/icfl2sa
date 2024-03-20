@@ -256,6 +256,51 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
     return add_suffix_in_tree_4(root->sons->data[index],suffix,indice,suffix_len);
 }
 
+void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
+
+    cout<<"Elaboro: ";
+    print_substring(suffix,suffix_len);
+    cout<<"\n";
+    //cout<<"\nLock: ";
+    //if(root->node_lock.try_lock()) cout<<"true";
+    //else cout<<"false";
+    //cout<<"\n";
+
+    if(root->suffix_len==suffix_len){
+        root->node_lock.lock();
+        add_in_int_vector(root->array_of_indexes,indice);
+        root->node_lock.unlock();
+        return;
+    }
+
+    bool nuovo_nodo=false;
+    int index=-1;
+
+    if(root->sons->used == 0) nuovo_nodo=true;
+    else{
+        index = binarySearch_3_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
+        if(strncmp(root->sons->data[index]->suffix,suffix,root->sons->data[index]->suffix_len))
+            nuovo_nodo=true;
+    }
+    if(nuovo_nodo){
+        root->node_lock.lock();
+
+        suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
+        add_in_int_vector(x->array_of_indexes,indice);
+        
+        if(index==-1) add_in_nodes_vector(root->sons,x);
+        else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
+        else add_in_order_3(root->sons,x,index);
+        x->father=root;
+
+        root->node_lock.unlock();
+        return ;
+    }
+
+    add_suffix_in_tree_4_multithreading(root->sons->data[index],suffix,indice,suffix_len);
+    return;
+}
+
  void add_suffix_in_tree_5(suffix_tree_node* root,const char* suffix,int indice,int suffix_len,suffix_tree_node** res){
 
     if(root->suffix_len==suffix_len){
