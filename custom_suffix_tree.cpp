@@ -291,7 +291,6 @@ void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suff
         return ;
     }
 
-    print_substring(root->suffix,root->suffix_len);
     root->node_lock.unlock();
     add_suffix_in_tree_4_multithreading(root->sons->data[index],suffix,indice,suffix_len);
 }
