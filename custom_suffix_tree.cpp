@@ -258,9 +258,9 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
 }
 
 void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
-    root->node_lock.lock();
-
+    
     if(root->suffix_len==suffix_len){
+        root->node_lock.lock();
         add_in_int_vector(root->array_of_indexes,indice);
         root->node_lock.unlock();
         return;
@@ -279,6 +279,7 @@ void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suff
     }
     
     if(nuovo_nodo){
+        root->node_lock.lock();
         suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
         add_in_int_vector(x->array_of_indexes,indice);
           
@@ -290,8 +291,7 @@ void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suff
         root->node_lock.unlock();
         return ;
     }
-
-    root->node_lock.unlock();
+    
     add_suffix_in_tree_4_multithreading(root->sons->data[index],suffix,indice,suffix_len);
 }
 
