@@ -264,6 +264,11 @@ void compute_i_phase_multithreding(const char*S,int lenght_of_word,vector<int>ic
         gruppo_di_threads[j] = std::thread(add_node_in_suffix_tree_multithreding,S,icfl_list,icfl_size,root,i,j);
         gruppo_di_threads[j].join();
     }
+    //if(i< lenght_of_word - icfl_list[icfl_size-1])
+    //    add_suffix_in_tree_4_multithreading(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
+    //for(int j=0;j<icfl_size-1;j++){
+    //    add_node_in_suffix_tree_multithreding(S,icfl_list,icfl_size,root,i,j);
+    //}
 }
 
 //root,S + icfl_list[j] +starting_position,icfl_list[j]+starting_position,i+1
