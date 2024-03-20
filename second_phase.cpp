@@ -143,8 +143,8 @@ int_vector* get_chain_from_bit_vector_2(suffix_tree_node* root){
 //Fa affidamento sul fatto che gli array vengono duplicati quindi non si possono fare determinate assunzioni
 //Tipo fare attenzione a quando si usa la free()
 int_vector* get_chain_from_bit_vector_3(suffix_tree_node* root){
-    if(root->father==NULL) return duplicate_int_vector(root->array_of_indexes);
-    if(root->common_chain_of_suffiexes->used) return duplicate_int_vector(root->common_chain_of_suffiexes);
+    if(root->father==NULL) return root->array_of_indexes;
+    if(root->common_chain_of_suffiexes->used) return root->common_chain_of_suffiexes;
     return join_int_vector_with_bit_vector(get_chain_from_bit_vector_3(root->father),root->array_of_indexes,root->bit_vec);
 }
 
@@ -180,9 +180,13 @@ void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size,
 }
 
 void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
-
-    root->father->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root->father);
-    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,root->father->common_chain_of_suffiexes,root->array_of_indexes);
+    //clock_t tot_inprefixmerge=0,tot_getchainfrombitvector=0,tStart;
+    //tStart = clock();
+    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes);
+    //printf("in_prefix_merge_bit_vector_3 Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    //tStart = clock();
+    root->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root);
+    //printf("get_chain_from_bit_vector_3 Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 }
 
 //Utilizza i common elements
@@ -205,6 +209,13 @@ void get_chains_3(suffix_tree_node* root,suffix_tree_node* node){
     for(int i=0;i<node->sons->used;i++){
         get_chains_3(root,node->sons->data[i]);
     }
+}
+
+void get_bit_vectors_from_root(const char* S,vector<int> icfl_list,int icfl_list_size,suffix_tree_node* root){
+    create_bit_vector_3_redundancy(S,icfl_list,icfl_list_size,root);
+    for(int i=0;i<root->sons->used;i++) 
+        get_bit_vectors_from_root(S,icfl_list,icfl_list_size,root->sons->data[i]);
+    return;
 }
 
 

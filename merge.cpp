@@ -542,3 +542,68 @@ common_elements_vector* in_prefix_merge_bit_vector_4(const char* S, vector<int> 
 
     return result;
 }
+
+bit_vector* in_prefix_merge_bit_vector_5(const char* S, vector<int> icfl_list, int icfl_list_size, int_vector* father, int_vector* child){
+    bit_vector* result = init_bit_vector(father->used+child->used);
+
+    int i=0,j=0;
+
+    //cout<<" last:"<<icfl_list[icfl_list.size()-1]<<" ";
+
+    while( i<father->used && j<child->used){
+        if(father->data[i] >= icfl_list[icfl_list_size-1] && child->data[j] >= icfl_list[icfl_list_size-1]){
+            add_in_bit_vector(result,true);
+            i++;
+        }
+        else if(get_factor(icfl_list,father->data[i])==get_factor(icfl_list,child->data[j])){
+            add_in_bit_vector(result,false);
+            j++;
+        }
+        else{
+            if(father->data[i] >= icfl_list[icfl_list_size-1]){
+                add_in_bit_vector(result,true);
+                i++;
+            }
+            else if(child->data[j] >= icfl_list[icfl_list_size-1]){
+                if(strcmp(S+child->data[j],S+father->data[i])<0){
+                    add_in_bit_vector(result,false);
+                    j++;
+                }
+                else{
+                    add_in_bit_vector(result,true);
+                    i++;
+                }
+            }
+            else{
+                if(father->data[i] > child->data[j]){
+                    add_in_bit_vector(result,false);
+                    j++;
+                }
+                else{
+                    if(strcmp(S+child->data[j],S+father->data[i])<0){
+                        add_in_bit_vector(result,false);
+                        j++;
+                    }
+                    else{
+                        add_in_bit_vector(result,true);
+                        i++;
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    while(j<child->used){
+        add_in_bit_vector(result,false);
+        j++;
+    }
+
+    while(i<father->used){
+        add_in_bit_vector(result,true);
+        i++;
+    }
+
+    return result;
+}

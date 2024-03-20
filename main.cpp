@@ -39,7 +39,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     //cout<<"\nCREAZIONE ALBERO\n";
     //La root è la stringa vuota
     //suffix_tree_node* root = creazione_albero(list_of_lyndon_words,icfl_list,word->c_str(),lenght_of_word,max_size);
-    suffix_tree_node* root = creazione_albero_2_multithread(icfl_list,word->c_str(),lenght_of_word,max_size);
+    suffix_tree_node* root = creazione_albero_3_multithread(icfl_list,word->c_str(),lenght_of_word,max_size);
 
 
     printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
