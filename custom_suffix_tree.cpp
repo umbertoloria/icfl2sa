@@ -258,77 +258,42 @@ suffix_tree_node* add_suffix_in_tree_4(suffix_tree_node* root,const char* suffix
 }
 
 void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suffix,int indice,int suffix_len){
-
-    //cout<<"Elaboro: ";
-    //print_substring(suffix,suffix_len);
-    //cout<<",Nel nodo: ";
-    //print_substring(root->suffix,root->suffix_len);
-    //cout<<"\n";
-    //cout<<"\nLock: ";
-    //if(root->node_lock.try_lock()) cout<<"true";
-    //else cout<<"false";
-    //cout<<"\n";
-
-    //cout<<"GETTING LOCK OF: ";
-    //print_substring(root->suffix,root->suffix_len);
-    //cout<<"\n";
     root->node_lock.lock();
-    //cout<<"\ndone\n";
 
     if(root->suffix_len==suffix_len){
-        //cout<<"aggiorno indice array... \n";
         add_in_int_vector(root->array_of_indexes,indice);
-        //cout<<"RELEASE LOCK OF: ";
-        //print_substring(root->suffix,root->suffix_len);
         root->node_lock.unlock();
-        //cout<<"\ndone\n";
         return;
     }
 
     bool nuovo_nodo=false;
     int index=-1;
 
-    //cout<<"Elaboro sequenze..\n";
-    if(root->sons->used == 0) //cout<<"1..\n";
+    if(root->sons->used == 0)
         nuovo_nodo=true;
     
     else{
-        //cout<<"2..\n";
         index = binarySearch_3_with_redundancy(root,suffix,suffix_len,0,root->sons->used-1);
         if(strncmp(root->sons->data[index]->suffix,suffix,root->sons->data[index]->suffix_len))
             nuovo_nodo=true;
     }
-
-    //cout<<"Nuovo nodo: "<<nuovo_nodo<<"\n";
+    
     if(nuovo_nodo){
-        //cout<<"creo nuovo nodo... \n";
-        
         suffix_tree_node* x=build_suffix_tree_node(root,suffix,suffix_len);
-        //cout<<"1\n";
         add_in_int_vector(x->array_of_indexes,indice);
-        //cout<<"2\n";
           
         if(index==-1) add_in_nodes_vector(root->sons,x);
         else if (strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0) add_in_nodes_vector(root->sons,x);
         else add_in_order_3(root->sons,x,index);
-
-        //cout<<"3\n";
         x->father=root;
-
-        //cout<<"RELEASE LOCK OF: ";
-        //print_substring(root->suffix,root->suffix_len);
+        
         root->node_lock.unlock();
-        //cout<<"\ndone\n";
         return ;
     }
 
-    //cout<<"reitero\n";
-    //cout<<"RELEASE LOCK OF: ";
     print_substring(root->suffix,root->suffix_len);
     root->node_lock.unlock();
-    //cout<<"\ndone\n";
     add_suffix_in_tree_4_multithreading(root->sons->data[index],suffix,indice,suffix_len);
-    //root->node_lock.unlock();
 }
 
  void add_suffix_in_tree_5(suffix_tree_node* root,const char* suffix,int indice,int suffix_len,suffix_tree_node** res){
