@@ -247,6 +247,45 @@ suffix_tree_node* creazione_albero_3(vector<int> icfl_list,const char* S,int len
     return root;
 }
 
+suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
+    suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
+    int icfl_size=icfl_list.size();
+    //clock_t tot_inserimento=0,tot_bitvector=0,tStart;
+    suffix_tree_node** roots=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*max_size);
+    std::thread gruppo_di_threads[max_size];
+    int num_of_alberelli=max_size;
+
+    for(int i=0;i<max_size;i++)
+        roots[i]=build_suffix_tree_node(NULL,"\0",0);
+
+    //cout<<"inizializzati alberelli\n";
+
+    for(int i=0;i<max_size;i++)
+        gruppo_di_threads[i] = std::thread(compute_i_phase_alberello_2,S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
+
+    for(int i=0;i<max_size;i++)
+        gruppo_di_threads[i].join();
+
+    //cout<<"finito di computare\n";
+
+    join_n_alberelli(roots,max_size,&root);
+
+    cout<<"finito il join\n";
+    //stampa_suffix_tree(root);
+
+    //tStart = clock();
+    for(int i = 0;i<root->sons->used;i++)
+        get_bit_vectors_from_root(S,icfl_list,icfl_size,root->sons->data[i]);
+    //tot_bitvector+=clock()-tStart;
+
+
+    //printf("tot_inserimento Time taken: %.2fs\n", (double)(tot_inserimento)/CLOCKS_PER_SEC);
+    //printf("tot_bitvector Time taken: %.2fs\n\n", (double)(tot_bitvector)/CLOCKS_PER_SEC);
+
+    return root;
+}
+
+
 void compute_i_phase(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
     //I nodi nell'ultimo fattore, statisticamente e la maggior parte delle volte i< lenght_of_word - icfl_list[icfl_Size-1] è sempre vero, ma è sempre bene controllare che non si sa mai
     if(i< lenght_of_word - icfl_list[icfl_size-1])
@@ -269,6 +308,27 @@ void compute_i_phase_multithreding(const char*S,int lenght_of_word,vector<int>ic
     //}
 }
 
+void compute_i_phase_alberello(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,alberello* alb,int i){
+    //print_nodes_vector(alb->roots);
+    if(i< lenght_of_word - icfl_list[icfl_size-1])
+        add_in_alberello(alb,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
+    //print_nodes_vector(alb->roots);
+    for(int j=0;j<icfl_size-1;j++)
+        add_node_in_suffix_tree_alberello(S,icfl_list,icfl_size,alb,i,j);
+    //print_nodes_vector(alb->roots);
+}
+
+void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
+    //print_nodes_vector(alb->roots);
+    if(i< lenght_of_word - icfl_list[icfl_size-1])
+        //add_suffix_in_node_sons(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
+        add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i);
+    //print_nodes_vector(alb->roots);
+    for(int j=0;j<icfl_size-1;j++)
+        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,root,i,j);
+    //print_nodes_vector(alb->roots);
+}
+
 //root,S + icfl_list[j] +starting_position,icfl_list[j]+starting_position,i+1
 void add_node_in_suffix_tree(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j){
     if(i<icfl_list[j+1]-icfl_list[j]){
@@ -280,3 +340,20 @@ void add_node_in_suffix_tree_multithreding(const char* S,vector<int> icfl_list,i
     if(i<icfl_list[j+1]-icfl_list[j])
         add_suffix_in_tree_4_multithreading(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,i+1);
 }
+
+void add_node_in_suffix_tree_alberello(const char* S,vector<int> icfl_list,int icfl_size,alberello* alb,int i,int j){
+    //print_nodes_vector(alb->roots);
+    if(i<icfl_list[j+1]-icfl_list[j])
+        add_in_alberello(alb,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
+    //cout<<"aggiunto in alberello\n";
+}
+
+void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j){
+    //print_nodes_vector(alb->roots);
+    if(i<icfl_list[j+1]-icfl_list[j])
+        //add_suffix_in_node_sons(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
+        add_suffix_in_node_sons_2(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i);
+    //cout<<"aggiunto in alberello\n";
+}
+
+

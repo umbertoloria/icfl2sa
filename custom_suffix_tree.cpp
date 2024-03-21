@@ -48,6 +48,27 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     return x;
 }
 
+suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_len){
+    //suffix_tree_node* x= (suffix_tree_node*)malloc(sizeof(suffix_tree_node));
+    suffix_tree_node* x = new(malloc(sizeof(suffix_tree_node))) suffix_tree_node{};
+
+    x->father=NULL;
+    x->suffix=suffix;
+
+    x->suffix_len=suffix_len;
+
+    x->array_of_indexes = init_int_vector(1);
+    x->sons=init_nodes_vector(1);
+    x->leaves=init_nodes_vector(1);
+
+    x->common_chain_of_suffiexes = init_int_vector(1);
+    x->chains_of_suffixes = init_array_of_int_vector(1);
+
+    x->common_elements_vec=init_common_elements_vector();
+
+    return x;
+}
+
 void free_node(suffix_tree_node* root){
     free(root->array_of_indexes->data);
     free(root->bit_vec->data);
@@ -291,7 +312,7 @@ void add_suffix_in_tree_4_multithreading(suffix_tree_node* root,const char* suff
         root->node_lock.unlock();
         return ;
     }
-    
+
     add_suffix_in_tree_4_multithreading(root->sons->data[index],suffix,indice,suffix_len);
 }
 
@@ -483,6 +504,34 @@ int binarySearch_3_with_redundancy(suffix_tree_node* root, const char* x,int suf
     return binarySearch_3_with_redundancy(root, x, suffix_len, mid+1, high);
 }
 
+int binarySearch_4_with_redundancy(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool* is_equal) {
+    
+    //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
+    //sleep(1);
+
+    //Non ci sono elementi nella lista
+    if(high==-1) return -1;
+    int mid = (low + high) / 2;
+
+    if(high == low){
+        if(!strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len)) *is_equal=1;
+        else *is_equal=0;
+        return mid;
+    }
+
+    int res_of_strncmp=strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len);
+
+    if(res_of_strncmp==0){
+        *is_equal=1;
+        return mid;
+    }
+
+    if (res_of_strncmp < 0)
+        return binarySearch_4_with_redundancy(n_vector, x, suffix_len, low, mid,is_equal);
+
+    return binarySearch_4_with_redundancy(n_vector, x, suffix_len, mid+1, high,is_equal);
+}
+
 /*
 Funzione che cerca il prefisso della stringa suffix passata in input tra i figli del nodo node passata input
 Restituisce -1 se non è stato trovato.
@@ -636,4 +685,138 @@ void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_posit
     add_in_nodes_vector(sons,NULL);
     for(int j=sons->used-1;j>starting_position;j--) sons->data[j] = sons->data[j-1];
     sons->data[starting_position]=node;
+}
+
+void print_nodes_vector(nodes_vector* n_vec){
+    for(int i=0;i<n_vec->used;i++){
+        print_substring(n_vec->data[i]->suffix,n_vec->data[i]->suffix_len);
+        cout<<", ";
+    }
+    cout<<"\n";
+}
+
+alberello* init_alberello(){
+    alberello* x = (alberello*)malloc(sizeof(alberello));
+    x->roots=init_nodes_vector(1);
+    x->leaves=init_nodes_vector(1);
+    return x;
+}
+
+//DA USARE SOLO QUANDO LA ROOTS È UGUALE ALLE FOGLIE
+void add_in_alberello(alberello* alb,const char* suffix,int suffix_len){
+    bool is_equal;
+    int index = binarySearch_4_with_redundancy(alb->roots,suffix,suffix_len,0,alb->roots->used-1,&is_equal);
+    //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
+    if (!alb->roots->used || !is_equal){
+        //cout<<"nuovo nodo\n";
+        if(!alb->roots->used || strcmp(alb->roots->data[alb->roots->used-1]->suffix,suffix)<0){
+            add_in_nodes_vector(alb->roots,build_suffix_tree_orphan_node(suffix,suffix_len));
+            add_in_nodes_vector(alb->leaves,build_suffix_tree_orphan_node(suffix,suffix_len));
+        }
+        else{
+            add_in_order_3(alb->roots,build_suffix_tree_orphan_node(suffix,suffix_len),index);
+            add_in_order_3(alb->leaves,build_suffix_tree_orphan_node(suffix,suffix_len),index);
+        }
+        
+    }
+    //else{
+    //    cout<<"stringa già presente\n";
+    //}
+    //cout<<"Nuova taglia alberello: "<<alb->roots->used<<"\n";
+}
+
+void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b){
+    int j=0,index;
+    bool is_equal;
+    suffix_tree_node* padre,*figlio;
+
+    for (;j<b->sons->used;j++)
+        add_node_in_node_sons(search_father_for_suffix(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len),b->sons->data[j]);
+}
+
+void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
+    int j=0,index;
+    bool is_equal;
+    suffix_tree_node* padre,*figlio;
+
+    for (;j<b->sons->used;j++)
+        add_node_in_node_sons(search_father_for_suffix(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len),b->sons->data[j]);
+    *res=a;
+}
+
+void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
+    int next_k;
+
+    while (k>1){
+        //cout<<"k: "<<k<<"\n";
+        if(k%2==1) next_k=k/2+1;
+        else next_k=k/2;
+        suffix_tree_node** roots_temp=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*next_k);
+
+        for(int j=0;j<k/2;j++)
+            join_two_alberelli_2(roots[j*2],roots[(j*2)+1],&roots_temp[j]);
+        //cout<<"joinati\n";
+        
+        if(k%2==1) roots_temp[next_k-1]=roots[k-1];
+        roots=roots_temp;
+        *res_tree=roots[0];
+        k=next_k;
+    }
+    
+
+}
+
+
+suffix_tree_node* search_father_for_suffix(suffix_tree_node* root,const char* suffix,int suffix_len){
+    bool nuovo_nodo=false,is_equal;
+    int index=-1;
+
+    if(root->sons->used == 0) return root;
+    index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,&is_equal);
+    if(!is_equal) return root;
+
+    return search_father_for_suffix(root->sons->data[index],suffix,suffix_len);
+}
+
+void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len){
+    bool is_equal;
+    int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,&is_equal);
+    //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
+    if (!root->sons->used || !is_equal){
+        //cout<<"nuovo nodo\n";
+        if(!root->sons->used || strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0)
+            add_in_nodes_vector(root->sons,build_suffix_tree_node(root,suffix,suffix_len));
+        else
+            add_in_order_3(root->sons,build_suffix_tree_orphan_node(suffix,suffix_len),index);
+    }
+}
+
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
+    bool is_equal;
+    int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,&is_equal);
+    //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
+    if (!root->sons->used || !is_equal){
+        suffix_tree_node* temp=build_suffix_tree_node(root,suffix,suffix_len);
+        //cout<<"nuovo nodo\n";
+        if(!root->sons->used || strcmp(root->sons->data[root->sons->used-1]->suffix,suffix)<0)
+            add_in_nodes_vector(root->sons,temp);
+        else
+            add_in_order_3(root->sons,temp,index);
+
+        add_in_int_vector(temp->array_of_indexes,suffix_index);
+    }
+    else add_in_int_vector(root->sons->data[index]->array_of_indexes,suffix_index);
+}
+
+//padre è il la posizione OPT dove inserire il nodo figlio
+void add_node_in_node_sons(suffix_tree_node* opt_padre,suffix_tree_node* figlio){
+    bool is_equal;
+    int index = binarySearch_4_with_redundancy(opt_padre->sons,figlio->suffix,figlio->suffix_len,0,opt_padre->sons->used-1,&is_equal);
+    if (!opt_padre->sons->used || !is_equal){
+        if(!opt_padre->sons->used || strcmp(opt_padre->sons->data[opt_padre->sons->used-1]->suffix,figlio->suffix)<0)
+            add_in_nodes_vector(opt_padre->sons,figlio);
+        else
+            add_in_order_3(opt_padre->sons,figlio,index);
+    }
+    figlio->father=opt_padre;
 }

@@ -50,6 +50,7 @@ typedef struct suffix_tree_node{
 }suffix_tree_node;
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
+suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_len);
 void free_node(suffix_tree_node* root);
 void free_node_2(suffix_tree_node* root);
 suffix_tree_node* add_suffix_in_tree(suffix_tree_node* root,const char* suffix,int indice,int suffix_len);
@@ -85,8 +86,27 @@ int binarySearch_with_redundancy(suffix_tree_node* root, const char* x, int suff
 int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high);
 int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
 int binarySearch_3_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
+int binarySearch_4_with_redundancy(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool* is_equal);
 nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_2(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_position);
 
+void print_nodes_vector(nodes_vector* n_vec);
+
+typedef struct alberello
+{
+    nodes_vector* roots;
+    nodes_vector* leaves;
+}alberello;
+
+alberello* init_alberello();
+//DA USARE SOLO QUANDO LA ROOTS È UGUALE ALLE FOGLIE
+void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
+void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
+void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void add_in_alberello(alberello* alb,const char* suffix,int suffix_len);
+void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len);
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int index);
+void add_node_in_node_sons(suffix_tree_node* opt_padre,suffix_tree_node* figlio);
+suffix_tree_node* search_father_for_suffix(suffix_tree_node* root,const char* suffix,int suffix_len);
 #endif
