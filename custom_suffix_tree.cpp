@@ -18,7 +18,7 @@ nodes_vector* init_nodes_vector(size_t size){
 
 bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element){
     if (x->size==x->used){
-        x->size += 1;
+        x->size *= 2;
         x->data = (suffix_tree_node**)realloc(x->data,sizeof(suffix_tree_node*)*x->size);
     }
     x->data[x->used++]=element;
@@ -792,15 +792,19 @@ void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree
 
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int next_k,used_threads,temp_used_threads;
-    std::thread threads[MAX_THREADS];
+    int num_threads=std::thread::hardware_concurrency();
+    cout<<"\nNum. of threads: "<<num_threads<<"\n";
+    std::thread threads[num_threads];
 
     while (k>1){
-        for(int j=0;j<k/2;j+=MAX_THREADS){
-            for(used_threads=0;used_threads<MAX_THREADS && j+used_threads<k/2;used_threads++)
+        for(int j=0;j<k/2;j+=num_threads){
+            for(used_threads=0;used_threads<num_threads && j+used_threads<k/2;used_threads++)
                 threads[used_threads] = std::thread(join_two_alberelli_3,roots[(j+used_threads)*2],roots[((j+used_threads)*2)+1],&roots[(j+used_threads)]);
             //cout<<"ciao\n";
             for(temp_used_threads=0;temp_used_threads<used_threads;temp_used_threads++)
                 threads[temp_used_threads].join();
+
+            //cout<<"used_threads: "<<used_threads<<" temp_used_threads: "<<temp_used_threads<<"\n";
         }
         if(k%2==1){ roots[k/2]=roots[k-1]; k=k/2+1;}
         else k=k/2;

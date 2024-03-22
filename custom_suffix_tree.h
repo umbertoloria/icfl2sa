@@ -8,8 +8,9 @@
 #include <mutex>
 #include <pthread.h>
 #include <thread>
+//#include <jthread>
 
-#define MAX_THREADS 1000
+#define MAX_THREADS 4
 
 using namespace std;
 
