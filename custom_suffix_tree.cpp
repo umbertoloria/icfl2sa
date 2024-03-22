@@ -4,6 +4,7 @@
 #include <string.h>
 #include "custom_suffix_tree.h"
 #include "utils.h"
+
 using namespace std;
 
 nodes_vector* init_nodes_vector(size_t size){
@@ -532,6 +533,34 @@ int binarySearch_4_with_redundancy(nodes_vector* n_vector, const char* x,int suf
     return binarySearch_4_with_redundancy(n_vector, x, suffix_len, mid+1, high,is_equal);
 }
 
+int binarySearch_4_with_redundancy_2(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool** is_equal) {
+    
+    //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
+    //sleep(1);
+
+    //Non ci sono elementi nella lista
+    if(high==-1) return -1;
+    int mid = (low + high) / 2;
+
+    if(high == low){
+        if(!strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len)) **is_equal=1;
+        else *is_equal=0;
+        return mid;
+    }
+
+    int res_of_strncmp=strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len);
+
+    if(res_of_strncmp==0){
+        **is_equal=1;
+        return mid;
+    }
+
+    if (res_of_strncmp < 0)
+        return binarySearch_4_with_redundancy_2(n_vector, x, suffix_len, low, mid,is_equal);
+
+    return binarySearch_4_with_redundancy_2(n_vector, x, suffix_len, mid+1, high,is_equal);
+}
+
 /*
 Funzione che cerca il prefisso della stringa suffix passata in input tra i figli del nodo node passata input
 Restituisce -1 se non è stato trovato.
@@ -735,33 +764,48 @@ void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b){
 }
 
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
-    int j=0,index;
-    bool is_equal;
-    suffix_tree_node* padre,*figlio;
-
-    for (;j<b->sons->used;j++)
+    for (int j=0;j<b->sons->used;j++)
         add_node_in_node_sons(search_father_for_suffix(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len),b->sons->data[j]);
     *res=a;
 }
 
+void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
+    int index;
+    bool is_equal;
+    suffix_tree_node* temp;
+    for (int j=0;j<b->sons->used;j++){
+        temp = search_father_for_suffix_2(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len,&index,&is_equal);
+        add_node_in_node_sons_2(temp,b->sons->data[j],index,is_equal);
+    }
+    *res=a;
+}
+
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
-    int next_k;
+    while (k>1){
+        for(int j=0;j<k/2;j++)
+            join_two_alberelli_3(roots[j*2],roots[(j*2)+1],&roots[(j)]);
+        if(k%2==1){ roots[k/2]=roots[k-1]; k=k/2+1;}
+        else k=k/2;
+    }
+    *res_tree=roots[0];
+}
+
+void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
+    int next_k,used_threads,temp_used_threads;
+    std::thread threads[MAX_THREADS];
 
     while (k>1){
-        //cout<<"k: "<<k<<"\n";
-        if(k%2==1) next_k=k/2+1;
-        else next_k=k/2;
-        suffix_tree_node** roots_temp=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*next_k);
-
-        for(int j=0;j<k/2;j++)
-            join_two_alberelli_2(roots[j*2],roots[(j*2)+1],&roots_temp[j]);
-        //cout<<"joinati\n";
-        
-        if(k%2==1) roots_temp[next_k-1]=roots[k-1];
-        roots=roots_temp;
-        *res_tree=roots[0];
-        k=next_k;
+        for(int j=0;j<k/2;j+=MAX_THREADS){
+            for(used_threads=0;used_threads<MAX_THREADS && j+used_threads<k/2;used_threads++)
+                threads[used_threads] = std::thread(join_two_alberelli_3,roots[(j+used_threads)*2],roots[((j+used_threads)*2)+1],&roots[(j+used_threads)]);
+            //cout<<"ciao\n";
+            for(temp_used_threads=0;temp_used_threads<used_threads;temp_used_threads++)
+                threads[temp_used_threads].join();
+        }
+        if(k%2==1){ roots[k/2]=roots[k-1]; k=k/2+1;}
+        else k=k/2;
     }
+    *res_tree=roots[0];
     
 
 }
@@ -776,6 +820,17 @@ suffix_tree_node* search_father_for_suffix(suffix_tree_node* root,const char* su
     if(!is_equal) return root;
 
     return search_father_for_suffix(root->sons->data[index],suffix,suffix_len);
+}
+
+suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,bool* is_equal){
+    bool nuovo_nodo=false;
+    *index = -1;
+
+    if(root->sons->used == 0) return root;
+    *index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,is_equal);
+    if(!*is_equal) return root;
+
+    return search_father_for_suffix_2(root->sons->data[*index],suffix,suffix_len,index,is_equal);
 }
 
 void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len){
@@ -812,6 +867,16 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
 void add_node_in_node_sons(suffix_tree_node* opt_padre,suffix_tree_node* figlio){
     bool is_equal;
     int index = binarySearch_4_with_redundancy(opt_padre->sons,figlio->suffix,figlio->suffix_len,0,opt_padre->sons->used-1,&is_equal);
+    if (!opt_padre->sons->used || !is_equal){
+        if(!opt_padre->sons->used || strcmp(opt_padre->sons->data[opt_padre->sons->used-1]->suffix,figlio->suffix)<0)
+            add_in_nodes_vector(opt_padre->sons,figlio);
+        else
+            add_in_order_3(opt_padre->sons,figlio,index);
+    }
+    figlio->father=opt_padre;
+}
+
+void add_node_in_node_sons_2(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,bool is_equal){
     if (!opt_padre->sons->used || !is_equal){
         if(!opt_padre->sons->used || strcmp(opt_padre->sons->data[opt_padre->sons->used-1]->suffix,figlio->suffix)<0)
             add_in_nodes_vector(opt_padre->sons,figlio);

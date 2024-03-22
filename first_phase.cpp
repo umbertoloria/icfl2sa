@@ -252,25 +252,35 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     int icfl_size=icfl_list.size();
     //clock_t tot_inserimento=0,tot_bitvector=0,tStart;
     suffix_tree_node** roots=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*max_size);
-    std::thread gruppo_di_threads[max_size];
-    int num_of_alberelli=max_size;
+    
+    clock_t tStart = clock();
 
     for(int i=0;i<max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
 
     //cout<<"inizializzati alberelli\n";
 
-    for(int i=0;i<max_size;i++)
-        gruppo_di_threads[i] = std::thread(compute_i_phase_alberello_2,S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
+    //for(int i=0;i<max_size;i++)
+    //    gruppo_di_threads[i] = std::thread(compute_i_phase_alberello_2,S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
-    for(int i=0;i<max_size;i++)
-        gruppo_di_threads[i].join();
+    //for(int i=0;i<max_size;i++)
+    //    gruppo_di_threads[i].join();
 
     //cout<<"finito di computare\n";
 
-    join_n_alberelli(roots,max_size,&root);
+    for(int i=0;i<max_size;i++)
+        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
-    cout<<"finito il join\n";
+    printf("tot inizializzazione Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
+    tStart = clock();
+
+    //join_n_alberelli(roots,max_size,&root);
+    join_n_alberelli_multithreading(roots,max_size,&root);
+
+    printf("tot join Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
+    //cout<<"finito il join\n";
     //stampa_suffix_tree(root);
 
     //tStart = clock();

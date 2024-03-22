@@ -7,6 +7,9 @@
 #include "generic_vector.h"
 #include <mutex>
 #include <pthread.h>
+#include <thread>
+
+#define MAX_THREADS 1000
 
 using namespace std;
 
@@ -87,6 +90,7 @@ int binarySearch_2(suffix_tree_node* root, const char* x, int low, int high);
 int binarySearch_2_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
 int binarySearch_3_with_redundancy(suffix_tree_node* root, const char* x,int suffix_len, int low, int high);
 int binarySearch_4_with_redundancy(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool* is_equal);
+int binarySearch_4_with_redundancy_2(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool** is_equal);
 nodes_vector* add_in_order(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_2(nodes_vector* x,suffix_tree_node* node);
 void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_position);
@@ -104,9 +108,12 @@ alberello* init_alberello();
 void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void add_in_alberello(alberello* alb,const char* suffix,int suffix_len);
 void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len);
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int index);
 void add_node_in_node_sons(suffix_tree_node* opt_padre,suffix_tree_node* figlio);
+void add_node_in_node_sons_2(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,bool is_equal);
 suffix_tree_node* search_father_for_suffix(suffix_tree_node* root,const char* suffix,int suffix_len);
+suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,bool* is_equal);
 #endif
