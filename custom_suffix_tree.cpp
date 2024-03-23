@@ -837,7 +837,8 @@ void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tre
         cout<<"dimensione chunk: "<<dim_chunks<<"\n";
         //cout<<"ciao\n";
 
-        if(dim_chunks){
+        //Se c'è almeno una coppia da elaborare per ogni thread
+        if(dim_chunks>=2){
             cout<<"multiplo\n";
             for(;j<num_threads;j++)
                 threads[used_threads++] = std::thread(join_k_alberelli,roots,j*dim_chunks,(j+1)*dim_chunks);
@@ -852,8 +853,8 @@ void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tre
         cout<<"fine multiplo...\n";
         
 
-        if(k%2==1){ roots[k/2]=roots[k-1]; k=k/2+1;}
-        else k=k/2;
+        if(k%2==1){ roots[k/2]=roots[k-1]; k=half+1;}
+        else k=half;
     }
     *res_tree=roots[0];
 }
@@ -888,6 +889,7 @@ suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* 
 
     if(root->sons->used == 0) return root;
     *index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,is_equal);
+    //Ritorno se non è stato trovato un figlio buono per il suffisso
     if(!*is_equal) return root;
 
     return search_father_for_suffix_2(root->sons->data[*index],suffix,suffix_len,index,is_equal);
