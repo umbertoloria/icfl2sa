@@ -110,6 +110,8 @@ void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void join_k_alberelli(suffix_tree_node** roots,int start,int end);
 void add_in_alberello(alberello* alb,const char* suffix,int suffix_len);
 void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len);
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int index);
