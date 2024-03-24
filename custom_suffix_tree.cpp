@@ -773,7 +773,7 @@ void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_no
     int index;
     bool is_equal;
     suffix_tree_node* temp;
-    cout<<"num nodi da inserire: "<<b->sons->used<<"\n";
+    //cout<<"num nodi da inserire: "<<b->sons->used<<"\n";
     for (int j=0;j<b->sons->used;j++){
         temp = search_father_for_suffix_2(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len,&index,&is_equal);
         //cout<<"padre: ";
@@ -783,7 +783,7 @@ void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_no
         //cout<<"\n";
         add_node_in_node_sons_2(temp,b->sons->data[j],index,is_equal);
     }
-    cout<<"finito\n";
+    //cout<<"finito\n";
     *res=a;
 }
 
@@ -822,48 +822,59 @@ void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_
 }
 
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
-    int used_threads,j,z,num_chunks,dim_chunks,half,effective;
+    int j,z,num_chunks,dim_chunks,half,effective;
     int num_threads=std::thread::hardware_concurrency();
+    
     cout<<"\nNum. of threads: "<<num_threads<<"\n";
     std::thread threads[num_threads];
 
     while (k>1){
+        suffix_tree_node** temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
         half=k/2;
-        j=z=used_threads=0;
-        cout<<"k: "<<k<<"\n";
+        j=z=0;
+        //cout<<"k: "<<k<<"\n";
         dim_chunks=half/num_threads;
         if(dim_chunks)num_chunks=half/dim_chunks;
-        if(dim_chunks)cout<<"numero chunk: "<<num_chunks<<"\n";
-        cout<<"dimensione chunk: "<<dim_chunks<<"\n";
+        //if(dim_chunks)cout<<"numero chunk: "<<num_chunks<<"\n";
+        //cout<<"dimensione chunk: "<<dim_chunks<<"\n";
         //cout<<"ciao\n";
 
         //Se c'è almeno una coppia da elaborare per ogni thread
-        if(dim_chunks>=2){
-            cout<<"multiplo\n";
+        //sembra elaborare una stessa linea più volte di fila
+        //so in generale non aggiorna l'albero
+        if(dim_chunks){
+            //cout<<"multiplo\n";
             for(;j<num_threads;j++)
-                threads[used_threads++] = std::thread(join_k_alberelli,roots,j*dim_chunks,(j+1)*dim_chunks);
+                threads[j] = std::thread(join_k_alberelli_2,roots,temp_res,j*dim_chunks,(j+1)*dim_chunks);
             //cout<<"ciao\n";
             for(;z<num_threads;z++)
                 threads[z].join();
         }
-        else cout<<"singolo\n";
+        //else cout<<"singolo\n";
 
         //cout<<"manca da: "<<dim_chunks*used_threads<<" a: "<<k/2<<"\n";
-        join_k_alberelli(roots,dim_chunks*used_threads,half);
-        cout<<"fine multiplo...\n";
-        
+        join_k_alberelli_2(roots,temp_res,dim_chunks*num_threads,half);
+        //cout<<"fine multiplo...\n";
 
-        if(k%2==1){ roots[k/2]=roots[k-1]; k=half+1;}
+        if(k%2==1){ temp_res[half]=roots[k-1]; k=half+1;}
         else k=half;
+        roots=temp_res;
     }
     *res_tree=roots[0];
 }
 
 void join_k_alberelli(suffix_tree_node** roots,int start,int end){
-    cout<<"start: "<<start<<", end: "<<end<<"\n";
+    //cout<<"start: "<<start<<", end: "<<end<<"\n";
     for(;start<end;start++)
         join_two_alberelli_3(roots[start*2],roots[(start*2)+1],&roots[(start)]);
 }
+
+void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int start,int end){
+    //cout<<"start: "<<start<<", end: "<<end<<"\n";
+    for(;start<end;start++)
+        join_two_alberelli_3(roots[start*2],roots[(start*2)+1],&res[(start)]);
+}
+
 
 
 suffix_tree_node* search_father_for_suffix(suffix_tree_node* root,const char* suffix,int suffix_len){
@@ -882,10 +893,10 @@ suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* 
     *index = -1;
 
 
-    print_substring(root->suffix,root->suffix_len);
-    cout<<", ";
-    print_substring(suffix,suffix_len);
-    cout<<"\n";
+    //print_substring(root->suffix,root->suffix_len);
+    //cout<<", ";
+    //print_substring(suffix,suffix_len);
+    //cout<<"\n";
 
     if(root->sons->used == 0) return root;
     *index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,is_equal);
