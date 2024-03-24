@@ -835,7 +835,6 @@ void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tre
         j=z=0;
         //cout<<"k: "<<k<<"\n";
         dim_chunks=half/num_threads;
-        if(dim_chunks)num_chunks=half/dim_chunks;
         //if(dim_chunks)cout<<"numero chunk: "<<num_chunks<<"\n";
         //cout<<"dimensione chunk: "<<dim_chunks<<"\n";
         //cout<<"ciao\n";
@@ -844,6 +843,7 @@ void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tre
         //sembra elaborare una stessa linea più volte di fila
         //so in generale non aggiorna l'albero
         if(dim_chunks){
+            num_chunks=half/dim_chunks;
             //cout<<"multiplo\n";
             for(;j<num_threads;j++)
                 threads[j] = std::thread(join_k_alberelli_2,roots,temp_res,j*dim_chunks,(j+1)*dim_chunks);
