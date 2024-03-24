@@ -823,13 +823,14 @@ void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_
 
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int j,z,num_chunks,dim_chunks,half,effective;
-    int num_threads=std::thread::hardware_concurrency();
-    
+    //int num_threads=std::thread::hardware_concurrency();
+    int num_threads=2;
     cout<<"\nNum. of threads: "<<num_threads<<"\n";
     std::thread threads[num_threads];
+    suffix_tree_node** temp_res;
 
     while (k>1){
-        suffix_tree_node** temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
+        temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k/2);
         half=k/2;
         j=z=0;
         //cout<<"k: "<<k<<"\n";
