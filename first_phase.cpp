@@ -278,6 +278,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
     join_n_alberelli_multithreading_2(roots,max_size,&root);
+    //join_n_alberelli_omp(roots,max_size,&root);
 
     printf("tot join Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 

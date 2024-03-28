@@ -9,6 +9,7 @@ bool check_suffix_array(const char* S,int_vector* SA){
     bool ord_bool = true;
     //controlla se sono presenti tutti i suffissi
     bool pres_bool = true;
+    //#pragma omp parallel for
     for(int i=0;i<strlen(S)-1;i++){
         if(strcmp(S+SA->data[i],S+SA->data[i+1])>0){
             ord_bool = false;
@@ -18,6 +19,7 @@ bool check_suffix_array(const char* S,int_vector* SA){
         }
     }
     if(!ord_bool) cout<<"\nNon tutti i suffissi sono ordinati. \n";
+    //#pragma omp parallel for
     for(int i=0;i<strlen(S)-1;i++){
         if(!element_in_int_vector(SA,i)){
             cout<<i<<endl;

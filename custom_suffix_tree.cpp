@@ -797,6 +797,18 @@ void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree
     *res_tree=roots[0];
 }
 
+void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
+    suffix_tree_node** temp_res;
+    while (k>1){
+        temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k/2);
+        join_k_alberelli_2_openmp(roots,temp_res,0,k/2);
+        if(k%2==1){ temp_res[k/2]=roots[k-1]; k=k/2+1;}
+        else k=k/2;
+        roots=temp_res;
+    }
+    *res_tree=roots[0];
+}
+
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int next_k,used_threads,temp_used_threads;
     int num_threads=std::thread::hardware_concurrency();
@@ -874,6 +886,15 @@ void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int star
     //cout<<"start: "<<start<<", end: "<<end<<"\n";
     for(;start<end;start++)
         join_two_alberelli_3(roots[start*2],roots[(start*2)+1],&res[(start)]);
+}
+
+void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end){
+    //cout<<"start: "<<start<<", end: "<<end<<"\n";
+    int i;
+    #pragma omp parallel for
+    for(i=start;i<end;i++)
+        join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&res[(i)]);
+    
 }
 
 
