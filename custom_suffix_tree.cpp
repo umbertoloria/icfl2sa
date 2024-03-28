@@ -891,7 +891,7 @@ void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int star
 void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end){
     //cout<<"start: "<<start<<", end: "<<end<<"\n";
     int i;
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(static, 10000)
     for(i=start;i<end;i++)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&res[(i)]);
     
