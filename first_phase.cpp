@@ -268,6 +268,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     //cout<<"finito di computare\n";
 
+    //#pragma omp parallel for schedule(static, 2)
     for(int i=0;i<max_size;i++)
         compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
@@ -285,9 +286,10 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     //cout<<"finito il join\n";
     //stampa_suffix_tree(root);
 
-    //tStart = clock();
+    tStart = clock();
     for(int i = 0;i<root->sons->used;i++)
         get_bit_vectors_from_root(S,icfl_list,icfl_size,root->sons->data[i]);
+    printf("get_bit_vectors_from_root Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     //tot_bitvector+=clock()-tStart;
 
 

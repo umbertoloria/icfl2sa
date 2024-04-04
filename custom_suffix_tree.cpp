@@ -533,32 +533,62 @@ int binarySearch_4_with_redundancy(nodes_vector* n_vector, const char* x,int suf
     return binarySearch_4_with_redundancy(n_vector, x, suffix_len, mid+1, high,is_equal);
 }
 
-int binarySearch_4_with_redundancy_2(nodes_vector* n_vector, const char* x,int suffix_len, int low, int high,bool** is_equal) {
+int binarySearch_4_with_redundancy_2(nodes_vector* n_vector,int root_size, const char* x,int suffix_len, int low, int high,bool* is_equal) {
     
     //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
     //sleep(1);
 
     //Non ci sono elementi nella lista
+
+
     if(high==-1) return -1;
     int mid = (low + high) / 2;
 
     if(high == low){
-        if(!strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len)) **is_equal=1;
+        if(!strncmp(x+root_size,n_vector->data[mid]->suffix+root_size,n_vector->data[mid]->suffix_len-root_size))*is_equal=1;
         else *is_equal=0;
         return mid;
     }
 
-    int res_of_strncmp=strncmp(x,n_vector->data[mid]->suffix,n_vector->data[mid]->suffix_len);
+    int res_of_strncmp=strncmp(x+root_size,n_vector->data[mid]->suffix+root_size,n_vector->data[mid]->suffix_len-root_size);
 
     if(res_of_strncmp==0){
-        **is_equal=1;
+        *is_equal=1;
         return mid;
     }
 
     if (res_of_strncmp < 0)
-        return binarySearch_4_with_redundancy_2(n_vector, x, suffix_len, low, mid,is_equal);
+        return binarySearch_4_with_redundancy_2(n_vector,root_size, x, suffix_len, low, mid,is_equal);
 
-    return binarySearch_4_with_redundancy_2(n_vector, x, suffix_len, mid+1, high,is_equal);
+    return binarySearch_4_with_redundancy_2(n_vector,root_size, x, suffix_len, mid+1, high,is_equal);
+}
+
+
+int binarySearch_4_with_redundancy_2_iterative(nodes_vector* n_vector,int root_size, const char* x,int suffix_len, int low, int high,bool* is_equal) {
+    if(high==-1) return -1;
+    int mid;
+    while(high>=low){
+    
+        mid = (low + high) / 2;
+
+        if(high == low){
+            if(!strncmp(x+root_size,n_vector->data[mid]->suffix+root_size,n_vector->data[mid]->suffix_len-root_size))*is_equal=1;
+            else *is_equal=0;
+            return mid;
+        }
+
+        int res_of_strncmp=strncmp(x+root_size,n_vector->data[mid]->suffix+root_size,n_vector->data[mid]->suffix_len-root_size);
+
+        if(res_of_strncmp==0){
+            *is_equal=1;
+            return mid;
+        }
+
+        if (res_of_strncmp < 0) high=mid;
+
+        else low=mid+1;
+    }
+    return -1;
 }
 
 /*
@@ -716,6 +746,12 @@ void add_in_order_3(nodes_vector* sons,suffix_tree_node* node,int starting_posit
     sons->data[starting_position]=node;
 }
 
+void add_in_order_4(nodes_vector* sons,suffix_tree_node* node,int starting_position){
+    add_in_nodes_vector(sons,NULL);
+    memmove(sons->data+starting_position+1,sons->data+starting_position,sizeof(nodes_vector*)*(sons->used-1-starting_position));
+    sons->data[starting_position]=node;
+}
+
 void print_nodes_vector(nodes_vector* n_vec){
     for(int i=0;i<n_vec->used;i++){
         print_substring(n_vec->data[i]->suffix,n_vec->data[i]->suffix_len);
@@ -775,13 +811,13 @@ void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_no
     suffix_tree_node* temp;
     //cout<<"num nodi da inserire: "<<b->sons->used<<"\n";
     for (int j=0;j<b->sons->used;j++){
-        temp = search_father_for_suffix_2(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len,&index,&is_equal);
+        temp = search_father_for_suffix_2_iterative(a,b->sons->data[j]->suffix,b->sons->data[j]->suffix_len,&index,&is_equal);
         //cout<<"padre: ";
         //print_substring(temp->suffix,temp->suffix_len);
         //cout<<", figlio: ";
         //print_substring(b->sons->data[j]->suffix,b->sons->data[j]->suffix_len);
         //cout<<"\n";
-        add_node_in_node_sons_2(temp,b->sons->data[j],index,is_equal);
+        add_node_in_node_sons_3(temp,b->sons->data[j],index,is_equal);
     }
     //cout<<"finito\n";
     *res=a;
@@ -921,11 +957,22 @@ suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* 
     //cout<<"\n";
 
     if(root->sons->used == 0) return root;
-    *index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons->used-1,is_equal);
+    *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons->used-1,is_equal);
     //Ritorno se non è stato trovato un figlio buono per il suffisso
     if(!*is_equal) return root;
 
     return search_father_for_suffix_2(root->sons->data[*index],suffix,suffix_len,index,is_equal);
+}
+
+suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,bool* is_equal){
+    *is_equal=true;
+    *index=-1;
+    while (root->sons->used != 0){
+        *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons->used-1,is_equal);
+        if(!*is_equal) return root;
+        root=root->sons->data[*index];
+    }
+    return root;
 }
 
 void add_suffix_in_node_sons(suffix_tree_node* root,const char* suffix,int suffix_len){
@@ -976,7 +1023,15 @@ void add_node_in_node_sons_2(suffix_tree_node* opt_padre,suffix_tree_node* figli
         if(!opt_padre->sons->used || strcmp(opt_padre->sons->data[opt_padre->sons->used-1]->suffix,figlio->suffix)<0)
             add_in_nodes_vector(opt_padre->sons,figlio);
         else
-            add_in_order_3(opt_padre->sons,figlio,index);
+            add_in_order_4(opt_padre->sons,figlio,index);
     }
+    figlio->father=opt_padre;
+}
+
+void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,bool is_equal){
+    if(!opt_padre->sons->used || (index == opt_padre->sons->used-1 && strcmp(opt_padre->sons->data[opt_padre->sons->used-1]->suffix,figlio->suffix)<0))
+        add_in_nodes_vector(opt_padre->sons,figlio);
+    else
+        add_in_order_4(opt_padre->sons,figlio,index);
     figlio->father=opt_padre;
 }
