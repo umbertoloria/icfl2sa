@@ -175,8 +175,7 @@ void create_bit_vector_2(const char* S,vector<int> icfl_list, suffix_tree_node* 
 
 void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 
-    int_vector* father_chain = get_chain_from_bit_vector(root->father);
-    root->bit_vec=in_prefix_merge_bit_vector_3(S,icfl_list,icfl_list_size,father_chain,root->array_of_indexes);
+    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes);
 }
 
 void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
@@ -212,7 +211,7 @@ void get_chains_3(suffix_tree_node* root,suffix_tree_node* node){
 }
 
 void get_bit_vectors_from_root(const char* S,vector<int> icfl_list,int icfl_list_size,suffix_tree_node* root){
-    create_bit_vector_3_redundancy(S,icfl_list,icfl_list_size,root);
+    create_bit_vector_3(S,icfl_list,icfl_list_size,root);
     for(int i=0;i<root->sons->used;i++) 
         get_bit_vectors_from_root(S,icfl_list,icfl_list_size,root->sons->data[i]);
     return;

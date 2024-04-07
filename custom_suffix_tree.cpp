@@ -18,7 +18,7 @@ nodes_vector* init_nodes_vector(size_t size){
 
 bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element){
     if (x->size==x->used){
-        x->size *= 2;
+        x->size += 1;
         x->data = (suffix_tree_node**)realloc(x->data,sizeof(suffix_tree_node*)*x->size);
     }
     x->data[x->used++]=element;
@@ -872,7 +872,7 @@ void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int j,z,num_chunks,dim_chunks,half,effective;
     //int num_threads=std::thread::hardware_concurrency();
-    int num_threads=2;
+    int num_threads=4;
     cout<<"\nNum. of threads: "<<num_threads<<"\n";
     std::thread threads[num_threads];
     suffix_tree_node** temp_res;
