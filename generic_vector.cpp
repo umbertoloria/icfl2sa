@@ -26,8 +26,8 @@ bool add_in_int_vector(int_vector* x,int element){
     return 1;
 }
 
-bool element_in_int_vector(int_vector* x,int element){
-    for(int i=0;i<x->used;i++) if(x->data[i]==element) return true;
+bool element_in_int_vector(std::vector<int> x,int element){
+    for(int i=0;i<x.size();i++) if(x[i]==element) return true;
     return false;
 }
 

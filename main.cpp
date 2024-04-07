@@ -53,23 +53,35 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
    
    tStart = clock();
 
-    array_of_int_vector* group_ranking = init_array_of_int_vector(root->sons->used);
+    vector<int> group_ranking [root->sons.size()];
     //for(int i=0;i<root->sons->used;i++){
     //    //add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
     //    add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
     //    //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     //}
 
-    for(int i=0;i<root->sons->used;i++){
-        get_common_prefix_merge_4_multihreading(root->sons->data[i],&group_ranking->data[i]);
+    cout<<"\nALBERO OTTENUTO\n";
+    stampa_suffix_tree(root);
+
+    cout<<"\naaa\n";
+
+    for(int i=0;i<root->sons.size();i++){
+        group_ranking[0] = get_common_prefix_merge_4_multihreading_2(root->sons[i]);
         //cout<<"Group chain: ";
         //print_int_vector(group_ranking->data[i]);
         //cout<<"\n";
-        add_in_array_of_int_vector(group_ranking,group_ranking->data[i]);
+        
+        //DA RE IMPLEMENTARE
+        //add_in_array_of_int_vector(group_ranking,group_ranking->data[i]);
+    }
+
+    vector<int> SA;
+    for(int i=0;i<root->sons.size();i++){
+        SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }
 
 
-    int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);
+    //int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);
 
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 

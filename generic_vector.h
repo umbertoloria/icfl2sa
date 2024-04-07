@@ -2,6 +2,7 @@
 #define CUSTOM_GENERIC_VECTOR_H_INCLUDED
 
 #include <cstdint>
+#include <vector>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ typedef struct array_of_int_vector
 array_of_int_vector* init_array_of_int_vector(size_t size);
 bool add_in_array_of_int_vector(array_of_int_vector* x,int_vector* element);
 int_vector* duplicate_int_vector(int_vector* x);
-bool element_in_int_vector(int_vector* x,int element);
+bool element_in_int_vector(std::vector<int> x,int element);
 
 void print_int_vector(int_vector* x);
 void print_array_of_vector(array_of_int_vector* x);

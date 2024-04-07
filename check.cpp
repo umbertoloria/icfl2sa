@@ -1,19 +1,20 @@
 #include "generic_vector.h"
 #include <string.h>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-bool check_suffix_array(const char* S,int_vector* SA){
+bool check_suffix_array(const char* S,std::vector<int> SA){
     //controlla se i suffissi sono ordinati
     bool ord_bool = true;
     //controlla se sono presenti tutti i suffissi
     bool pres_bool = true;
     //#pragma omp parallel for
     for(int i=0;i<strlen(S)-1;i++){
-        if(strcmp(S+SA->data[i],S+SA->data[i+1])>0){
+        if(strcmp(S+SA[i],S+SA[i+1])>0){
             ord_bool = false;
-            cout<<SA->data[i]<<endl;
+            cout<<SA[i]<<endl;
             //cout<<S+SA->data[i]<<endl;
             //cout<<S+SA->data[i+1]<<endl;
         }
