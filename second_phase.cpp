@@ -17,14 +17,8 @@ vector<int> join_int_vector_with_bit_vector(vector<int> father_chain,vector<int>
     i=j=0;
     vector<int> result;
     for(int z=0;z<bit_vec.size();z++){
-        if(bit_vec[z]){
-            result.push_back(father_chain[i]);
-            i++;
-        }
-        else{
-           result.push_back(son_chain[j]);
-        j++; 
-        }
+        if(bit_vec[z]) result.push_back(father_chain[i++]);
+        else result.push_back(son_chain[j++]);
     }
     return result;
 }

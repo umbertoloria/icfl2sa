@@ -47,7 +47,7 @@ suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_le
     return x;
 }
 
-int binarySearch_4_with_redundancy(vector<suffix_tree_node*> n_vector, const char* x,int suffix_len, int low, int high,bool* is_equal) {
+int binarySearch_4_with_redundancy(vector<suffix_tree_node*> n_vector, const char* x,int suffix_len, int low, int high,int* is_not_equal) {
     
     //cout<<"low: "<<high<<", high: "<<low<<", mid: "<<mid<<"\n";
     //sleep(1);
@@ -57,22 +57,17 @@ int binarySearch_4_with_redundancy(vector<suffix_tree_node*> n_vector, const cha
     int mid = (low + high) / 2;
 
     if(high == low){
-        if(!strncmp(x,n_vector[mid]->suffix,n_vector[mid]->suffix_len)) *is_equal=1;
-        else *is_equal=0;
+        *is_not_equal = strncmp(x,n_vector[mid]->suffix,n_vector[mid]->suffix_len);
         return mid;
     }
 
-    int res_of_strncmp=strncmp(x,n_vector[mid]->suffix,n_vector[mid]->suffix_len);
+    *is_not_equal=strncmp(x,n_vector[mid]->suffix,n_vector[mid]->suffix_len);
 
-    if(res_of_strncmp==0){
-        *is_equal=1;
-        return mid;
-    }
+    if(*is_not_equal==0) return mid;
 
-    if (res_of_strncmp < 0)
-        return binarySearch_4_with_redundancy(n_vector, x, suffix_len, low, mid,is_equal);
+    if (*is_not_equal < 0) return binarySearch_4_with_redundancy(n_vector, x, suffix_len, low, mid,is_not_equal);
 
-    return binarySearch_4_with_redundancy(n_vector, x, suffix_len, mid+1, high,is_equal);
+    return binarySearch_4_with_redundancy(n_vector, x, suffix_len, mid+1, high,is_not_equal);
 }
 
 int binarySearch_4_with_redundancy_2(nodes_vector* n_vector,int root_size, const char* x,int suffix_len, int low, int high,bool* is_equal) {
@@ -106,7 +101,7 @@ int binarySearch_4_with_redundancy_2(nodes_vector* n_vector,int root_size, const
 }
 
 
-int binarySearch_4_with_redundancy_2_iterative(vector<suffix_tree_node*> n_vector,int root_size, const char* x,int suffix_len, int low, int high,bool* is_not_equal) {
+int binarySearch_4_with_redundancy_2_iterative(vector<suffix_tree_node*> n_vector,int root_size, const char* x,int suffix_len, int low, int high,int* is_not_equal) {
     if(high==-1) return -1;
     int mid;
     while(high>=low){
@@ -213,9 +208,15 @@ void quicksort_of_nodes_local(nodes_vector* x, int start, int end){
     }
 }
 
-void add_in_order_4(vector<suffix_tree_node*> sons,suffix_tree_node* node,int starting_position){
+void add_in_order_4(vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position){
     sons.push_back(NULL);
     std::move(sons.begin()+starting_position,sons.end()-starting_position,sons.begin()+starting_position+1);
+    sons[starting_position]=node;
+}
+
+void add_in_order_5(vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position){
+    sons.push_back(NULL);
+    for(int j=sons.size()-1;j>starting_position;j--) sons[j] = sons[j-1];
     sons[starting_position]=node;
 }
 
@@ -235,18 +236,18 @@ alberello* init_alberello(){
 }
 
 void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
-    int index;
-    bool is_equal;
+    int index,is_not_equal;
     suffix_tree_node* temp;
     //cout<<"num nodi da inserire: "<<b->sons->used<<"\n";
     for (int j=0;j<b->sons.size();j++){
-        temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_equal);
+        temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
         //cout<<"padre: ";
         //print_substring(temp->suffix,temp->suffix_len);
         //cout<<", figlio: ";
-        //print_substring(b->sons->data[j]->suffix,b->sons->data[j]->suffix_len);
+        //print_substring(b->sons[j]->suffix,b->sons[j]->suffix_len);
+        //cout<<", index: "<<index;
         //cout<<"\n";
-        add_node_in_node_sons_3(temp,b->sons[j],index,is_equal);
+        add_node_in_node_sons_3(temp,b->sons[j],index,is_not_equal);
     }
     //cout<<"finito\n";
     *res=a;
@@ -349,7 +350,7 @@ void join_k_alberelli(suffix_tree_node** roots,int start,int end){
 
 void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int start,int end){
     //cout<<"start: "<<start<<", end: "<<end<<"\n";
-    for(;start<end;start++)
+    for(;start<end;++start)
         join_two_alberelli_3(roots[start*2],roots[(start*2)+1],&res[(start)]);
 }
 
@@ -362,7 +363,7 @@ void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,i
     
 }
 
-suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,bool* is_equal){
+suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,int* is_not_equal){
     bool nuovo_nodo=false;
     *index = -1;
 
@@ -373,45 +374,49 @@ suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* 
     //cout<<"\n";
 
     if(root->sons.empty()) return root;
-    *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,is_equal);
+    *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,is_not_equal);
     //Ritorno se non è stato trovato un figlio buono per il suffisso
-    if(!*is_equal) return root;
+    if(*is_not_equal) return root;
 
-    return search_father_for_suffix_2(root->sons[*index],suffix,suffix_len,index,is_equal);
+    return search_father_for_suffix_2(root->sons[*index],suffix,suffix_len,index,is_not_equal);
 }
 
-suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,bool* is_equal){
-    *is_equal=true;
+suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,int* is_not_equal){
     *index=-1;
     while (!root->sons.empty()){
-        *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,is_equal);
-        if(!*is_equal) return root;
+        *index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,is_not_equal);
+        if(*is_not_equal) return root;
         root=root->sons[*index];
     }
     return root;
 }
 
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
-    bool is_not_equal;
+    int is_not_equal;
+    //cout<<"Inserisco stringa: ";
+    //print_substring(suffix,suffix_len);
+    //cout<<"\n";
+
     int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
     //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
     if (root->sons.empty() || is_not_equal){
         suffix_tree_node* temp=build_suffix_tree_node(root,suffix,suffix_len);
         //cout<<"nuovo nodo\n";
-        if(root->sons.empty() || is_not_equal<0)
+        //cout<<"index "<<index<<" root->sons.size()-1 "<< root->sons.size()-1<<" is_not_equal "<<is_not_equal<<"\n";
+        if(root->sons.empty() || (index == root->sons.size()-1 && is_not_equal>0))
             root->sons.push_back(temp);
         else
-            add_in_order_4(root->sons,temp,index);
+            add_in_order_5(root->sons,temp,index);
 
         temp->array_of_indexes.push_back(suffix_index);
     }
     else root->sons[index]->array_of_indexes.push_back(suffix_index);
 }
 
-void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,bool is_equal){
-    if(opt_padre->sons.empty() || (index == opt_padre->sons.size()-1 && strcmp(opt_padre->sons[opt_padre->sons.size()-1]->suffix,figlio->suffix)<0))
+void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal){
+    if(opt_padre->sons.empty() || (index == opt_padre->sons.size()-1 && is_not_equal>0))
         opt_padre->sons.push_back(figlio);
     else
-        add_in_order_4(opt_padre->sons,figlio,index);
+        add_in_order_5(opt_padre->sons,figlio,index);
     figlio->father=opt_padre;
 }

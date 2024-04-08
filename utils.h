@@ -11,6 +11,7 @@ using namespace std;
 
 void print(string word);
 void printVector(vector<int> vec, string msg);
+void printVec(vector<int> vec);
 char* append(const char *s, char c);
 void quicksort(int_vector* x, int start, int end);
 void quicksort_of_nodes(nodes_vector* x, int start, int end);

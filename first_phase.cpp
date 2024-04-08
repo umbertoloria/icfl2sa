@@ -17,7 +17,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     int icfl_size=icfl_list.size();
     //clock_t tot_inserimento=0,tot_bitvector=0,tStart;
     suffix_tree_node** roots=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*max_size);
-    
+    //std::vector<suffix_tree_node*> roots[max_size];
+
     clock_t tStart = clock();
 
     for(int i=0;i<max_size;i++)

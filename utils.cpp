@@ -18,6 +18,12 @@ void printVector(vector<int> vec, string msg){
     cout<<endl;
 }
 
+void printVec(vector<int> vec){
+    for(int i=0; i<vec.size(); i++)
+        cout<<vec.at(i)<<" ";
+    cout<<endl;
+}
+
 char* append(const char *s, char c) {
     int len = strlen(s);
     char buf[len+2];

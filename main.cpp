@@ -60,13 +60,12 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     //    //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
     //}
 
-    cout<<"\nALBERO OTTENUTO\n";
-    stampa_suffix_tree(root);
-
-    cout<<"\naaa\n";
+    //cout<<"\nALBERO OTTENUTO\n";
+    //stampa_suffix_tree(root);
+    
 
     for(int i=0;i<root->sons.size();i++){
-        group_ranking[0] = get_common_prefix_merge_4_multihreading_2(root->sons[i]);
+        group_ranking[i] = get_common_prefix_merge_4_multihreading_2(root->sons[i]);
         //cout<<"Group chain: ";
         //print_int_vector(group_ranking->data[i]);
         //cout<<"\n";

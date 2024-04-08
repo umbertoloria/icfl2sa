@@ -45,15 +45,20 @@ vector<int> get_common_prefix_merge_4_multihreading_2(suffix_tree_node* root){
     if(root->sons.empty()){
         res = get_chain_from_bit_vector_3(root);
         //cout<<"\nOttenuta chain\n";
+        //printVec(res);
         return res;
     }  
     int k=root->sons.size(),next_k;
 
+    //cout<<"ciao\n";
+
     vector<int> common_elements=get_chain_from_bit_vector_3(root);
     vector<int> common_prefix_of_sons[k];
 
+    //cout<<"ciao\n";
+
     for(int z=0;z<k;z++)
-        common_prefix_of_sons[k]=get_common_prefix_merge_4_multihreading_2(root->sons[z]);
+        common_prefix_of_sons[z]=get_common_prefix_merge_4_multihreading_2(root->sons[z]);
 
     while(k>1){
         if (k%2==1) next_k=k/2+1;
@@ -69,6 +74,7 @@ vector<int> get_common_prefix_merge_4_multihreading_2(suffix_tree_node* root){
     }
 
     res=common_prefix_of_sons[0];
+    //printVec(res);
     return res;
 
 }
