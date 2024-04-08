@@ -1,5 +1,6 @@
 #include "custom_suffix_tree.h"
 #include "utils.h"
+#include <omp.h>
 using namespace std;
 
 nodes_vector* init_nodes_vector(size_t size){
@@ -267,7 +268,11 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
     suffix_tree_node** temp_res;
     while (k>1){
         temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k/2);
-        join_k_alberelli_2_openmp(roots,temp_res,0,k/2);
+
+        #pragma omp parallel for shared(roots,temp_res) if(k/2>100) schedule(dynamic)
+        for(int i=0;i<k/2;++i)
+            join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
+
         if(k%2==1){ temp_res[k/2]=roots[k-1]; k=k/2+1;}
         else k=k/2;
         roots=temp_res;
@@ -301,8 +306,8 @@ void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_
 
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int j,z,num_chunks,dim_chunks,half,effective;
-    //int num_threads=std::thread::hardware_concurrency();
-    int num_threads=4;
+    int num_threads=std::thread::hardware_concurrency();
+    //int num_threads=4;
     cout<<"\nNum. of threads: "<<num_threads<<"\n";
     std::thread threads[num_threads];
     suffix_tree_node** temp_res;
@@ -357,8 +362,8 @@ void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int star
 void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end){
     //cout<<"start: "<<start<<", end: "<<end<<"\n";
     int i;
-    #pragma omp parallel for schedule(static, 10000)
-    for(i=start;i<end;i++)
+    #pragma omp parallel for shared(roots,res) if(end>10000)//schedule(static, 10000)
+    for(i=start;i<end;++i)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&res[(i)]);
     
 }

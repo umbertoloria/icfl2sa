@@ -1,5 +1,6 @@
 #include "first_phase.h"
 #include "second_phase.h"
+#include <omp.h>
 
 int get_max_size(vector<int> icfl_list,int lenght_of_word){
     int max_size=-1;
@@ -34,8 +35,11 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     //cout<<"finito di computare\n";
 
-    //#pragma omp parallel for schedule(static, 2)
-    for(int i=0;i<max_size;i++)
+    //omp_set_num_threads(2);
+    omp_set_num_threads(std::thread::hardware_concurrency());
+
+    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots) schedule(static)
+    for(int i=0;i<max_size;++i)
         compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
     printf("tot inizializzazione Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
@@ -44,8 +48,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
-    join_n_alberelli_multithreading_2(roots,max_size,&root);
-    //join_n_alberelli_omp(roots,max_size,&root);
+    //join_n_alberelli_multithreading_2(roots,max_size,&root);
+    join_n_alberelli_omp(roots,max_size,&root);
 
     printf("tot join Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
