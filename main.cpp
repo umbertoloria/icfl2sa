@@ -10,6 +10,7 @@
 #include "third_phase.h"
 #include "check.h"
 #include <string.h>
+#include <omp.h>
 
 #define CONTROLLO_OUTPUT 1
 
@@ -35,15 +36,14 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
     //cout<<"Max size: "<<max_size<<endl;
 
-    clock_t tStart = clock();
-    //cout<<"\nCREAZIONE ALBERO\n";
-    //La root è la stringa vuota
-    //suffix_tree_node* root = creazione_albero(list_of_lyndon_words,icfl_list,word->c_str(),lenght_of_word,max_size);
-    //suffix_tree_node* root = creazione_albero_3_multithread(icfl_list,word->c_str(),lenght_of_word,max_size);
+    double itime;
+
+    itime = omp_get_wtime();
+
     suffix_tree_node* root = creazione_albero_alberelli(icfl_list,word->c_str(),lenght_of_word,max_size);
 
 
-    printf("Creazione albero, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("Creazione albero, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);
@@ -51,7 +51,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     if (!CONTROLLO_OUTPUT) word->clear();
     cout<<endl;
    
-   tStart = clock();
+   clock_t tStart = clock();
 
     vector<int> group_ranking [root->sons.size()];
     //for(int i=0;i<root->sons->used;i++){
@@ -62,7 +62,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
 
     //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);
-    
+
 
     for(int i=0;i<root->sons.size();i++){
         group_ranking[i] = get_common_prefix_merge_4_multihreading_2(root->sons[i]);

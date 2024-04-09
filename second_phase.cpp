@@ -16,9 +16,13 @@ vector<int> join_int_vector_with_bit_vector(vector<int> father_chain,vector<int>
     int i,j;
     i=j=0;
     vector<int> result;
-    for(int z=0;z<bit_vec.size();z++){
-        if(bit_vec[z]) result.push_back(father_chain[i++]);
-        else result.push_back(son_chain[j++]);
+    result.reserve(son_chain.size()+father_chain.size());
+    //#pragma omp parallel for shared(result)
+    for(int z=0;z<bit_vec.size();++z){
+        if(bit_vec[z]) result.emplace_back(father_chain[i++]);
+        else result.emplace_back(son_chain[j++]);
+        //if(bit_vec[z]) result[z]=father_chain[i++];
+        //else result[z]=son_chain[j++];
     }
     return result;
 }
@@ -39,13 +43,8 @@ void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size,
 
 
 void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
-    //clock_t tot_inprefixmerge=0,tot_getchainfrombitvector=0,tStart;
-    //tStart = clock();
     root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes);
-    //printf("in_prefix_merge_bit_vector_3 Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    //tStart = clock();
     root->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root);
-    //printf("get_chain_from_bit_vector_3 Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 }
 
 //Utilizza i common elements
@@ -59,7 +58,7 @@ void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl
 
 
 void get_bit_vectors_from_root(const char* S,vector<int> icfl_list,int icfl_list_size,suffix_tree_node* root){
-    create_bit_vector_3(S,icfl_list,icfl_list_size,root);
+    create_bit_vector_3_redundancy(S,icfl_list,icfl_list_size,root);
     for(int i=0;i<root->sons.size();i++) 
         get_bit_vectors_from_root(S,icfl_list,icfl_list_size,root->sons[i]);
     return;

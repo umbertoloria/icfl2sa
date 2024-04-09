@@ -19,47 +19,38 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     //clock_t tot_inserimento=0,tot_bitvector=0,tStart;
     suffix_tree_node** roots=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*max_size);
     //std::vector<suffix_tree_node*> roots[max_size];
+    clock_t tStart;
+    double itime;
+    omp_set_num_threads(std::thread::hardware_concurrency());
 
-    clock_t tStart = clock();
+    itime = omp_get_wtime();
 
+    #pragma omp parallel for shared(roots) schedule(static)
     for(int i=0;i<max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
-
-    //cout<<"inizializzati alberelli\n";
-
-    //for(int i=0;i<max_size;i++)
-    //    gruppo_di_threads[i] = std::thread(compute_i_phase_alberello_2,S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
-
-    //for(int i=0;i<max_size;i++)
-    //    gruppo_di_threads[i].join();
-
-    //cout<<"finito di computare\n";
-
-    //omp_set_num_threads(2);
-    omp_set_num_threads(std::thread::hardware_concurrency());
 
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots) schedule(static)
     for(int i=0;i<max_size;++i)
         compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
-    printf("tot inizializzazione Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("tot inizializzazione Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    tStart = clock();
+    itime = omp_get_wtime();
 
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
     //join_n_alberelli_multithreading_2(roots,max_size,&root);
     join_n_alberelli_omp(roots,max_size,&root);
 
-    printf("tot join Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"finito il join\n";
     //stampa_suffix_tree(root);
 
-    tStart = clock();
+    itime = omp_get_wtime();
     for(int i = 0;i<root->sons.size();i++)
         get_bit_vectors_from_root(S,icfl_list,icfl_size,root->sons[i]);
-    printf("get_bit_vectors_from_root Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    printf("get_bit_vectors_from_root Time taken: %.2fs\n", omp_get_wtime() - itime);
     //tot_bitvector+=clock()-tStart;
 
 

@@ -269,7 +269,7 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
     while (k>1){
         temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k/2);
 
-        #pragma omp parallel for shared(roots,temp_res) if(k/2>100) schedule(dynamic)
+        #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(k/2>100)
         for(int i=0;i<k/2;++i)
             join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
 
