@@ -239,7 +239,7 @@ alberello* init_alberello(){
 void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
     int index,is_not_equal;
     suffix_tree_node* temp;
-    //cout<<"num nodi da inserire: "<<b->sons->used<<"\n";
+    //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
     for (int j=0;j<b->sons.size();j++){
         temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
         //cout<<"padre: ";
@@ -254,6 +254,23 @@ void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_no
     *res=a;
 }
 
+suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b){
+    int index,is_not_equal;
+    suffix_tree_node* temp;
+    //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
+    for (int j=0;j<b->sons.size();j++){
+        temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
+        //cout<<"padre: ";
+        //print_substring(temp->suffix,temp->suffix_len);
+        //cout<<", figlio: ";
+        //print_substring(b->sons[j]->suffix,b->sons[j]->suffix_len);
+        //cout<<", index: "<<index;
+        //cout<<"\n";
+        add_node_in_node_sons_3(temp,b->sons[j],index,is_not_equal);
+    }
+    return a;
+}
+
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     while (k>1){
         for(int j=0;j<k/2;j++)
@@ -265,20 +282,35 @@ void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree
 }
 
 void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
-    suffix_tree_node** temp_res;
+    //suffix_tree_node** temp_res=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
+    suffix_tree_node* temp_res[k/2];
+    int use_temp=1;
     while (k>1){
-        temp_res =(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k/2);
-
-        #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(k/2>100)
-        for(int i=0;i<k/2;++i)
-            join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
-
-        if(k%2==1){ temp_res[k/2]=roots[k-1]; k=k/2+1;}
-        else k=k/2;
-        roots=temp_res;
+        //cout<<"k: "<<k<<", use_temp: "<<use_temp<<"\n";
+        if(use_temp%2) join_n_alberelli_omp_inner(roots,temp_res,&k);
+        else join_n_alberelli_omp_inner(temp_res,roots,&k);
+        ++use_temp;
     }
+    
     *res_tree=roots[0];
 }
+
+void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k){
+    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(k/2>100)
+    for(int i=0;i<*k/2;++i)
+        join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
+        //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
+    //for(int i=0;i<*k/2;++i){
+    //    stampa_suffix_tree(temp_res[(i)]);
+    //    cout<<"\n";
+    //}
+    
+    //if(*k%2==1){ temp_res[*k/2]=roots[*k-1];stampa_suffix_tree(temp_res[(*k/2)]);cout<<"\n";*k=*k/2+1;}
+    if(*k%2==1){ temp_res[*k/2]=roots[*k-1];*k=*k/2+1;}
+    else *k=*k/2;
+}
+
+
 
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     int next_k,used_threads,temp_used_threads;

@@ -82,6 +82,8 @@ alberello* init_alberello();
 //DA USARE SOLO QUANDO LA ROOTS È UGUALE ALLE FOGLIE
 void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
+void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
+suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b);
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
@@ -89,6 +91,7 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
 void join_k_alberelli(suffix_tree_node** roots,int start,int end);
 void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
 void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
+void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k);
 void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal);
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index);
 suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,int* is_not_equal);
