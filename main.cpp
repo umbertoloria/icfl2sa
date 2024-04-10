@@ -39,11 +39,12 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word) {
     double itime;
 
     itime = omp_get_wtime();
+    custom_prefix_trie* root_2 = creazione_albero_custom_prefix_trie(icfl_list,word->c_str(),lenght_of_word,max_size);
+    printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    itime = omp_get_wtime();
     suffix_tree_node* root = creazione_albero_alberelli(icfl_list,word->c_str(),lenght_of_word,max_size);
-
-
-    printf("Creazione albero, Time taken: %.2fs\n", omp_get_wtime() - itime);
+    printf("creazione_albero_alberelli, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"\nALBERO OTTENUTO\n";
     //stampa_suffix_tree(root);

@@ -25,6 +25,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     itime = omp_get_wtime();
 
+
+
     #pragma omp parallel for shared(roots) schedule(static)
     for(int i=0;i<max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
