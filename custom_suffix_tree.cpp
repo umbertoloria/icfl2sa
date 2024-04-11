@@ -237,18 +237,22 @@ alberello* init_alberello(){
 }
 
 void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res){
-    int index,is_not_equal;
+    //int index,is_not_equal;
     suffix_tree_node* temp;
     //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
     for (int j=0;j<b->sons.size();j++){
-        temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
+        //temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
+        temp = search_father_for_suffix_3_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len);
+
         //cout<<"padre: ";
         //print_substring(temp->suffix,temp->suffix_len);
         //cout<<", figlio: ";
         //print_substring(b->sons[j]->suffix,b->sons[j]->suffix_len);
         //cout<<", index: "<<index;
         //cout<<"\n";
-        add_node_in_node_sons_3(temp,b->sons[j],index,is_not_equal);
+
+        //add_node_in_node_sons_3(temp,b->sons[j],index,is_not_equal);
+        add_node_in_node_sons_4(temp,b->sons[j]);
     }
     //cout<<"finito\n";
     *res=a;
@@ -283,7 +287,7 @@ void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree
 
 void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     //suffix_tree_node** temp_res=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
-    suffix_tree_node* temp_res[k/2];
+    suffix_tree_node* temp_res[k];
     int use_temp=1;
     while (k>1){
         //cout<<"k: "<<k<<", use_temp: "<<use_temp<<"\n";
@@ -296,7 +300,7 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
 }
 
 void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k){
-    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(k/2>100)
+    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000)
     for(int i=0;i<*k/2;++i)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
         //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
@@ -428,6 +432,16 @@ suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,co
     return root;
 }
 
+suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,const char* suffix,int suffix_len){
+    int index,is_not_equal;
+    while (!root->sons.empty()){
+        index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
+        if(is_not_equal) return root;
+        root=root->sons[index];
+    }
+    return root;
+}
+
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
     int is_not_equal;
     //cout<<"Inserisco stringa: ";
@@ -451,6 +465,17 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
 }
 
 void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal){
+    if(opt_padre->sons.empty() || (index == opt_padre->sons.size()-1 && is_not_equal>0))
+        opt_padre->sons.push_back(figlio);
+    else
+        add_in_order_5(opt_padre->sons,figlio,index);
+    figlio->father=opt_padre;
+}
+
+
+void add_node_in_node_sons_4(suffix_tree_node* opt_padre,suffix_tree_node* figlio){
+    int index,is_not_equal;
+    index = binarySearch_4_with_redundancy_2_iterative(opt_padre->sons,opt_padre->suffix_len,figlio->suffix,figlio->suffix_len,0,opt_padre->sons.size()-1,&is_not_equal);    
     if(opt_padre->sons.empty() || (index == opt_padre->sons.size()-1 && is_not_equal>0))
         opt_padre->sons.push_back(figlio);
     else

@@ -1,39 +1,46 @@
 #include "custom_prefix_trie.h"
 
-custom_prefix_trie *init_custom_prefix_trie(){
-    custom_prefix_trie * x = (custom_prefix_trie *) malloc(sizeof(custom_prefix_trie *));
-    x->node=NULL;
+custom_prefix_trie init_custom_prefix_trie(){
+    custom_prefix_trie x;
+    //cout<<"Dict vuoto: "<<x.sons.empty()<<"\n";
+    //cout<<"Dict size: "<<x.sons.size()<<"\n";
+    x.node=NULL;
     return x;
 }
 
-custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
-    custom_prefix_trie* root = init_custom_prefix_trie();
+custom_prefix_trie creazione_albero_custom_prefix_trie(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size){
+    custom_prefix_trie root = init_custom_prefix_trie();
+    //cout<<"creato root\n";
     for(int i=0;i<max_size;++i)
-        compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),root,i);
+        compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),&root,i);
     return root;
 }
 
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index){
-    if(current_suffix_len==suffix_len){
+    //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
+
+    if(current_suffix_len==suffix_index){
         if(!root->node)
-            root->node = build_suffix_tree_node(NULL,suffix,suffix_len);
+            root->node = build_suffix_tree_node(NULL,suffix,suffix_index);
         root->node->array_of_indexes.push_back(suffix_index);
         return;
     }
     
-    std::map<char,custom_prefix_trie *>::iterator iter;
-    cout<<"ciao\n";
+    std::map<char,custom_prefix_trie>::iterator iter;
+
+    //cout<<suffix[current_suffix_len]<<"\n";
+    
     if(!root->sons.empty())
         iter = root->sons.find(suffix[current_suffix_len]);
-    cout<<"ciao\n";
     
     if(root->sons.empty() || iter ==  root->sons.end()){
-        custom_prefix_trie* temp = init_custom_prefix_trie();
-        root->sons.insert(std::pair<char,custom_prefix_trie *>(suffix[current_suffix_len],temp));
-        return add_in_custom_prefix_trie(temp,suffix,++current_suffix_len,suffix_index,suffix_index);
+        //cout<<"non presente\n";
+        custom_prefix_trie temp = init_custom_prefix_trie();
+        root->sons.insert(std::pair<char,custom_prefix_trie>(suffix[current_suffix_len],temp));
+        return add_in_custom_prefix_trie(&temp,suffix,++current_suffix_len,suffix_len,suffix_index);
     }
-
-    return add_in_custom_prefix_trie(iter->second,suffix,++current_suffix_len,suffix_index,suffix_index);
+    //cout<<"presente\n";
+    return add_in_custom_prefix_trie(&iter->second,suffix,++current_suffix_len,suffix_len,suffix_index);
 }
 
 
