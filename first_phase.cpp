@@ -22,7 +22,6 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     clock_t tStart;
     double itime;
     omp_set_num_threads(std::thread::hardware_concurrency());
-
     itime = omp_get_wtime();
 
 
@@ -31,7 +30,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     for(int i=0;i<max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
 
-    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots) schedule(static)
+    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots) schedule(static) 
     for(int i=0;i<max_size;++i)
         compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
 
