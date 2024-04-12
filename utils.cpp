@@ -96,3 +96,24 @@ void print_substring(const char* str,int n){
         putchar(str[i]);
     }
 }
+
+char* get_substring(const char* basestring,int len){
+    char* temp=(char*)malloc(sizeof(char)*len+1);
+    memcpy(temp, basestring, len);
+    temp[len] = '\0';
+    return temp;
+}
+
+unsigned long get_hash_of_subsring(char* str){
+    unsigned long res = hash_substring(str);
+    free(str);
+    return res;
+}
+
+unsigned long hash_substring(char *str){
+    unsigned long hash = 5381;
+    int c;
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    return hash;
+}

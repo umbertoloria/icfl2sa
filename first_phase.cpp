@@ -2,6 +2,8 @@
 #include "second_phase.h"
 #include <omp.h>
 
+std::mutex mut_map;
+
 int get_max_size(vector<int> icfl_list,int lenght_of_word){
     int max_size=-1;
     for(int i=1;i<icfl_list.size();i++){
@@ -24,6 +26,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     omp_set_num_threads(std::thread::hardware_concurrency());
     itime = omp_get_wtime();
 
+    std::map<size_t,std::vector<suffix_tree_node*>> m;
+
 
 
     #pragma omp parallel for shared(roots) schedule(static)
@@ -32,9 +36,14 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots) schedule(static) 
     for(int i=0;i<max_size;++i)
-        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
+        compute_i_phase_alberello_3(S,lenght_of_word,icfl_list,icfl_size,roots[i],i,&m);
 
     printf("tot inizializzazione Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    cout<<m.size()<<"\n";
+    cout<<get_hash_of_subsring(get_substring("AA",1))<<"\n";
+    cout<<m[get_hash_of_subsring(get_substring("A",1))].size()<<"\n";
+
 
     itime = omp_get_wtime();
 
@@ -82,3 +91,32 @@ void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int
 }
 
 
+void compute_i_phase_alberello_3(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i,std::map<size_t,std::vector<suffix_tree_node*>>* m){
+    suffix_tree_node* x;
+    if(i< lenght_of_word - icfl_list[icfl_size-1]){
+        x=add_suffix_in_node_sons_3(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i);
+        //(*m).insert(std::pair<size_t,suffix_tree_node*>(get_hash_of_subsring(get_substring(x->suffix,x->suffix_len)),x));
+        mut_map.lock();
+        (*m)[get_hash_of_subsring(get_substring(x->suffix,x->suffix_len))].push_back(x);
+
+        cout<<"suffix: ";
+        print_substring(x->suffix,x->suffix_len);
+        cout<<", size: "<<x->suffix_len<<", hash: "<<get_hash_of_subsring(get_substring(x->suffix,x->suffix_len))<<"\n";
+        mut_map.unlock();
+    }
+    for(int j=0;j<icfl_size-1;j++)
+        add_node_in_suffix_tree_alberello_3(S,icfl_list,icfl_size,root,i,j,m);
+}
+
+void add_node_in_suffix_tree_alberello_3(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j,std::map<size_t,std::vector<suffix_tree_node*>>* m){
+    suffix_tree_node* x;
+    if(i<icfl_list[j+1]-icfl_list[j]){
+        x=add_suffix_in_node_sons_3(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i);
+        mut_map.lock();
+        (*m)[get_hash_of_subsring(get_substring(x->suffix,x->suffix_len))].push_back(x);
+        cout<<"suffix: ";
+        print_substring(x->suffix,x->suffix_len);
+        cout<<", size: "<<x->suffix_len<<", hash: "<<get_hash_of_subsring(get_substring(x->suffix,x->suffix_len))<<"\n";
+        mut_map.unlock();
+    }
+}

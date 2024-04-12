@@ -459,6 +459,30 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
     else root->sons[index]->array_of_indexes.push_back(suffix_index);
 }
 
+suffix_tree_node* add_suffix_in_node_sons_3(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
+    int is_not_equal;
+    //cout<<"Inserisco stringa: ";
+    //print_substring(suffix,suffix_len);
+    //cout<<"\n";
+
+    int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
+    //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
+    if (root->sons.empty() || is_not_equal){
+        suffix_tree_node* temp=build_suffix_tree_node(root,suffix,suffix_len);
+        //cout<<"nuovo nodo\n";
+        //cout<<"index "<<index<<" root->sons.size()-1 "<< root->sons.size()-1<<" is_not_equal "<<is_not_equal<<"\n";
+        if(root->sons.empty() || (index == root->sons.size()-1 && is_not_equal>0))
+            root->sons.push_back(temp);
+        else
+            add_in_order_5(root->sons,temp,index);
+
+        temp->array_of_indexes.push_back(suffix_index);
+        return temp;
+    }
+    else root->sons[index]->array_of_indexes.push_back(suffix_index);
+    return root->sons[index];
+}
+
 void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal){
     if(opt_padre->sons.empty() || (index == opt_padre->sons.size()-1 && is_not_equal>0))
         opt_padre->sons.push_back(figlio);

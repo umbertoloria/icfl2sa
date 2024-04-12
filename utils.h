@@ -17,4 +17,8 @@ void quicksort(int_vector* x, int start, int end);
 void quicksort_of_nodes(nodes_vector* x, int start, int end);
 void print_substring(const char* str,int n);
 
+char* get_substring(const char* basestring,int len);
+size_t get_hash_of_subsring(char* str);
+unsigned long hash_substring(char *str);
+
 #endif
