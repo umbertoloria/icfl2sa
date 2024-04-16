@@ -19,6 +19,6 @@ void print_substring(const char* str,int n);
 
 char* get_substring(const char* basestring,int len);
 size_t get_hash_of_subsring(char* str);
-unsigned long hash_substring(char *str);
-
+unsigned long hash_substring(const char *str,int size);
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m);
 #endif

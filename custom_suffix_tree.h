@@ -71,8 +71,10 @@ int binarySearch_4_with_redundancy(vector<suffix_tree_node*> n_vector, const cha
 int binarySearch_4_with_redundancy_2(nodes_vector* n_vector,int root_size, const char* x,int suffix_len, int low, int high,bool* is_equal);
 int binarySearch_4_with_redundancy_2_iterative(vector<suffix_tree_node*> n_vector,int root_size, const char* x,int suffix_len, int low, int high,int* is_not_equal);
 void print_nodes_vector(nodes_vector* n_vec);
+void print_nodes_vector_2(std::vector<suffix_tree_node*> n_vec);
 void add_in_order_4(std::vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position);
 void add_in_order_5(vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position);
+void add_in_order_6(vector<suffix_tree_node*>* sons,suffix_tree_node* node,int starting_position);
 
 typedef struct alberello
 {
@@ -86,14 +88,17 @@ void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
 void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
 suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b);
+void join_two_alberelli_5(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,std::map<size_t,std::vector<suffix_tree_node*>>& m);
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,std::map<size_t,std::vector<suffix_tree_node*>>& m);
 void join_k_alberelli(suffix_tree_node** roots,int start,int end);
 void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
 void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
 void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k);
+void join_n_alberelli_omp_inner_2(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,std::map<size_t,std::vector<suffix_tree_node*>>& m);
 void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal);
 void add_node_in_node_sons_4(suffix_tree_node* opt_padre,suffix_tree_node* figlio);
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index);
@@ -101,4 +106,6 @@ suffix_tree_node* add_suffix_in_node_sons_3(suffix_tree_node* root,const char* s
 suffix_tree_node* search_father_for_suffix_2(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,int* is_not_equal);
 suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,const char* suffix,int suffix_len,int* index,int* is_not_equal);
 suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,const char* suffix,int suffix_len);
+suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m);
+void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,suffix_tree_node* figlio);
 #endif

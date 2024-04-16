@@ -7,6 +7,8 @@
 
 using namespace std;
 
+std::mutex mut_map_3;
+
 void print(string word){
     cout<<word<<endl;
 }
@@ -19,9 +21,10 @@ void printVector(vector<int> vec, string msg){
 }
 
 void printVec(vector<int> vec){
+    cout<<"(";
     for(int i=0; i<vec.size(); i++)
         cout<<vec.at(i)<<" ";
-    cout<<endl;
+    cout<<")\n";
 }
 
 char* append(const char *s, char c) {
@@ -105,15 +108,39 @@ char* get_substring(const char* basestring,int len){
 }
 
 unsigned long get_hash_of_subsring(char* str){
-    unsigned long res = hash_substring(str);
+    unsigned long res;
+    //res = hash_substring(str);
     free(str);
     return res;
 }
 
-unsigned long hash_substring(char *str){
+unsigned long hash_substring(const char *str,int size){
     unsigned long hash = 5381;
     int c;
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    for (int i=0;i<size;++i)
+        hash = ((hash << 5) + hash) + *str++; /* hash * 33 + c */
     return hash;
 }
+
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+    unsigned long key = 5381,last_key=0;
+    int index,is_not_equal;
+
+    for (int i=0;i<suffix_len;++i){
+        key = ((key << 5) + key) + *(suffix+i); /* hash * 33 + c */
+        //mut_map_3.lock();
+        if(m.find(key) != m.end()){
+            index=binarySearch_4_with_redundancy(m[key],suffix,suffix_len,0,m[key].size()-1,&is_not_equal);
+            if(!is_not_equal){
+                last_key=key;
+                //cout<<"trovato: "<<key<<"\n";
+            }
+        }
+        //mut_map_3.unlock();
+    }
+    //cout<<"non trovato\n";
+    return last_key;
+}
+
+
+

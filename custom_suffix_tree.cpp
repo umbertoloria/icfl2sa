@@ -3,6 +3,8 @@
 #include <omp.h>
 using namespace std;
 
+std::mutex mut_map_2;
+
 nodes_vector* init_nodes_vector(size_t size){
     nodes_vector* x= (nodes_vector*)malloc(sizeof(nodes_vector));
     x->size=size;
@@ -221,12 +223,27 @@ void add_in_order_5(vector<suffix_tree_node*>& sons,suffix_tree_node* node,int s
     sons[starting_position]=node;
 }
 
+void add_in_order_6(vector<suffix_tree_node*>* sons,suffix_tree_node* node,int starting_position){
+    (*sons).push_back(NULL);
+    for(int j=(*sons).size()-1;j>starting_position;j--) (*sons)[j] = (*sons)[j-1];
+    (*sons)[starting_position]=node;
+}
+
 void print_nodes_vector(nodes_vector* n_vec){
     for(int i=0;i<n_vec->used;i++){
         print_substring(n_vec->data[i]->suffix,n_vec->data[i]->suffix_len);
         cout<<", ";
     }
     cout<<"\n";
+}
+
+void print_nodes_vector_2(std::vector<suffix_tree_node*> n_vec){
+    cout<<"(";
+    for(int i=0;i<n_vec.size();i++){
+        print_substring(n_vec[i]->suffix,n_vec[i]->suffix_len);
+        cout<<", ";
+    }
+    cout<<")\n";
 }
 
 alberello* init_alberello(){
@@ -270,6 +287,26 @@ suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b){
     return a;
 }
 
+void join_two_alberelli_5(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+    //int index,is_not_equal;
+    std::map<size_t, std::mutex> map;
+    size_t key;
+    suffix_tree_node* temp[b->sons.size()];
+    //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
+    #pragma omp parallel for shared(temp,a,b,map) schedule(static)
+    for (int j=0;j<b->sons.size();++j){
+        //temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
+        temp[j] = search_father_for_suffix_4(b->sons[j]->suffix,b->sons[j]->suffix_len-1,m);
+        if(!temp[j]) temp[j]=a;
+        key=hash_substring(temp[j]->suffix,temp[j]->suffix_len);
+        map[key].lock();
+        add_node_in_node_sons_4(temp[j],b->sons[j]);
+        map[key].unlock();
+    }
+    //cout<<"finito\n";
+    *res=a;
+}
+
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
     while (k>1){
         for(int j=0;j<k/2;j++)
@@ -294,10 +331,39 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
     *res_tree=roots[0];
 }
 
+void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+    //suffix_tree_node** temp_res=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
+    suffix_tree_node* temp_res[k];
+    int use_temp=1;
+    while (k>1){
+        //cout<<"k: "<<k<<", use_temp: "<<use_temp<<"\n";
+        if(use_temp%2) join_n_alberelli_omp_inner_2(roots,temp_res,&k,m);
+        else join_n_alberelli_omp_inner_2(temp_res,roots,&k,m);
+        ++use_temp;
+    }
+    
+    *res_tree=roots[0];
+}
+
 void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k){
     #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
     for(int i=0;i<*k/2;++i)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
+        //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
+    //for(int i=0;i<*k/2;++i){
+    //    stampa_suffix_tree(temp_res[(i)]);
+    //    cout<<"\n";
+    //}
+    
+    //if(*k%2==1){ temp_res[*k/2]=roots[*k-1];stampa_suffix_tree(temp_res[(*k/2)]);cout<<"\n";*k=*k/2+1;}
+    if(*k%2==1){ temp_res[*k/2]=roots[*k-1];*k=*k/2+1;}
+    else *k=*k/2;
+}
+
+void join_n_alberelli_omp_inner_2(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
+    for(int i=0;i<*k/2;++i)
+        join_two_alberelli_5(roots[i*2],roots[(i*2)+1],&temp_res[(i)],m);
         //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
     //for(int i=0;i<*k/2;++i){
     //    stampa_suffix_tree(temp_res[(i)]);
@@ -437,6 +503,35 @@ suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,co
     return root;
 }
 
+suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+    suffix_tree_node* res=NULL;
+    int is_not_equal,index;
+    size_t key;
+    //cout<<"Cercando padre per: ";
+    //print_substring(suffix,suffix_len+1);
+    //cout<<"\n";
+    //ricerca sequenziale
+    //for (;suffix_len>0;--suffix_len){
+        //cout<<"ciao\n";
+    key=last_substring_in_map(suffix,suffix_len,m);
+    //print_substring(suffix,suffix_len);
+    //cout<<" "<<key<<"\n";
+    //cout<<m.count(key)<<"\n";
+    //mut_map_2.lock();
+    if(m.find(key) != m.end()){
+        //cout<<" trovato con chiave: "<<key<<"\n";
+        index=binarySearch_4_with_redundancy(m[key],suffix,suffix_len,0,m[key].size()-1,&is_not_equal);
+        //cout<<" e index: "<<index<<"\n";
+        if(!is_not_equal) res = m[key][index];
+    }
+    //else cout<<"non trovato \n";
+    //mut_map_2.unlock();
+    //}
+    //cout<<"non trovato\n";
+    //cout<<"non trovato\n";
+    return res;
+}
+
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
     int is_not_equal;
     //cout<<"Inserisco stringa: ";
@@ -500,4 +595,17 @@ void add_node_in_node_sons_4(suffix_tree_node* opt_padre,suffix_tree_node* figli
     else
         add_in_order_5(opt_padre->sons,figlio,index);
     figlio->father=opt_padre;
+}
+
+void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,suffix_tree_node* figlio){
+    int index,is_not_equal;
+    //print_substring(figlio->suffix,figlio->suffix_len);
+    //cout<<"\n";
+    index = binarySearch_4_with_redundancy(opt_padre_sons,figlio->suffix,figlio->suffix_len,0,opt_padre_sons.size()-1,&is_not_equal);
+    if(opt_padre_sons.empty()) opt_padre_sons.push_back(figlio);
+    else if(!is_not_equal) return;
+    else if(index == opt_padre_sons.size()-1 && is_not_equal>0) opt_padre_sons.push_back(figlio);
+    else add_in_order_5(opt_padre_sons,figlio,index);
+    //print_nodes_vector_2(opt_padre_sons);
+    //printVec(opt_padre_sons[0]->array_of_indexes);
 }
