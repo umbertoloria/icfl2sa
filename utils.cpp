@@ -7,7 +7,7 @@
 
 using namespace std;
 
-std::mutex mut_map_3;
+std::unordered_map<size_t,std::mutex> mut_map_3;
 
 void print(string word){
     cout<<word<<endl;
@@ -122,15 +122,16 @@ unsigned long hash_substring(const char *str,int size){
     return hash;
 }
 
-unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m){
     unsigned long key = 5381,last_key=0;
     int index,is_not_equal;
 
     for (int i=0;i<suffix_len;++i){
         key = ((key << 5) + key) + *(suffix+i); /* hash * 33 + c */
+        //std::lock_guard<std::mutex> lock(mut_map_3[key]);
         //mut_map_3.lock();
-        if(m.find(key) != m.end()){
-            index=binarySearch_4_with_redundancy(m[key],suffix,suffix_len,0,m[key].size()-1,&is_not_equal);
+        if(m.count(key)){
+            index=binarySearch_4_with_redundancy(m.at(key),suffix,suffix_len,0,m.at(key).size()-1,&is_not_equal);
             if(!is_not_equal){
                 last_key=key;
                 //cout<<"trovato: "<<key<<"\n";
@@ -142,5 +143,38 @@ unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::map<s
     return last_key;
 }
 
+int fast_compare( const char *ptr0, const char *ptr1, int len ){
+  int fast = len/sizeof(size_t) + 1;
+  int offset = (fast-1)*sizeof(size_t);
+  int current_block = 0;
 
+  if( len <= sizeof(size_t)){ fast = 0; }
+
+
+  size_t *lptr0 = (size_t*)ptr0;
+  size_t *lptr1 = (size_t*)ptr1;
+
+  while( current_block < fast ){
+    if( (lptr0[current_block] ^ lptr1[current_block] )){
+      int pos;
+      for(pos = current_block*sizeof(size_t); pos < len ; ++pos ){
+        if( (ptr0[pos] ^ ptr1[pos]) || (ptr0[pos] == 0) || (ptr1[pos] == 0) ){
+          return  (int)((unsigned char)ptr0[pos] - (unsigned char)ptr1[pos]);
+          }
+        }
+      }
+
+    ++current_block;
+    }
+
+  while( len > offset ){
+    if( (ptr0[offset] ^ ptr1[offset] )){ 
+      return (int)((unsigned char)ptr0[offset] - (unsigned char)ptr1[offset]); 
+      }
+    ++offset;
+    }
+	
+	
+  return 0;
+}
 

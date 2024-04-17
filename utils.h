@@ -16,9 +16,10 @@ char* append(const char *s, char c);
 void quicksort(int_vector* x, int start, int end);
 void quicksort_of_nodes(nodes_vector* x, int start, int end);
 void print_substring(const char* str,int n);
+int fast_compare( const char *ptr0, const char *ptr1, int len );
 
 char* get_substring(const char* basestring,int len);
 size_t get_hash_of_subsring(char* str);
 unsigned long hash_substring(const char *str,int size);
-unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m);
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m);
 #endif

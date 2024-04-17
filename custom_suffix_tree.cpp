@@ -3,7 +3,8 @@
 #include <omp.h>
 using namespace std;
 
-std::mutex mut_map_2;
+std::unordered_map<size_t,std::mutex> mut_map_2;
+std::mutex general_mutex;
 
 nodes_vector* init_nodes_vector(size_t size){
     nodes_vector* x= (nodes_vector*)malloc(sizeof(nodes_vector));
@@ -108,17 +109,54 @@ int binarySearch_4_with_redundancy_2_iterative(vector<suffix_tree_node*> n_vecto
     if(high==-1) return -1;
     int mid;
     while(high>=low){
-    
         mid = (low + high) / 2;
+        //print_substring(x,suffix_len);
+        //cout<<"\n";
+        //print_substring(n_vector[mid]->suffix,n_vector[mid]->suffix_len);
+        //cout<<"\n";
+        //cout<<"Root size: "<<root_size<<"\n";
+        
+        
 
-        if(high == low){
-            *is_not_equal = strncmp(x+root_size,n_vector[mid]->suffix+root_size,n_vector[mid]->suffix_len-root_size);
-            return mid;
-        }
+        *is_not_equal = std::strncmp(x+root_size,n_vector[mid]->suffix+root_size,n_vector[mid]->suffix_len-root_size);
 
-        *is_not_equal=strncmp(x+root_size,n_vector[mid]->suffix+root_size,n_vector[mid]->suffix_len-root_size);
+        //cout<<"is_not_equal: "<<*is_not_equal<<"\n";
 
-        if(*is_not_equal==0) return mid;
+        if(high == low || *is_not_equal==0) return mid;
+
+        if (*is_not_equal < 0) high=mid;
+
+        else low=mid+1;
+    }
+    return -1;
+}
+
+int binarySearch_4_with_redundancy_3_iterative(vector<suffix_tree_node*> n_vector,int root_size, const char* x,int suffix_len, int low, int high,int* is_not_equal) {
+    if(high==-1) return -1;
+    int mid,offset;
+    char *s1,*s2;
+    s1=(char*)malloc(sizeof(char)*suffix_len*suffix_len+4);
+    s2=(char*)malloc(sizeof(char)*suffix_len*suffix_len+4);
+    while(high>=low){
+        mid = (low + high) / 2;
+        offset = n_vector[mid]->suffix_len-root_size;
+        
+        //cout<<"A\n";
+        memcpy(s1,x+root_size,offset);
+        memcpy(s2,n_vector[mid]->suffix+root_size,offset);
+        memset(s1+offset,'\0',4);
+        memset(s2+offset,'\0',4);
+
+        //cout<<"B\n";
+        //cout<<string(s1)<<"\n";
+        //cout<<string(s2)<<"\n";
+        //cout<<"Suffix_len: "<<suffix_len<<"\n";
+        //cout<<"Offset: "<<offset<<"\n";
+        
+        //*is_not_equal = strncmp(x+root_size,n_vector[mid]->suffix+root_size,n_vector[mid]->suffix_len-root_size);
+        *is_not_equal = memcmp(s1,s2,offset);
+
+        if(high == low || *is_not_equal==0) return mid;
 
         if (*is_not_equal < 0) high=mid;
 
@@ -287,18 +325,18 @@ suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b){
     return a;
 }
 
-void join_two_alberelli_5(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+void join_two_alberelli_5(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m){
     //int index,is_not_equal;
-    std::map<size_t, std::mutex> map;
-    size_t key;
+    std::map<intptr_t, std::mutex> map;
+    intptr_t key;
     suffix_tree_node* temp[b->sons.size()];
     //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
-    #pragma omp parallel for shared(temp,a,b,map) schedule(static)
+    #pragma omp parallel for shared(temp,a,b,map,mutex_m) schedule(static)
     for (int j=0;j<b->sons.size();++j){
         //temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
-        temp[j] = search_father_for_suffix_4(b->sons[j]->suffix,b->sons[j]->suffix_len-1,m);
+        temp[j] = search_father_for_suffix_4(b->sons[j]->suffix,b->sons[j]->suffix_len-1,m,mutex_m);
         if(!temp[j]) temp[j]=a;
-        key=hash_substring(temp[j]->suffix,temp[j]->suffix_len);
+        key=(intptr_t)temp[j];
         map[key].lock();
         add_node_in_node_sons_4(temp[j],b->sons[j]);
         map[key].unlock();
@@ -331,14 +369,14 @@ void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_
     *res_tree=roots[0];
 }
 
-void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m){
     //suffix_tree_node** temp_res=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
     suffix_tree_node* temp_res[k];
     int use_temp=1;
     while (k>1){
         //cout<<"k: "<<k<<", use_temp: "<<use_temp<<"\n";
-        if(use_temp%2) join_n_alberelli_omp_inner_2(roots,temp_res,&k,m);
-        else join_n_alberelli_omp_inner_2(temp_res,roots,&k,m);
+        if(use_temp%2) join_n_alberelli_omp_inner_2(roots,temp_res,&k,m,mutex_m);
+        else join_n_alberelli_omp_inner_2(temp_res,roots,&k,m,mutex_m);
         ++use_temp;
     }
     
@@ -360,10 +398,10 @@ void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp
     else *k=*k/2;
 }
 
-void join_n_alberelli_omp_inner_2(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,std::map<size_t,std::vector<suffix_tree_node*>>& m){
-    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
+void join_n_alberelli_omp_inner_2(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m){
+    #pragma omp parallel for shared(roots,temp_res,mutex_m) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
     for(int i=0;i<*k/2;++i)
-        join_two_alberelli_5(roots[i*2],roots[(i*2)+1],&temp_res[(i)],m);
+        join_two_alberelli_5(roots[i*2],roots[(i*2)+1],&temp_res[(i)],m,mutex_m);
         //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
     //for(int i=0;i<*k/2;++i){
     //    stampa_suffix_tree(temp_res[(i)]);
@@ -496,6 +534,10 @@ suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,co
 suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,const char* suffix,int suffix_len){
     int index,is_not_equal;
     while (!root->sons.empty()){
+        //print_substring(suffix,suffix_len);
+        //cout<<"\n";
+        //print_nodes_vector_2(root->sons);
+        //cout<<"\n";
         index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
         if(is_not_equal) return root;
         root=root->sons[index];
@@ -503,7 +545,7 @@ suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,co
     return root;
 }
 
-suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,std::map<size_t,std::vector<suffix_tree_node*>>& m){
+suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m){
     suffix_tree_node* res=NULL;
     int is_not_equal,index;
     size_t key;
@@ -513,16 +555,18 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
     //ricerca sequenziale
     //for (;suffix_len>0;--suffix_len){
         //cout<<"ciao\n";
+    //mut_map_2.lock();
+    std::lock_guard<std::mutex> lock(mutex_m);
     key=last_substring_in_map(suffix,suffix_len,m);
     //print_substring(suffix,suffix_len);
     //cout<<" "<<key<<"\n";
     //cout<<m.count(key)<<"\n";
-    //mut_map_2.lock();
-    if(m.find(key) != m.end()){
+    //std::lock_guard<std::mutex> lock(mut_map_2[key]);
+    if(m.count(key)){
         //cout<<" trovato con chiave: "<<key<<"\n";
-        index=binarySearch_4_with_redundancy(m[key],suffix,suffix_len,0,m[key].size()-1,&is_not_equal);
+        index=binarySearch_4_with_redundancy(m.at(key),suffix,suffix_len,0,m.at(key).size()-1,&is_not_equal);
         //cout<<" e index: "<<index<<"\n";
-        if(!is_not_equal) res = m[key][index];
+        if(!is_not_equal) res =m.at(key)[index];
     }
     //else cout<<"non trovato \n";
     //mut_map_2.unlock();
