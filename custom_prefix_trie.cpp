@@ -19,28 +19,14 @@ custom_prefix_trie creazione_albero_custom_prefix_trie(vector<int> icfl_list,con
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index){
     //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
 
-    if(current_suffix_len==suffix_index){
-        if(!root->node)
-            root->node = build_suffix_tree_node(NULL,suffix,suffix_index);
-        root->node->array_of_indexes.push_back(suffix_index);
-        return;
-    }
-    
-    std::map<char,custom_prefix_trie>::iterator iter;
+    while(current_suffix_len!=suffix_index)
+        root=&root->sons[suffix[current_suffix_len++]];
 
-    //cout<<suffix[current_suffix_len]<<"\n";
-    
-    if(!root->sons.empty())
-        iter = root->sons.find(suffix[current_suffix_len]);
-    
-    if(root->sons.empty() || iter ==  root->sons.end()){
-        //cout<<"non presente\n";
-        custom_prefix_trie temp = init_custom_prefix_trie();
-        root->sons.insert(std::pair<char,custom_prefix_trie>(suffix[current_suffix_len],temp));
-        return add_in_custom_prefix_trie(&temp,suffix,++current_suffix_len,suffix_len,suffix_index);
-    }
-    //cout<<"presente\n";
-    return add_in_custom_prefix_trie(&iter->second,suffix,++current_suffix_len,suffix_len,suffix_index);
+
+    if(!root->node)
+        root->node = build_suffix_tree_node(NULL,suffix,suffix_index);
+    root->node->array_of_indexes.push_back(suffix_index);
+    return;
 }
 
 
