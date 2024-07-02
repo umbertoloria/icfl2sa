@@ -30,11 +30,13 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     std::unordered_map<size_t,std::vector<suffix_tree_node*>> m;
     std::mutex mutex_m;
 
-
+    //Inizializza i nodi padre vuoti, uno per ogni size ddei suffissi
     #pragma omp parallel for shared(roots) schedule(static)
     for(int i=0;i<max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
 
+    //i è la lunghezza del suffisso, per ogni lunghezza di un suffisso si inserisce nell'apposito nodo vuoto
+    //il nodo vuoti è roots[i] e contiene tutti i suffissi di lunghezza i
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
     for(int i=0;i<max_size;++i)
         compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
@@ -82,23 +84,24 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
     return root;
 }
 
-
+//root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
 void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
     //print_nodes_vector(alb->roots);
     if(i< lenght_of_word - icfl_list[icfl_size-1])
         //add_suffix_in_node_sons(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i);
+        add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list,lenght_of_word);
     //print_nodes_vector(alb->roots);
     for(int j=0;j<icfl_size-1;j++)
         add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,root,i,j);
     //print_nodes_vector(alb->roots);
 }
 
-void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j){
+//root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
+void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word){
     //print_nodes_vector(alb->roots);
     if(i<icfl_list[j+1]-icfl_list[j])
         //add_suffix_in_node_sons(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i);
+        add_suffix_in_node_sons_2(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,icfl_list,lenght_of_word);
     //cout<<"aggiunto in alberello\n";
 }
 

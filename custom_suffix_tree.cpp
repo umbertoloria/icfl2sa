@@ -576,7 +576,8 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
     return res;
 }
 
-void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
+//root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,int lenght_of_word){
     int is_not_equal;
     //cout<<"Inserisco stringa: ";
     //print_substring(suffix,suffix_len);
@@ -584,6 +585,8 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
 
     int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
     //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
+
+    //Se non è presente, prima di inserirlo inserisco il nodo in modo ordinato in ordine lessicografico
     if (root->sons.empty() || is_not_equal){
         suffix_tree_node* temp=build_suffix_tree_node(root,suffix,suffix_len);
         //cout<<"nuovo nodo\n";
@@ -593,10 +596,19 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
         else
             add_in_order_5(root->sons,temp,index);
 
-        temp->array_of_indexes.push_back(suffix_index);
+        //Fine della creazione del nodo e del suo inserimento, lo inserisco all'interno dell' array dei suffissi
+
+        //Se è un suffisso locale, lo inserico normalmente
+        if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) temp->array_of_indexes.push_back(suffix_index);
+
+        //altrimenti lo inseriso nella lista custom
+        else temp->custom_array_of_indexes.push_back(suffix_index);
     }
-    else root->sons[index]->array_of_indexes.push_back(suffix_index);
-}
+    else{
+        if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) root->sons[index]->array_of_indexes.push_back(suffix_index);
+        else root->sons[index]->array_of_indexes.push_back(suffix_index);
+    }
+} 
 
 suffix_tree_node* add_suffix_in_node_sons_3(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){
     int is_not_equal;

@@ -9,6 +9,7 @@
 #include "second_phase.h"
 #include "third_phase.h"
 #include "check.h"
+#include "custom_factors.h"
 #include <string.h>
 #include <omp.h>
 
@@ -29,6 +30,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
 
     printVector(icfl_list, "Stampa ICFL");
     
+    vector<int> custom_icfl_list = get_custom_factor(icfl_list,lenght_of_word);
 
     cout<<endl;
     
@@ -151,9 +153,10 @@ char* experiment_given_word_by_input_file(int n_threads) {
 }
 
 int main(int argc, char** argv) {
-    int n_threads;
-    if(argc!= 2) return 1;
-    n_threads=atoi(argv[1]);
+    int n_threads=1;
+    if(argc== 2){
+        n_threads=atoi(argv[1]);
+    }
     cout<<"N. threads: "<<n_threads<<"\n";
 
     //experiment_given_word();
