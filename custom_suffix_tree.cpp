@@ -1,10 +1,29 @@
 #include "custom_suffix_tree.h"
-#include "utils.h"
-#include <omp.h>
 using namespace std;
 
 std::unordered_map<size_t,std::mutex> mut_map_2;
 std::mutex general_mutex;
+
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m){
+    unsigned long key = 5381,last_key=0;
+    int index,is_not_equal;
+
+    for (int i=0;i<suffix_len;++i){
+        key = ((key << 5) + key) + *(suffix+i); /* hash * 33 + c */
+        //std::lock_guard<std::mutex> lock(mut_map_3[key]);
+        //mut_map_3.lock();
+        if(m.count(key)){
+            index=binarySearch_4_with_redundancy(m.at(key),suffix,suffix_len,0,m.at(key).size()-1,&is_not_equal);
+            if(!is_not_equal){
+                last_key=key;
+                //cout<<"trovato: "<<key<<"\n";
+            }
+        }
+        //mut_map_3.unlock();
+    }
+    //cout<<"non trovato\n";
+    return last_key;
+}
 
 nodes_vector* init_nodes_vector(size_t size){
     nodes_vector* x= (nodes_vector*)malloc(sizeof(nodes_vector));
@@ -606,7 +625,7 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
     }
     else{
         if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) root->sons[index]->array_of_indexes.push_back(suffix_index);
-        else root->sons[index]->array_of_indexes.push_back(suffix_index);
+        else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
     }
 } 
 
@@ -664,4 +683,13 @@ void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,
     else add_in_order_5(opt_padre_sons,figlio,index);
     //print_nodes_vector_2(opt_padre_sons);
     //printVec(opt_padre_sons[0]->array_of_indexes);
+}
+
+void merge_custom_array_of_indexes(suffix_tree_node* alberello){
+    for(int i=0;i < alberello->sons.size();i++){
+        for(int j=0;j < alberello->sons[i]->custom_array_of_indexes.size();j++){
+            alberello->sons[i]->array_of_indexes.push_back(alberello->sons[i]->custom_array_of_indexes[j]);
+        }
+        
+    }
 }

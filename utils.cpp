@@ -1,8 +1,4 @@
-#include<iostream>
-#include<string.h>
-#include "custom_suffix_tree.h"
 
-#include "generic_vector.h"
 #include "utils.h"
 
 using namespace std;
@@ -120,27 +116,6 @@ unsigned long hash_substring(const char *str,int size){
     for (int i=0;i<size;++i)
         hash = ((hash << 5) + hash) + *str++; /* hash * 33 + c */
     return hash;
-}
-
-unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m){
-    unsigned long key = 5381,last_key=0;
-    int index,is_not_equal;
-
-    for (int i=0;i<suffix_len;++i){
-        key = ((key << 5) + key) + *(suffix+i); /* hash * 33 + c */
-        //std::lock_guard<std::mutex> lock(mut_map_3[key]);
-        //mut_map_3.lock();
-        if(m.count(key)){
-            index=binarySearch_4_with_redundancy(m.at(key),suffix,suffix_len,0,m.at(key).size()-1,&is_not_equal);
-            if(!is_not_equal){
-                last_key=key;
-                //cout<<"trovato: "<<key<<"\n";
-            }
-        }
-        //mut_map_3.unlock();
-    }
-    //cout<<"non trovato\n";
-    return last_key;
 }
 
 int fast_compare( const char *ptr0, const char *ptr1, int len ){

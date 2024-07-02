@@ -1,6 +1,8 @@
 #include "custom_factors.h"
 
-int offset = 2;
+using namespace std;
+
+int offset = 5;
 
 vector<int> get_custom_factor(vector<int>& icfl,int word_size){
     int j,z;

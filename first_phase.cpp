@@ -15,7 +15,7 @@ int get_max_size(vector<int> icfl_list,int lenght_of_word){
     return max_size;
 }
 
-suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S,int lenght_of_word,int max_size,int n_threads){
+suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> custom_icfl_list,const char* S,int lenght_of_word,int max_size,int custom_max_size,int n_threads){
     suffix_tree_node* root = build_suffix_tree_node(NULL,"\0",0);
     int icfl_size=icfl_list.size();
     //clock_t tot_inserimento=0,tot_bitvector=0,tStart;
@@ -60,6 +60,11 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,const char* S
 
     itime = omp_get_wtime();
 
+    //Aggiungere fase di unione tra array di suffissi locali e custom
+    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
+    for(int i=0;i<max_size;++i)
+        merge_custom_array_of_indexes(roots[i]);
+
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
     //join_n_alberelli_multithreading_2(roots,max_size,&root);
@@ -92,7 +97,7 @@ void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl
         add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list,lenght_of_word);
     //print_nodes_vector(alb->roots);
     for(int j=0;j<icfl_size-1;j++)
-        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,root,i,j);
+        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,root,i,j,lenght_of_word);
     //print_nodes_vector(alb->roots);
 }
 

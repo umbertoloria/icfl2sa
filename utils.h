@@ -2,12 +2,14 @@
 #define UTILS_H_INCLUDED
 
 #include<iostream>
-#include<vector>
-
+#include<string.h>
+#include<unordered_map>
 #include "generic_vector.h"
-#include "custom_suffix_tree.h"
+#include "custom_suffix_tree_structs.h"
+#include "mutex"
 
 using namespace std;
+
 
 void print(string word);
 void printVector(vector<int> vec, string msg);
@@ -21,5 +23,4 @@ int fast_compare( const char *ptr0, const char *ptr1, int len );
 char* get_substring(const char* basestring,int len);
 size_t get_hash_of_subsring(char* str);
 unsigned long hash_substring(const char *str,int size);
-unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m);
 #endif

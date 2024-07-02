@@ -9,11 +9,10 @@
 #include "second_phase.h"
 #include "third_phase.h"
 #include "check.h"
-#include "custom_factors.h"
 #include <string.h>
 #include <omp.h>
 
-#define CONTROLLO_OUTPUT 0
+#define CONTROLLO_OUTPUT 1
 
 using namespace std;
 
@@ -35,6 +34,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
     cout<<endl;
     
     int max_size=get_max_size(icfl_list,lenght_of_word);
+    int custom_max_size=get_max_size(custom_icfl_list,lenght_of_word);
 
     //cout<<"Max size: "<<max_size<<endl;
 
@@ -45,7 +45,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
     //printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     itime = omp_get_wtime();
-    suffix_tree_node* root = creazione_albero_alberelli(icfl_list,word->c_str(),lenght_of_word,max_size,n_threads);
+    suffix_tree_node* root = creazione_albero_alberelli(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size,n_threads);
     printf("creazione_albero_alberelli, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"\nALBERO OTTENUTO\n";

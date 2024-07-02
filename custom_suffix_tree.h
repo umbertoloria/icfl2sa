@@ -14,6 +14,8 @@
 #include <map>
 #include <unordered_map>
 #include <cstring>
+#include "utils.h"
+#include <omp.h>
 
 
 //#include <jthread>
@@ -24,45 +26,14 @@ using namespace std;
 
 struct nodes_vector;
 
-typedef struct suffix_tree_node{
-    //Qui viene salvato il prefisso presente in questo nodo dell'albero
-    const char* suffix;
-
-    //Size del suffisso
-    int suffix_len;
-
-    //Padre del nodo
-    suffix_tree_node* father;
-
-    //Array di indici nei quali è presente il prefisso di cui sopra
-    std::vector<int> array_of_indexes;
-
-    //Array di indici nei quali è presente il prefisso di cui sopra
-    std::vector<int> custom_array_of_indexes;
-
-    //Figli del nodo
-    std::vector<suffix_tree_node*> sons;
-
-    //Chain of suffixes dal figlio di root al nodo
-    std::vector<int> common_chain_of_suffiexes;
-
-    //bit_vector del nodo
-    std::vector<bool> bit_vec;
-
-}suffix_tree_node;
+unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m);
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
 suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_len);
 //Non fa i return(cosa bella)
 void stampa_suffix_tree(suffix_tree_node* root);
 
-typedef struct nodes_vector
-    {
-        suffix_tree_node** data;
-        size_t size;
-        size_t used;
 
-    }nodes_vector;
 
 nodes_vector* init_nodes_vector(size_t size);
 bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element);
@@ -82,12 +53,6 @@ void print_nodes_vector_2(std::vector<suffix_tree_node*> n_vec);
 void add_in_order_4(std::vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position);
 void add_in_order_5(vector<suffix_tree_node*>& sons,suffix_tree_node* node,int starting_position);
 void add_in_order_6(vector<suffix_tree_node*>* sons,suffix_tree_node* node,int starting_position);
-
-typedef struct alberello
-{
-    nodes_vector* roots;
-    nodes_vector* leaves;
-}alberello;
 
 alberello* init_alberello();
 //DA USARE SOLO QUANDO LA ROOTS È UGUALE ALLE FOGLIE
@@ -115,4 +80,7 @@ suffix_tree_node* search_father_for_suffix_2_iterative(suffix_tree_node* root,co
 suffix_tree_node* search_father_for_suffix_3_iterative(suffix_tree_node* root,const char* suffix,int suffix_len);
 suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m);
 void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,suffix_tree_node* figlio);
+
+
+void merge_custom_array_of_indexes(suffix_tree_node* alberello);
 #endif
