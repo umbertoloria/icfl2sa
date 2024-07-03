@@ -32,14 +32,17 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     //Inizializza i nodi padre vuoti, uno per ogni size ddei suffissi
     #pragma omp parallel for shared(roots) schedule(static)
-    for(int i=0;i<max_size;i++)
+    for(int i=0;i<custom_max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
 
     //i è la lunghezza del suffisso, per ogni lunghezza di un suffisso si inserisce nell'apposito nodo vuoto
     //il nodo vuoti è roots[i] e contiene tutti i suffissi di lunghezza i
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
-    for(int i=0;i<max_size;++i)
-        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
+    for(int i=0;i<custom_max_size;++i)
+        //SERIALE
+        //compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
+        compute_i_phase_alberello_2(S,lenght_of_word,custom_icfl_list,custom_icfl_list.size(),roots[i],i);
+        //PARALLELA (non buona)
         //compute_i_phase_alberello_3(S,lenght_of_word,icfl_list,icfl_size,roots[i],i,m,mutex_m);
 
     printf("tot inizializzazione Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -62,13 +65,17 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     //Aggiungere fase di unione tra array di suffissi locali e custom
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
-    for(int i=0;i<max_size;++i)
+    for(int i=0;i<custom_max_size;++i)
         merge_custom_array_of_indexes(roots[i]);
+
+    printf("tot merge_custom_array_of_indexes Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    itime = omp_get_wtime();
 
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
     //join_n_alberelli_multithreading_2(roots,max_size,&root);
-    join_n_alberelli_omp(roots,max_size,&root);
+    join_n_alberelli_omp(roots,custom_max_size,&root);
     //join_n_alberelli_omp_2(roots,max_size,&root,m,mutex_m);
 
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);

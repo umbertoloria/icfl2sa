@@ -36,7 +36,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
     int max_size=get_max_size(icfl_list,lenght_of_word);
     int custom_max_size=get_max_size(custom_icfl_list,lenght_of_word);
 
-    //cout<<"Max size: "<<max_size<<endl;
+    cout<<"Max size: "<<max_size<<endl;
+    cout<<"Custom Max size: "<<custom_max_size<<endl;
 
     double itime;
 
@@ -82,15 +83,17 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
         SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }
 
+    for(int i=0;i<SA.size();i++){
+        cout<<SA[i]<<", ";
+    }
+    cout<<"\n";
+
 
     //int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);
 
     printf("Common+Concat, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
     if(CONTROLLO_OUTPUT){
-        //cout<<"\n\n";
-        //print_int_vector(SA);
-        //cout<<"\n\n";
         tStart = clock();
         if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
         printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
