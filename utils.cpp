@@ -90,6 +90,35 @@ void quicksort_of_nodes(nodes_vector* x, int start, int end){
 }
 
 
+void quicksort_of_indexes(const char* S,vector<int>& indexes, int start, int end){
+    int i, j, pivot, temp;
+    if(start<end){
+
+        pivot=start;
+        
+        i=start;
+        j=end;     
+
+        while(i<j){
+            while(strcmp(S+indexes[i],S+indexes[pivot])<=0 && i<end) i++;
+            while(strcmp(S+indexes[j],S+indexes[pivot])>0) j--;
+
+            if(i<j){   
+               temp=indexes[i];
+               indexes[i]=indexes[j];
+               indexes[j]=temp;
+            }
+        }
+
+        temp=indexes[pivot];
+        indexes[pivot]=indexes[j];
+        indexes[j]=temp;
+        quicksort_of_indexes(S,indexes,start,j-1);
+        quicksort_of_indexes(S,indexes,j+1,end);
+    }
+}
+
+
 void print_substring(const char* str,int n){
     for (int i = 0; i < n; ++i) {
         putchar(str[i]);

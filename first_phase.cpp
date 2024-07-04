@@ -1,6 +1,5 @@
 #include "first_phase.h"
-#include "second_phase.h"
-#include <omp.h>
+
 
 std::mutex mut_map;
 
@@ -66,7 +65,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     //Aggiungere fase di unione tra array di suffissi locali e custom
     #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
     for(int i=0;i<custom_max_size;++i)
-        merge_custom_array_of_indexes(roots[i]);
+        merge_custom_array_of_indexes(S,icfl_list,roots[i]);
 
     printf("tot merge_custom_array_of_indexes Time taken: %.2fs\n", omp_get_wtime() - itime);
 
@@ -99,6 +98,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
 void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
     //print_nodes_vector(alb->roots);
+    //controlla i se non sfora la max lenght per questo fattore
     if(i< lenght_of_word - icfl_list[icfl_size-1])
         //add_suffix_in_node_sons(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
         add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list,lenght_of_word);
@@ -111,6 +111,7 @@ void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
 void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word){
     //print_nodes_vector(alb->roots);
+    //controlla se i non sfora la max lenght per questo fattore
     if(i<icfl_list[j+1]-icfl_list[j])
         //add_suffix_in_node_sons(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
         add_suffix_in_node_sons_2(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,icfl_list,lenght_of_word);

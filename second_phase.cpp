@@ -1,11 +1,6 @@
-#include <iostream>
-#include "generic_vector.h"
-#include "custom_suffix_tree.h"
-#include <string.h>
-#include <vector>
+
 #include "second_phase.h"
-#include "merge.h"
-#include "utils.h"
+
 
 using namespace std;
 

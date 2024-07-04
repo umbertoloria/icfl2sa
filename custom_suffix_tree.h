@@ -5,7 +5,6 @@
 #include <vector>
 #include <unistd.h>
 #include "generic_vector.h"
-#include "custom_factors.h"
 #include <mutex>
 #include <pthread.h>
 #include <thread>
@@ -14,7 +13,7 @@
 #include <map>
 #include <unordered_map>
 #include <cstring>
-#include "utils.h"
+#include "merge.h"
 #include <omp.h>
 
 
@@ -82,5 +81,5 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,suffix_tree_node* figlio);
 
 
-void merge_custom_array_of_indexes(suffix_tree_node* alberello);
+void merge_custom_array_of_indexes(const char* S,vector<int> icfl_list,suffix_tree_node* alberello);
 #endif

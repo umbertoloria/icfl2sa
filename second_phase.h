@@ -1,3 +1,4 @@
+#include <iostream>
 #include "generic_vector.h"
 #include "custom_suffix_tree.h"
 #include <string.h>

@@ -685,11 +685,19 @@ void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,
     //printVec(opt_padre_sons[0]->array_of_indexes);
 }
 
-void merge_custom_array_of_indexes(suffix_tree_node* alberello){
+void merge_custom_array_of_indexes(const char* S,vector<int> icfl_list,suffix_tree_node* alberello){
     for(int i=0;i < alberello->sons.size();i++){
-        for(int j=0;j < alberello->sons[i]->custom_array_of_indexes.size();j++){
-            alberello->sons[i]->array_of_indexes.push_back(alberello->sons[i]->custom_array_of_indexes[j]);
-        }
+        //prima di inserirli ordino gli indici di fattori non canonici
+        quicksort_of_indexes(S,alberello->sons[i]->custom_array_of_indexes,0,alberello->sons[i]->custom_array_of_indexes.size()-1);
+        //inserisco gli indici ordinati all'interno del nodo corrispondete
+
+        //li inserisco semplicemente in append
+        //for(int j=0;j < alberello->sons[i]->custom_array_of_indexes.size();j++){
+        //    alberello->sons[i]->array_of_indexes.push_back(alberello->sons[i]->custom_array_of_indexes[j]);
+        //}
+
+        //applico l'in_prefix_merge
+        alberello->sons[i]->array_of_indexes = in_prefix_merge_bit_vector_6(S,icfl_list,icfl_list.size(),alberello->sons[i]->array_of_indexes,alberello->sons[i]->custom_array_of_indexes);
         
     }
 }

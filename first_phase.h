@@ -4,6 +4,8 @@
 #include <string.h>
 #include <thread>
 #include <unordered_map>
+#include "second_phase.h"
+#include <omp.h>
 
 int get_max_size(vector<int> icfl_list,int lenght_of_word);
 

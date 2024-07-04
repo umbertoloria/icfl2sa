@@ -17,6 +17,7 @@ void printVec(vector<int> vec);
 char* append(const char *s, char c);
 void quicksort(int_vector* x, int start, int end);
 void quicksort_of_nodes(nodes_vector* x, int start, int end);
+void quicksort_of_indexes(const char* S,vector<int>& indexes, int start, int end);
 void print_substring(const char* str,int n);
 int fast_compare( const char *ptr0, const char *ptr1, int len );
 

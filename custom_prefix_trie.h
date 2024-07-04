@@ -3,8 +3,10 @@
 #include <iostream>
 
 typedef struct custom_prefix_trie{
+
     std::map<char,custom_prefix_trie> sons;
     suffix_tree_node* node;
+    
 }custom_prefix_trie;
 
 custom_prefix_trie init_custom_prefix_trie();
