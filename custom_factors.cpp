@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int offset = 2;
+int offset = 5;
 
 vector<int> get_custom_factor(vector<int>& icfl,int word_size){
     int j,z;
@@ -41,14 +41,12 @@ bool check_if_custom_index(vector<int>& icfl,int word_size,int index){
     for(int i=1;i<icfl.size();i++){
         //cout<<"("<<icfl[i-1]<<","<<icfl[i]<<","<<index<<")";
         if(index>=icfl[i-1] && index<icfl[i]){
-            if((icfl[i] - index) <= offset)
-                return false;
-            return true;
+            if((icfl[i] - index) <= offset) return false;
         }
     }
 
-    if((word_size- index) <= offset)
-        return false;
+    //cout<<"word_size: "<<word_size<<" index: "<<index<<" offset: "<<offset<<"\n";
+    if((word_size - index) <= offset) return false;
 
     return true;
 

@@ -36,11 +36,11 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     //i è la lunghezza del suffisso, per ogni lunghezza di un suffisso si inserisce nell'apposito nodo vuoto
     //il nodo vuoti è roots[i] e contiene tutti i suffissi di lunghezza i
-    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
+    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
     for(int i=0;i<custom_max_size;++i)
         //SERIALE
         //compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
-        compute_i_phase_alberello_2(S,lenght_of_word,custom_icfl_list,custom_icfl_list.size(),roots[i],i);
+        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),roots[i],i);
         //PARALLELA (non buona)
         //compute_i_phase_alberello_3(S,lenght_of_word,icfl_list,icfl_size,roots[i],i,m,mutex_m);
 
@@ -79,8 +79,9 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //cout<<"finito il join\n";
-    //stampa_suffix_tree(root);
+    cout<<"finito il join\n";
+    stampa_suffix_tree(root);
+    cout<<"\n";
 
     itime = omp_get_wtime();
     for(int i = 0;i<root->sons.size();i++)
@@ -96,25 +97,25 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 }
 
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
-void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,suffix_tree_node* root,int i){
+void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i){
     //print_nodes_vector(alb->roots);
     //controlla i se non sfora la max lenght per questo fattore
-    if(i< lenght_of_word - icfl_list[icfl_size-1])
+    if(i< lenght_of_word - custom_icfl_list[custom_icfl_size-1])
         //add_suffix_in_node_sons(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1,icfl_list[icfl_size-1]+lenght_of_word - icfl_list[icfl_size-1]-1-i,icfl_list,lenght_of_word);
+        add_suffix_in_node_sons_2(root,S + custom_icfl_list[custom_icfl_size-1] + lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,i+1,custom_icfl_list[custom_icfl_size-1]+lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,icfl_list,custom_icfl_list,lenght_of_word);
     //print_nodes_vector(alb->roots);
-    for(int j=0;j<icfl_size-1;j++)
-        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,root,i,j,lenght_of_word);
+    for(int j=0;j<custom_icfl_size-1;j++)
+        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,custom_icfl_list,custom_icfl_size,root,i,j,lenght_of_word);
     //print_nodes_vector(alb->roots);
 }
 
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
-void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word){
+void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word){
     //print_nodes_vector(alb->roots);
     //controlla se i non sfora la max lenght per questo fattore
-    if(i<icfl_list[j+1]-icfl_list[j])
+    if(i<custom_icfl_list[j+1]-custom_icfl_list[j])
         //add_suffix_in_node_sons(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1,icfl_list[j]+icfl_list[j+1]-icfl_list[j]-1-i,icfl_list,lenght_of_word);
+        add_suffix_in_node_sons_2(root,S + custom_icfl_list[j] +custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,i+1,custom_icfl_list[j]+custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,icfl_list,custom_icfl_list,lenght_of_word);
     //cout<<"aggiunto in alberello\n";
 }
 

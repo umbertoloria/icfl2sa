@@ -596,7 +596,7 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 }
 
 //root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
-void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,int lenght_of_word){
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word){
     int is_not_equal;
     //cout<<"Inserisco stringa: ";
     //print_substring(suffix,suffix_len);
@@ -618,12 +618,15 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
         //Fine della creazione del nodo e del suo inserimento, lo inserisco all'interno dell' array dei suffissi
 
         //Se è un suffisso locale, lo inserico normalmente
+        //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
+
         if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) temp->array_of_indexes.push_back(suffix_index);
 
         //altrimenti lo inseriso nella lista custom
         else temp->custom_array_of_indexes.push_back(suffix_index);
     }
     else{
+        //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
         if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) root->sons[index]->array_of_indexes.push_back(suffix_index);
         else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
     }
@@ -687,6 +690,18 @@ void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,
 
 void merge_custom_array_of_indexes(const char* S,vector<int> icfl_list,suffix_tree_node* alberello){
     for(int i=0;i < alberello->sons.size();i++){
+
+        //print_substring(alberello->sons[i]->suffix,alberello->sons[i]->suffix_len);
+        //cout<<"\n";
+        //for(int j=0;j<alberello->sons[i]->array_of_indexes.size();j++){
+        //    cout<<alberello->sons[i]->array_of_indexes[j]<<", ";
+        //}
+        //cout<<"\n";
+        //for(int j=0;j<alberello->sons[i]->custom_array_of_indexes.size();j++){
+        //    cout<<alberello->sons[i]->custom_array_of_indexes[j]<<", ";
+        //}
+        //cout<<"\n";
+
         //prima di inserirli ordino gli indici di fattori non canonici
         quicksort_of_indexes(S,alberello->sons[i]->custom_array_of_indexes,0,alberello->sons[i]->custom_array_of_indexes.size()-1);
         //inserisco gli indici ordinati all'interno del nodo corrispondete
@@ -699,5 +714,10 @@ void merge_custom_array_of_indexes(const char* S,vector<int> icfl_list,suffix_tr
         //applico l'in_prefix_merge
         alberello->sons[i]->array_of_indexes = in_prefix_merge_bit_vector_6(S,icfl_list,icfl_list.size(),alberello->sons[i]->array_of_indexes,alberello->sons[i]->custom_array_of_indexes);
         
+        //print_substring(alberello->sons[i]->suffix,alberello->sons[i]->suffix_len);
+        //for(int j=0;j<alberello->sons[i]->array_of_indexes.size();j++){
+        //    cout<<" "<<alberello->sons[i]->array_of_indexes[j]<<",";
+        //}
+        //cout<<"\n";
     }
 }
