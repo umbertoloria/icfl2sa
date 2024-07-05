@@ -79,9 +79,9 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    cout<<"finito il join\n";
-    stampa_suffix_tree(root);
-    cout<<"\n";
+    //cout<<"finito il join\n";
+    //stampa_suffix_tree(root);
+    //cout<<"\n";
 
     itime = omp_get_wtime();
     for(int i = 0;i<root->sons.size();i++)

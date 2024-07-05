@@ -23,15 +23,16 @@ std::vector<bool> in_prefix_merge_bit_vector_5(const char* S, vector<int> icfl_l
 
     //cout<<" last:"<<icfl_list[icfl_list.size()-1]<<" ";
 
-    cout<<"Comparing:\n";
-    printVec(father);
-    cout<<"\n";
-    printVec(child);
-    cout<<"\n";
+    //cout<<"Comparing:\n";
+    //printVec(father);
+    //cout<<"\n";
+    //printVec(child);
+    //cout<<"\n";
 
     while( i<father.size() && j<child.size()){
 
-        if(check_if_custom_index(icfl_list,strlen(S),i) || check_if_custom_index(icfl_list,strlen(S),j) ){
+        if(check_if_custom_index(icfl_list,strlen(S),father[i]) || check_if_custom_index(icfl_list,strlen(S),child[j]) ){
+            //cout<<i<<" "<<j<<"\n";
             temp_res = strcmp(S+child[j],S+father[i]);
             if(temp_res<0){
                 result.emplace_back(false);
