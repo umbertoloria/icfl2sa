@@ -31,7 +31,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
 
     //Inizializza i nodi padre vuoti, uno per ogni size ddei suffissi
-    #pragma omp parallel for shared(roots) schedule(static)
+    #pragma omp parallel for //shared(roots) schedule(static)
     for(int i=0;i<custom_max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
 
@@ -39,7 +39,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     //i è la lunghezza del suffisso, per ogni lunghezza di un suffisso si inserisce nell'apposito nodo vuoto
     //il nodo vuoti è roots[i] e contiene tutti i suffissi di lunghezza i
-    #pragma omp parallel for shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
+    #pragma omp parallel for //shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
     for(int i=0;i<custom_max_size;++i)
         //SERIALE
         //compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
