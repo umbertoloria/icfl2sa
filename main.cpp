@@ -81,10 +81,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
         SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }
 
-    for(int i=0;i<SA.size();i++){
-        cout<<SA[i]<<", ";
-    }
-    cout<<"\n";
+    //printVec(SA);
 
 
     //int_vector* SA = merge_array_of_vector_2(group_ranking,lenght_of_word);

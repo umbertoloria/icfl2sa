@@ -29,6 +29,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     std::unordered_map<size_t,std::vector<suffix_tree_node*>> m;
     std::mutex mutex_m;
 
+    vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
+
     //Inizializza i nodi padre vuoti, uno per ogni size ddei suffissi
     #pragma omp parallel for shared(roots) schedule(static)
     for(int i=0;i<custom_max_size;i++)
@@ -40,7 +42,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     for(int i=0;i<custom_max_size;++i)
         //SERIALE
         //compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_size,roots[i],i);
-        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),roots[i],i);
+        compute_i_phase_alberello_2(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),roots[i],i,is_custom_vec);
         //PARALLELA (non buona)
         //compute_i_phase_alberello_3(S,lenght_of_word,icfl_list,icfl_size,roots[i],i,m,mutex_m);
 
@@ -97,25 +99,25 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 }
 
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
-void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i){
+void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,vector<int> is_custom_vec){
     //print_nodes_vector(alb->roots);
     //controlla i se non sfora la max lenght per questo fattore
     if(i< lenght_of_word - custom_icfl_list[custom_icfl_size-1])
         //add_suffix_in_node_sons(root,S + icfl_list[icfl_size-1] + lenght_of_word - icfl_list[icfl_size-1]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + custom_icfl_list[custom_icfl_size-1] + lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,i+1,custom_icfl_list[custom_icfl_size-1]+lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,icfl_list,custom_icfl_list,lenght_of_word);
+        add_suffix_in_node_sons_2(root,S + custom_icfl_list[custom_icfl_size-1] + lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,i+1,custom_icfl_list[custom_icfl_size-1]+lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,icfl_list,custom_icfl_list,lenght_of_word,is_custom_vec);
     //print_nodes_vector(alb->roots);
     for(int j=0;j<custom_icfl_size-1;j++)
-        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,custom_icfl_list,custom_icfl_size,root,i,j,lenght_of_word);
+        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,custom_icfl_list,custom_icfl_size,root,i,j,lenght_of_word,is_custom_vec);
     //print_nodes_vector(alb->roots);
 }
 
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
-void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word){
+void add_node_in_suffix_tree_alberello_2(const char* S,vector<int> icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,int j,int lenght_of_word,vector<int> is_custom_vec){
     //print_nodes_vector(alb->roots);
     //controlla se i non sfora la max lenght per questo fattore
     if(i<custom_icfl_list[j+1]-custom_icfl_list[j])
         //add_suffix_in_node_sons(root,S + icfl_list[j] +icfl_list[j+1]-icfl_list[j]-1-i,i+1);
-        add_suffix_in_node_sons_2(root,S + custom_icfl_list[j] +custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,i+1,custom_icfl_list[j]+custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,icfl_list,custom_icfl_list,lenght_of_word);
+        add_suffix_in_node_sons_2(root,S + custom_icfl_list[j] +custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,i+1,custom_icfl_list[j]+custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,icfl_list,custom_icfl_list,lenght_of_word,is_custom_vec);
     //cout<<"aggiunto in alberello\n";
 }
 
@@ -146,4 +148,14 @@ void add_node_in_suffix_tree_alberello_3(const char* S,vector<int> icfl_list,int
         add_node_in_node_sons_5_map(m[key],x);
         //mut_map.unlock();
     }
+}
+
+vector<int> get_is_custom_vec(vector<int>icfl ,int lenght_of_word){
+    vector<int> is_custom_vec;
+    is_custom_vec.reserve(lenght_of_word);
+    // 0 = fattore ICFL
+    // 1 = fattore custom
+    for(int i=0;i<lenght_of_word;++i)
+        is_custom_vec.push_back(check_if_custom_index(icfl,lenght_of_word,i));
+    return is_custom_vec;
 }

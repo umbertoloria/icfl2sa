@@ -596,7 +596,7 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 }
 
 //root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
-void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word){
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word,vector<int> is_custom_vec){
     int is_not_equal;
     //cout<<"Inserisco stringa: ";
     //print_substring(suffix,suffix_len);
@@ -620,14 +620,14 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
         //Se è un suffisso locale, lo inserico normalmente
         //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
 
-        if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) temp->array_of_indexes.push_back(suffix_index);
+        if(!is_custom_vec[suffix_index]) temp->array_of_indexes.push_back(suffix_index);
 
         //altrimenti lo inseriso nella lista custom
         else temp->custom_array_of_indexes.push_back(suffix_index);
     }
     else{
         //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
-        if(check_if_normal_index(icfl_list,lenght_of_word,suffix_index)) root->sons[index]->array_of_indexes.push_back(suffix_index);
+        if(!is_custom_vec[suffix_index]) root->sons[index]->array_of_indexes.push_back(suffix_index);
         else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
     }
 } 
@@ -702,8 +702,11 @@ void merge_custom_array_of_indexes(const char* S,vector<int> icfl_list,suffix_tr
         //}
         //cout<<"\n";
 
+        
         //prima di inserirli ordino gli indici di fattori non canonici
         quicksort_of_indexes(S,alberello->sons[i]->custom_array_of_indexes,0,alberello->sons[i]->custom_array_of_indexes.size()-1);
+        
+        
         //inserisco gli indici ordinati all'interno del nodo corrispondete
 
         //li inserisco semplicemente in append
