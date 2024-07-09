@@ -178,7 +178,7 @@ std::vector<int> in_prefix_merge_bit_vector_7(const char* S, vector<int> icfl_li
     //cout<<" last:"<<icfl_list[icfl_list.size()-1]<<" ";
 
     while( i<father.size() && j<child.size()){
-        if(is_custom_suffix[father[i]] || is_custom_suffix[child[j]]){
+        if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]]){
             //cout<<i<<" "<<j<<"\n";
             temp_res = strcmp(S+child[j],S+father[i]);
             if(temp_res<0){
