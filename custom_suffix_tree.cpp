@@ -596,8 +596,10 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 }
 
 //root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
-void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word,vector<int> is_custom_vec){
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word,vector<int> is_custom_vec){
     int is_not_equal;
+    std::vector<int> temp_vec;
+    suffix_tree_node* temp_root;
     //cout<<"Inserisco stringa: ";
     //print_substring(suffix,suffix_len);
     //cout<<"\n";
@@ -620,16 +622,20 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* suffix,int suf
         //Se è un suffisso locale, lo inserico normalmente
         //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
 
-        if(!is_custom_vec[suffix_index]) temp->array_of_indexes.push_back(suffix_index);
-
-        //altrimenti lo inseriso nella lista custom
-        else temp->custom_array_of_indexes.push_back(suffix_index);
+        temp_root=temp;
+        //if(!is_custom_vec[suffix_index]) temp->array_of_indexes.push_back(suffix_index);
+        ////altrimenti lo inseriso nella lista custom
+        //else temp->custom_array_of_indexes.push_back(suffix_index);
     }
-    else{
+    else temp_root=root->sons[index];
+        
         //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
-        if(!is_custom_vec[suffix_index]) root->sons[index]->array_of_indexes.push_back(suffix_index);
-        else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
-    }
+        //if(!is_custom_vec[suffix_index]) root->sons[index]->array_of_indexes.push_back(suffix_index);
+        //else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
+    temp_vec.push_back(suffix_index);
+    temp_root->array_of_indexes=in_prefix_merge_bit_vector_7(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,temp_vec,is_custom_vec);
+
+    temp_vec.clear();
 } 
 
 suffix_tree_node* add_suffix_in_node_sons_3(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){

@@ -182,15 +182,15 @@ std::vector<int> in_prefix_merge_bit_vector_7(const char* S, vector<int> icfl_li
             //cout<<i<<" "<<j<<"\n";
             temp_res = strcmp(S+child[j],S+father[i]);
             if(temp_res<0){
-                result.emplace_back(false);
+                result.emplace_back(child[j]);
                 j++;
             }
             else{
-                result.emplace_back(true);
+                result.emplace_back(father[i]);
                 i++;
             }
         }
-        if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1]){
+        else if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1]){
             result.emplace_back(father[i]);
             i++;
         }
