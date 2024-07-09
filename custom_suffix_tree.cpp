@@ -598,13 +598,14 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 //root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
 void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word,vector<int> is_custom_vec){
     int is_not_equal;
-    std::vector<int> temp_vec;
+    //std::vector<int> temp_vec;
     suffix_tree_node* temp_root;
     //cout<<"Inserisco stringa: ";
     //print_substring(suffix,suffix_len);
     //cout<<"\n";
 
     int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
+    //int index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
     //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
 
     //Se non è presente, prima di inserirlo inserisco il nodo in modo ordinato in ordine lessicografico
@@ -615,7 +616,8 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* 
         if(root->sons.empty() || (index == root->sons.size()-1 && is_not_equal>0))
             root->sons.push_back(temp);
         else
-            add_in_order_5(root->sons,temp,index);
+            //add_in_order_5(root->sons,temp,index);
+            root->sons.insert(root->sons.begin() + index,temp);
 
         //Fine della creazione del nodo e del suo inserimento, lo inserisco all'interno dell' array dei suffissi
 
@@ -632,10 +634,10 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* 
         //cout<<suffix_index<<": "<<check_if_normal_index(icfl_list,lenght_of_word,suffix_index)<<"\n";
         //if(!is_custom_vec[suffix_index]) root->sons[index]->array_of_indexes.push_back(suffix_index);
         //else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
-    temp_vec.push_back(suffix_index);
-    temp_root->array_of_indexes=in_prefix_merge_bit_vector_7(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,temp_vec,is_custom_vec);
-
-    temp_vec.clear();
+    //temp_vec.push_back(suffix_index);
+    //temp_root->array_of_indexes=in_prefix_merge_bit_vector_7(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,temp_vec,is_custom_vec);
+    in_prefix_merge_bit_vector_8(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,suffix_index,is_custom_vec);
+    //temp_vec.clear();
 } 
 
 suffix_tree_node* add_suffix_in_node_sons_3(suffix_tree_node* root,const char* suffix,int suffix_len,int suffix_index){

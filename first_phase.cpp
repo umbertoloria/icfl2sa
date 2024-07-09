@@ -24,7 +24,6 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     double itime;
     //omp_set_num_threads(std::thread::hardware_concurrency());
     omp_set_num_threads(n_threads);
-    itime = omp_get_wtime();
 
     std::unordered_map<size_t,std::vector<suffix_tree_node*>> m;
     std::mutex mutex_m;
@@ -35,6 +34,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     #pragma omp parallel for shared(roots) schedule(static)
     for(int i=0;i<custom_max_size;i++)
         roots[i]=build_suffix_tree_node(NULL,"\0",0);
+
+    itime = omp_get_wtime();
 
     //i è la lunghezza del suffisso, per ogni lunghezza di un suffisso si inserisce nell'apposito nodo vuoto
     //il nodo vuoti è roots[i] e contiene tutti i suffissi di lunghezza i
@@ -80,9 +81,9 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    cout<<"finito il join\n";
-    stampa_suffix_tree(root);
-    cout<<"\n";
+    //cout<<"finito il join\n";
+    //stampa_suffix_tree(root);
+    //cout<<"\n";
 
     itime = omp_get_wtime();
     for(int i = 0;i<root->sons.size();i++)
