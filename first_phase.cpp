@@ -63,7 +63,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     //}
 
 
-    itime = omp_get_wtime();
+    //itime = omp_get_wtime();
 
     //Aggiungere fase di unione tra array di suffissi locali e custom
     //#pragma omp parallel for shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
@@ -71,12 +71,17 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     //    merge_custom_array_of_indexes(S,icfl_list,roots[i]);
     //printf("tot merge_custom_array_of_indexes Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    //for(int i=0;i<custom_max_size;i++)
+    //  for(int j=0;j<roots[0]->sons.size();j++)
+    //      create_bit_vector_3_redundancy(S,icfl_list,icfl_list.size(),roots[0]->sons[j]);
+        //roots[0]->sons[i]->common_chain_of_suffiexes=roots[0]->sons[i]->array_of_indexes;
+
     itime = omp_get_wtime();
 
     //join_n_alberelli(roots,max_size,&root);
     //join_n_alberelli_multithreading(roots,max_size,&root);
     //join_n_alberelli_multithreading_2(roots,max_size,&root);
-    join_n_alberelli_omp(roots,custom_max_size,&root);
+    join_n_alberelli_omp(roots,custom_max_size,&root,S,icfl_list);
     //join_n_alberelli_omp_2(roots,max_size,&root,m,mutex_m);
 
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -86,6 +91,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
     //cout<<"\n";
 
     itime = omp_get_wtime();
+    #pragma omp parallel for
     for(int i = 0;i<root->sons.size();i++)
         get_bit_vectors_from_root(S,icfl_list,icfl_size,root->sons[i]);
     printf("get_bit_vectors_from_root Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -107,7 +113,9 @@ void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl
         add_suffix_in_node_sons_2(root,S,S + custom_icfl_list[custom_icfl_size-1] + lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,i+1,custom_icfl_list[custom_icfl_size-1]+lenght_of_word - custom_icfl_list[custom_icfl_size-1]-1-i,icfl_list,custom_icfl_list,lenght_of_word,is_custom_vec);
     //print_nodes_vector(alb->roots);
     for(int j=0;j<custom_icfl_size-1;j++)
-        add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,custom_icfl_list,custom_icfl_size,root,i,j,lenght_of_word,is_custom_vec);
+        //add_node_in_suffix_tree_alberello_2(S,icfl_list,icfl_size,custom_icfl_list,custom_icfl_size,root,i,j,lenght_of_word,is_custom_vec);
+        if(i<custom_icfl_list[j+1]-custom_icfl_list[j])
+            add_suffix_in_node_sons_2(root,S,S + custom_icfl_list[j] +custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,i+1,custom_icfl_list[j]+custom_icfl_list[j+1]-custom_icfl_list[j]-1-i,icfl_list,custom_icfl_list,lenght_of_word,is_custom_vec);
     //print_nodes_vector(alb->roots);
 }
 

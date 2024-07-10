@@ -33,12 +33,12 @@ vector<int> get_chain_from_bit_vector_3(suffix_tree_node* root){
 
 void create_bit_vector_3(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 
-    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes);
+    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes,root->father->suffix_len);
 }
 
 
 void create_bit_vector_3_redundancy(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
-    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes);
+    root->bit_vec=in_prefix_merge_bit_vector_5(S,icfl_list,icfl_list_size,get_chain_from_bit_vector_3(root->father),root->array_of_indexes,root->father->suffix_len);
     root->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root);
     //printVec(root->common_chain_of_suffiexes);
     //cout<<"\n";

@@ -327,6 +327,26 @@ void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_no
     *res=a;
 }
 
+void join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,const char* S,std::vector<int> icfl_list){
+    //int index,is_not_equal;
+    std::map<intptr_t, std::mutex> map;
+    suffix_tree_node* temp[b->sons.size()];
+    //cout<<"num nodi da inserire: "<<b->sons.size()<<"\n";
+    #pragma omp parallel for shared(temp,a,b,map) schedule(static)
+    for (int j=0;j<b->sons.size();++j){
+        //temp = search_father_for_suffix_2_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len,&index,&is_not_equal);
+        temp[j] = search_father_for_suffix_3_iterative(a,b->sons[j]->suffix,b->sons[j]->suffix_len);
+        map[(intptr_t)temp[j]].lock();
+        add_node_in_node_sons_4(temp[j],b->sons[j]);
+        get_bit_vectors_from_root(S,icfl_list,icfl_list.size(),temp[j]);
+        cout<<"Result:\n";
+        printVec(b->sons[j]->common_chain_of_suffiexes);
+        map[(intptr_t)temp[j]].unlock();
+    }
+    //cout<<"finito\n";
+    *res=a;
+}
+
 suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b){
     int index,is_not_equal;
     suffix_tree_node* temp;
@@ -374,14 +394,14 @@ void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree
     *res_tree=roots[0];
 }
 
-void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree){
+void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,const char* S,std::vector<int> icfl_list){
     //suffix_tree_node** temp_res=(suffix_tree_node**)malloc(sizeof(suffix_tree_node*)*k);
     suffix_tree_node* temp_res[k];
     int use_temp=1;
     while (k>1){
         //cout<<"k: "<<k<<", use_temp: "<<use_temp<<"\n";
-        if(use_temp%2) join_n_alberelli_omp_inner(roots,temp_res,&k);
-        else join_n_alberelli_omp_inner(temp_res,roots,&k);
+        if(use_temp%2) join_n_alberelli_omp_inner(roots,temp_res,&k,S,icfl_list);
+        else join_n_alberelli_omp_inner(temp_res,roots,&k,S,icfl_list);
         ++use_temp;
     }
     
@@ -402,10 +422,11 @@ void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** re
     *res_tree=roots[0];
 }
 
-void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k){
+void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,const char* S,std::vector<int> icfl_list){
     #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
     for(int i=0;i<*k/2;++i)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
+        //join_two_alberelli_4(roots[i*2],roots[(i*2)+1],&temp_res[(i)],S,icfl_list);
         //temp_res[(i)] = join_two_alberelli_4(roots[i*2],roots[(i*2)+1]);
     //for(int i=0;i<*k/2;++i){
     //    stampa_suffix_tree(temp_res[(i)]);
@@ -604,8 +625,8 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* 
     //print_substring(suffix,suffix_len);
     //cout<<"\n";
 
-    int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
-    //int index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
+    //int index = binarySearch_4_with_redundancy(root->sons,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
+    int index = binarySearch_4_with_redundancy_2_iterative(root->sons,root->suffix_len,suffix,suffix_len,0,root->sons.size()-1,&is_not_equal);
     //Valuto solo se il suffisso che voglio inserire non è già presente all'interno della lista
 
     //Se non è presente, prima di inserirlo inserisco il nodo in modo ordinato in ordine lessicografico
@@ -636,7 +657,7 @@ void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* 
         //else root->sons[index]->custom_array_of_indexes.push_back(suffix_index);
     //temp_vec.push_back(suffix_index);
     //temp_root->array_of_indexes=in_prefix_merge_bit_vector_7(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,temp_vec,is_custom_vec);
-    in_prefix_merge_bit_vector_8(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,suffix_index,is_custom_vec);
+    in_prefix_merge_bit_vector_8(S,icfl_list,icfl_list.size(),temp_root->array_of_indexes,suffix_index,is_custom_vec,temp_root->suffix_len);
     //temp_vec.clear();
 } 
 

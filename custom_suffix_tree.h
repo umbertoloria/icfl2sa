@@ -15,6 +15,7 @@
 #include <cstring>
 #include "merge.h"
 #include <omp.h>
+#include "second_phase.h"
 
 
 //#include <jthread>
@@ -58,17 +59,18 @@ alberello* init_alberello();
 void join_two_alberelli(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_2(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
 void join_two_alberelli_3(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res);
+void join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,const char* S,std::vector<int> icfl_list);
 suffix_tree_node* join_two_alberelli_4(suffix_tree_node* a,suffix_tree_node* b);
 void join_two_alberelli_5(suffix_tree_node* a,suffix_tree_node* b,suffix_tree_node** res,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m);
 void join_n_alberelli(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
 void join_n_alberelli_multithreading_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
-void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree);
+void join_n_alberelli_omp(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,const char* S,std::vector<int> icfl_list);
 void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** res_tree,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m);
 void join_k_alberelli(suffix_tree_node** roots,int start,int end);
 void join_k_alberelli_2(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
 void join_k_alberelli_2_openmp(suffix_tree_node** roots,suffix_tree_node** res,int start,int end);
-void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k);
+void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,const char* S,std::vector<int> icfl_list);
 void join_n_alberelli_omp_inner_2(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m);
 void add_node_in_node_sons_3(suffix_tree_node* opt_padre,suffix_tree_node* figlio,int index,int is_not_equal);
 void add_node_in_node_sons_4(suffix_tree_node* opt_padre,suffix_tree_node* figlio);
