@@ -54,6 +54,9 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     x->suffix=suffix;
 
     x->suffix_len=suffix_len;
+    x->array_of_indexes.reserve(1);
+    x->common_chain_of_suffiexes.reserve(1);
+    x->bit_vec.reserve(1);
     
     return x;
 }
@@ -423,7 +426,7 @@ void join_n_alberelli_omp_2(suffix_tree_node** roots,int k,suffix_tree_node** re
 }
 
 void join_n_alberelli_omp_inner(suffix_tree_node** roots,suffix_tree_node** temp_res,int* k,const char* S,std::vector<int> icfl_list){
-    #pragma omp parallel for shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
+    #pragma omp parallel for //shared(roots,temp_res) schedule(static) // if(*k>1000) num_threads(std::thread::hardware_concurrency()/2)
     for(int i=0;i<*k/2;++i)
         join_two_alberelli_3(roots[i*2],roots[(i*2)+1],&temp_res[(i)]);
         //join_two_alberelli_4(roots[i*2],roots[(i*2)+1],&temp_res[(i)],S,icfl_list);

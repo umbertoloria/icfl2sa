@@ -60,5 +60,3 @@ void get_bit_vectors_from_root(const char* S,vector<int> icfl_list,int icfl_list
         get_bit_vectors_from_root(S,icfl_list,icfl_list_size,root->sons[i]);
     return;
 }
-
-
