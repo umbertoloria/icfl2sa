@@ -1,6 +1,6 @@
 #include "merge.h"
 
-int get_factor(vector<int> icfl_list,int index){
+int get_factor(vector<int>& icfl_list,int index){
     int max_factor=icfl_list.size()-1;
 
     for(int i=0;i<max_factor;i++){
@@ -13,8 +13,15 @@ int get_factor(vector<int> icfl_list,int index){
 
 }
 
+std::vector<int> get_factor_list(vector<int>& icfl_list,int str_len){
+    std::vector<int> res;
+    res.reserve(str_len);
+    for(int i=0;i<str_len;++i) res.push_back(get_factor(icfl_list,i));
+    return res;
+}
 
-std::vector<bool> in_prefix_merge_bit_vector_5(const char* S, vector<int> icfl_list, int icfl_list_size, vector<int> father, vector<int> child,int father_lenght){
+
+std::vector<bool> in_prefix_merge_bit_vector_5(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, vector<int>& child,int father_lenght,std::vector<int>& is_custom_suffix){
     std::vector<bool> result;
     result.reserve(father.size()+child.size());
     int temp_res;
@@ -31,7 +38,7 @@ std::vector<bool> in_prefix_merge_bit_vector_5(const char* S, vector<int> icfl_l
 
     while( i<father.size() && j<child.size()){
 
-        if(check_if_custom_index(icfl_list,strlen(S),father[i]) || check_if_custom_index(icfl_list,strlen(S),child[j]) ){
+        if(is_custom_suffix[father[i]] || is_custom_suffix[child[j]] ){
             //cout<<i<<" "<<j<<"\n";
             temp_res = strcmp(S+child[j],S+father[i]);
             if(temp_res<0){result.emplace_back(false);j++;}
@@ -194,7 +201,7 @@ std::vector<int> in_prefix_merge_bit_vector_7(const char* S, vector<int> icfl_li
     return result;
 }
 
-void in_prefix_merge_bit_vector_8(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, int child,vector<int>& is_custom_suffix,int father_lenght){
+void in_prefix_merge_bit_vector_8(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, int child,vector<int>& is_custom_suffix,int father_lenght,vector<int>& factor_list){
 
     int i=0,j=0,temp_res;
     bool flag=true;
@@ -206,44 +213,44 @@ void in_prefix_merge_bit_vector_8(const char* S, vector<int>& icfl_list, int icf
             //cout<<i<<" "<<j<<"\n";
             temp_res = strcmp(S+child+father_lenght,S+father[i]+father_lenght);
             if(temp_res<0) flag=false;
-            else i++;
+            else ++i;
         }
         //A questo punto solo uno o nessuno dei due è arificiale
         //Se il primo è artificiale allora si inverte la regola
         else if (is_custom_suffix[father[i]]){
             if(father[i] >= icfl_list[icfl_list_size-1] && child >= icfl_list[icfl_list_size-1]) flag=false;
-            else if(get_factor(icfl_list,father[i])==get_factor(icfl_list,child)) i++;
+            else if(factor_list[father[i]]==factor_list[child]) ++i;
             else{
                 if(father[i] >= icfl_list[icfl_list_size-1]) flag=false;
                 else if(child >= icfl_list[icfl_list_size-1]){
-                    if(strcmp(S+child+father_lenght,S+father[i]+father_lenght)<0) i++;
+                    if(strcmp(S+child+father_lenght,S+father[i]+father_lenght)<0) ++i;
                     else flag=false;
                 }
                 else{
-                    if(father[i] > child) i++;
+                    if(father[i] > child) ++i;
                     else{
                         //Questo uguale all'originale, c'è la strcmp 
                         if(strcmp(S+child+father_lenght,S+father[i]+father_lenght)<0) flag=false;
-                        else i++;
+                        else ++i;
                     }
 
                 }
             }
         }
         //Se nessuno dei due è custom:
-        else if(father[i] >= icfl_list[icfl_list_size-1] && child >= icfl_list[icfl_list_size-1]) i++;
-        else if(get_factor(icfl_list,father[i])==get_factor(icfl_list,child)) flag=false;
+        else if(father[i] >= icfl_list[icfl_list_size-1] && child >= icfl_list[icfl_list_size-1]) ++i;
+        else if(factor_list[father[i]]==factor_list[child]) flag=false;
         else{
-            if(father[i] >= icfl_list[icfl_list_size-1]) i++;
+            if(father[i] >= icfl_list[icfl_list_size-1]) ++i;
             else if(child >= icfl_list[icfl_list_size-1]){
                 if(strcmp(S+child+father_lenght,S+father[i]+father_lenght)<0) flag=false;
-                else i++;
+                else ++i;
             }
             else{
                 if(father[i] > child) flag=false;
                 else{
                     if(strcmp(S+child+father_lenght,S+father[i]+father_lenght)<0) flag=false;
-                    else i++;
+                    else ++i;
                 }
 
             }
