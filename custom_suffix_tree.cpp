@@ -54,6 +54,7 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     x->suffix=suffix;
 
     x->suffix_len=suffix_len;
+    x->sons.reserve(1);
     x->array_of_indexes.reserve(1);
     x->common_chain_of_suffiexes.reserve(1);
     x->bit_vec.reserve(1);
@@ -620,7 +621,7 @@ suffix_tree_node* search_father_for_suffix_4(const char* suffix,int suffix_len,s
 }
 
 //root è il nodo vuoto che contiene tutti i suffissi di lunghezza suffix_len
-void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* suffix,int suffix_len,int suffix_index,vector<int> icfl_list,vector<int> custom_icfl_list,int lenght_of_word,vector<int> is_custom_vec){
+void add_suffix_in_node_sons_2(suffix_tree_node* root,const char* S,const char* suffix,int suffix_len,int suffix_index,vector<int>& icfl_list,vector<int>& custom_icfl_list,int lenght_of_word,vector<int>& is_custom_vec){
     int is_not_equal;
     //std::vector<int> temp_vec;
     suffix_tree_node* temp_root;

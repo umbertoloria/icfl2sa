@@ -105,7 +105,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int> icfl_list,vector<int> c
 }
 
 //root è l'alberello vuoto che contiene tutti i suffissi di lunghezza i
-void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>icfl_list,int icfl_size,vector<int> custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,vector<int> is_custom_vec){
+void compute_i_phase_alberello_2(const char*S,int lenght_of_word,vector<int>& icfl_list,int icfl_size,vector<int>& custom_icfl_list,int custom_icfl_size,suffix_tree_node* root,int i,vector<int>& is_custom_vec){
     //print_nodes_vector(alb->roots);
     //controlla i se non sfora la max lenght per questo fattore
     if(i< lenght_of_word - custom_icfl_list[custom_icfl_size-1])

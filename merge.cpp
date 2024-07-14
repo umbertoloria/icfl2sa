@@ -194,7 +194,7 @@ std::vector<int> in_prefix_merge_bit_vector_7(const char* S, vector<int> icfl_li
     return result;
 }
 
-void in_prefix_merge_bit_vector_8(const char* S, vector<int> icfl_list, int icfl_list_size, vector<int>& father, int child,vector<int> is_custom_suffix,int father_lenght){
+void in_prefix_merge_bit_vector_8(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, int child,vector<int>& is_custom_suffix,int father_lenght){
 
     int i=0,j=0,temp_res;
     bool flag=true;
