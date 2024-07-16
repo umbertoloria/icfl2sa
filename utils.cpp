@@ -16,6 +16,15 @@ void printVector(vector<int> vec, string msg){
     cout<<endl;
 }
 
+void printBoolVec(vector<bool> vec){
+    cout<<"(";
+    for(int i=0; i<vec.size(); i++){
+        if (vec.at(i)) cout<<"1 ";
+        else cout<<"0 ";
+    }
+    cout<<")\n";
+}
+
 void printVec(vector<int> vec){
     cout<<"(";
     for(int i=0; i<vec.size(); i++)
@@ -91,6 +100,34 @@ void quicksort_of_nodes(nodes_vector* x, int start, int end){
 
 
 void quicksort_of_indexes(const char* S,vector<int>& indexes, int start, int end){
+    int i, j, pivot, temp;
+    if(start<end){
+
+        pivot=start;
+        
+        i=start;
+        j=end;     
+
+        while(i<j){
+            while(strcmp(S+indexes[i],S+indexes[pivot])<=0 && i<end) i++;
+            while(strcmp(S+indexes[j],S+indexes[pivot])>0) j--;
+
+            if(i<j){   
+               temp=indexes[i];
+               indexes[i]=indexes[j];
+               indexes[j]=temp;
+            }
+        }
+
+        temp=indexes[pivot];
+        indexes[pivot]=indexes[j];
+        indexes[j]=temp;
+        quicksort_of_indexes(S,indexes,start,j-1);
+        quicksort_of_indexes(S,indexes,j+1,end);
+    }
+}
+
+void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int end,int start_offset){
     int i, j, pivot, temp;
     if(start<end){
 
