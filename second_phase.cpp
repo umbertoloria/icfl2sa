@@ -61,6 +61,15 @@ void create_bit_vector_3_redundancy(const char* S,vector<int>& icfl_list,int icf
     root->common_chain_of_suffiexes = get_chain_from_bit_vector_3(root);
 }
 
+void create_chain(const char* S,vector<int>& icfl_list,int icfl_list_size, suffix_tree_node* root,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    if(root->father==NULL)
+        root->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_2(S,icfl_list,icfl_list_size,root->father->array_of_indexes,root->array_of_indexes,root->father->suffix_len,is_custom_suffix,factor_list);
+        //root->common_chain_of_suffiexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list_size,root->father->array_of_indexes,root->array_of_indexes,is_custom_suffix,root->father->suffix_len,factor_list);
+    else
+        root->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_2(S,icfl_list,icfl_list_size,root->father->common_chain_of_suffiexes,root->array_of_indexes,root->father->suffix_len,is_custom_suffix,factor_list);
+        //root->common_chain_of_suffiexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list_size,root->father->common_chain_of_suffiexes,root->array_of_indexes,is_custom_suffix,root->father->suffix_len,factor_list);
+}
+
 //Utilizza i common elements
 //void create_bit_vector_4(const char* S,vector<int> icfl_list,int icfl_list_size, suffix_tree_node* root){
 //
@@ -77,3 +86,11 @@ void get_bit_vectors_from_root(const char* S,vector<int>& icfl_list,int icfl_lis
         get_bit_vectors_from_root(S,icfl_list,icfl_list_size,root->sons[i],is_custom_suffix,factor_list);
     return;
 }
+
+void get_chain_from_root(const char* S,vector<int>& icfl_list,int icfl_list_size,suffix_tree_node* root,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    create_chain(S,icfl_list,icfl_list_size,root,is_custom_suffix,factor_list);
+    for(int i=0;i<root->sons.size();i++) 
+        get_chain_from_root(S,icfl_list,icfl_list_size,root->sons[i],is_custom_suffix,factor_list);
+    return;
+}
+

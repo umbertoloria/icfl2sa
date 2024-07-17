@@ -150,8 +150,8 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
         temp=indexes[pivot];
         indexes[pivot]=indexes[j];
         indexes[j]=temp;
-        quicksort_of_indexes(S,indexes,start,j-1);
-        quicksort_of_indexes(S,indexes,j+1,end);
+        quicksort_of_indexes_2(S,indexes,start,j-1,start_offset);
+        quicksort_of_indexes_2(S,indexes,j+1,end,start_offset);
     }
 }
 

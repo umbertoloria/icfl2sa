@@ -94,8 +94,8 @@ suffix_tree_node* creazione_albero_alberelli(vector<int>& icfl_list,vector<int>&
     itime = omp_get_wtime();
     #pragma omp parallel for
     for(int i = 0;i<root->sons.size();i++)
-        get_bit_vectors_from_root(S,icfl_list,icfl_size,root->sons[i],is_custom_vec,factor_list);
-    printf("get_bit_vectors_from_root Time taken: %.2fs\n", omp_get_wtime() - itime);
+        get_chain_from_root(S,icfl_list,icfl_size,root->sons[i],is_custom_vec,factor_list);
+    printf("get_chain_from_root Time taken: %.2fs\n", omp_get_wtime() - itime);
     //tot_bitvector+=clock()-tStart;
 
 

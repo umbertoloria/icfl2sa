@@ -54,7 +54,7 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     x->suffix=suffix;
 
     x->suffix_len=suffix_len;
-    x->sons.reserve(1);
+    x->sons.reserve(10);
     x->array_of_indexes.reserve(1);
     x->common_chain_of_suffiexes.reserve(1);
     x->bit_vec.reserve(1);
@@ -822,38 +822,9 @@ void add_node_in_node_sons_5_map(std::vector<suffix_tree_node*>& opt_padre_sons,
 }
 
 void merge_custom_array_of_indexes(const char* S,vector<int>& icfl_list,suffix_tree_node* alberello,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list){
-    for(int i=0;i < alberello->sons.size();i++){
-
-        //print_substring(alberello->sons[i]->suffix,alberello->sons[i]->suffix_len);
-        //cout<<"\n";
-        //for(int j=0;j<alberello->sons[i]->array_of_indexes.size();j++){
-        //    cout<<alberello->sons[i]->array_of_indexes[j]<<", ";
-        //}
-        //cout<<"\n";
-        //for(int j=0;j<alberello->sons[i]->custom_array_of_indexes.size();j++){
-        //    cout<<alberello->sons[i]->custom_array_of_indexes[j]<<", ";
-        //}
-        //cout<<"\n";
-
-        
-        //prima di inserirli ordino gli indici di fattori non canonici
+    #pragma omp parallel for
+    for(int i=0;i < alberello->sons.size();++i){
         quicksort_of_indexes_2(S,alberello->sons[i]->custom_array_of_indexes,0,alberello->sons[i]->custom_array_of_indexes.size()-1,alberello->sons[i]->suffix_len);
-        
-        
-        //inserisco gli indici ordinati all'interno del nodo corrispondete
-
-        //li inserisco semplicemente in append
-        //for(int j=0;j < alberello->sons[i]->custom_array_of_indexes.size();j++){
-        //    alberello->sons[i]->array_of_indexes.push_back(alberello->sons[i]->custom_array_of_indexes[j]);
-        //}
-
-        //applico l'in_prefix_merge
         alberello->sons[i]->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),alberello->sons[i]->array_of_indexes,alberello->sons[i]->custom_array_of_indexes,is_custom_suffix,alberello->sons[i]->suffix_len,factor_list);
-        
-        //print_substring(alberello->sons[i]->suffix,alberello->sons[i]->suffix_len);
-        //for(int j=0;j<alberello->sons[i]->array_of_indexes.size();j++){
-        //    cout<<" "<<alberello->sons[i]->array_of_indexes[j]<<",";
-        //}
-        //cout<<"\n";
     }
 }
