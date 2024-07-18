@@ -9,6 +9,7 @@
 #include "check.h"
 #include <string.h>
 #include <omp.h>
+#include "custom_prefix_trie.h"
 
 #define CONTROLLO_OUTPUT 0
 
@@ -39,47 +40,15 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
 
     double itime;
 
-    //itime = omp_get_wtime();
-    //custom_prefix_trie root_2 = creazione_albero_custom_prefix_trie(icfl_list,word->c_str(),lenght_of_word,max_size);
-    //printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
-
     itime = omp_get_wtime();
-    suffix_tree_node* root = creazione_albero_alberelli(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size,n_threads);
-    printf("creazione_albero_alberelli, Time taken: %.2fs\n", omp_get_wtime() - itime);
+    custom_prefix_trie root_2 = creazione_albero_custom_prefix_trie(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size,n_threads);
+    printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //cout<<"\nALBERO OTTENUTO\n";
-    //stampa_suffix_tree(root);
     
-    if (!CONTROLLO_OUTPUT) word->clear();
-    cout<<endl;
-   
-   clock_t tStart = clock();
-
-    vector<int> group_ranking [root->sons.size()];
-    //for(int i=0;i<root->sons->used;i++){
-    //    //add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_5(root->sons->data[i])->chain);
-    //    add_in_array_of_int_vector(group_ranking,get_common_prefix_merge_4(root->sons->data[i]));
-    //    //print_int_vector(get_common_prefix_merge_3(root->sons->data[i]));
-    //}
-
-    //cout<<"\nALBERO OTTENUTO\n";
-    //stampa_suffix_tree(root);
-
-
-    for(int i=0;i<root->sons.size();i++){
-        group_ranking[i] = get_common_prefix_merge_4_multihreading_2(root->sons[i]);
-        //cout<<"Group chain: ";
-        //print_int_vector(group_ranking->data[i]);
-        //cout<<"\n";
-        
-        //DA RE IMPLEMENTARE
-        //add_in_array_of_int_vector(group_ranking,group_ranking->data[i]);
-    }
-
     vector<int> SA;
-    for(int i=0;i<root->sons.size();i++){
-        SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
-    }
+    //for(int i=0;i<root->sons.size();i++){
+    //    SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
+    //}
 
     //printVec(SA);
 
