@@ -29,6 +29,7 @@ struct nodes_vector;
 unsigned long last_substring_in_map(const char *suffix,int suffix_len,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m);
 
 suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* suffix,int suffix_len);
+suffix_tree_node* build_suffix_tree_node_2(suffix_tree_node* father,const char* suffix,int suffix_len);
 suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_len);
 //Non fa i return(cosa bella)
 void stampa_suffix_tree(suffix_tree_node* root);

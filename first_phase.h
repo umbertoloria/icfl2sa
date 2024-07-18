@@ -1,6 +1,5 @@
 #include <malloc.h>
 #include "utils.h"
-#include "custom_prefix_trie.h"
 #include <string.h>
 #include <thread>
 #include <unordered_map>

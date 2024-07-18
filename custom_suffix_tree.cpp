@@ -62,6 +62,23 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     return x;
 }
 
+//prealloca e inizializza i figli 
+suffix_tree_node* build_suffix_tree_node_2(suffix_tree_node* father,const char* suffix,int suffix_len){
+    //suffix_tree_node* x= (suffix_tree_node*)malloc(sizeof(suffix_tree_node));
+    suffix_tree_node* x = new(malloc(sizeof(suffix_tree_node))) suffix_tree_node{};
+
+    x->father=father;
+    x->suffix=suffix;
+
+    x->suffix_len=suffix_len;
+    x->sons.resize(30);
+    x->array_of_indexes.reserve(1);
+    x->common_chain_of_suffiexes.reserve(1);
+    x->bit_vec.reserve(1);
+    
+    return x;
+}
+
 suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_len){
     //suffix_tree_node* x= (suffix_tree_node*)malloc(sizeof(suffix_tree_node));
     suffix_tree_node* x = new(malloc(sizeof(suffix_tree_node))) suffix_tree_node{};
