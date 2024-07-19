@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int offset = 100;
+int offset = 10;
 
 vector<int> get_custom_factor(vector<int>& icfl,int word_size){
     int j,z;

@@ -4,6 +4,7 @@
 
 typedef struct custom_prefix_trie{
 
+    //std::map<char,custom_prefix_trie> sons;
     std::vector<custom_prefix_trie*> sons;
     suffix_tree_node* node;
     custom_prefix_trie* father;
