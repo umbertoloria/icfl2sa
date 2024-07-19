@@ -64,7 +64,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int>& icfl_list,vector<int>&
     //}
 
 
-    //itime = omp_get_wtime();
+    itime = omp_get_wtime();
 
     //Aggiungere fase di unione tra array di suffissi locali e custom
     #pragma omp parallel for //shared(S,lenght_of_word,icfl_list,icfl_size,roots,mutex_m) schedule(static) 
@@ -88,7 +88,7 @@ suffix_tree_node* creazione_albero_alberelli(vector<int>& icfl_list,vector<int>&
     printf("tot join Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"finito il join\n";
-    //stampa_suffix_tree(root);
+    stampa_suffix_tree(root);
     //cout<<"\n";
 
     itime = omp_get_wtime();

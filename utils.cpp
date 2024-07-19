@@ -137,8 +137,8 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
         j=end;     
 
         while(i<j){
-            while(strcmp(S+indexes[i],S+indexes[pivot])<=0 && i<end) i++;
-            while(strcmp(S+indexes[j],S+indexes[pivot])>0) j--;
+            while(strcmp(S+indexes[i]+start_offset,S+indexes[pivot]+start_offset)<=0 && i<end) i++;
+            while(strcmp(S+indexes[j]+start_offset,S+indexes[pivot]+start_offset)>0) j--;
 
             if(i<j){   
                temp=indexes[i];
