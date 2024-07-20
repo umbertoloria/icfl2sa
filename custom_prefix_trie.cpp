@@ -1,16 +1,17 @@
 #include "custom_prefix_trie.h"
 
 custom_prefix_trie* init_custom_prefix_trie(){
-    custom_prefix_trie* x = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};;
+    custom_prefix_trie* x = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
     //cout<<"Dict vuoto: "<<x.sons.empty()<<"\n";
     //cout<<"Dict size: "<<x.sons.size()<<"\n";
-    x->node=NULL;
+    x->node=build_suffix_tree_node(NULL,"\0",0);
     x->father=NULL;
-    x->sons.resize(26);
     return x;
 }
 
 void stampa_prefix_trie(custom_prefix_trie* root){
+
+    std::map<char,custom_prefix_trie>::iterator it;
 
     if (!root->sons.size() && root->node){
         cout<<"(";
@@ -26,8 +27,8 @@ void stampa_prefix_trie(custom_prefix_trie* root){
     if(root->node){
         print_substring(root->node->suffix,root->node->suffix_len);
         cout<<"(";
-        for(int i=0;i<root->sons.capacity();++i){
-            if(root->sons.at(i)) stampa_prefix_trie(root->sons.at(i));
+        for(it = root->sons.begin(); it != root->sons.end();++it){
+            stampa_prefix_trie(&it->second);
         }
         cout<<"[";
             for(size_t j = 0; j<root->node->array_of_indexes.size();j++){
@@ -36,7 +37,7 @@ void stampa_prefix_trie(custom_prefix_trie* root){
         cout<<"])";
     }
 
-    else for(int i=0;i<root->sons.capacity();++i) if(root->sons.at(i)) stampa_prefix_trie(root->sons.at(i));
+    else for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(&it->second);
     return;
 }
 
@@ -63,12 +64,16 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
         compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),root,i,is_custom_vec,factor_list);
     printf("tot compute_i_phase_alberello_custom_prefix_trie Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    itime = omp_get_wtime();
+    merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list);
+    printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
+
     //stampa_prefix_trie(root);
     //cout<<"\n";
 
     itime = omp_get_wtime();
-    merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list);
-    printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
+    get_chain_from_root_2(S,icfl_list,icfl_list.size(),root,root->node->array_of_indexes,is_custom_vec,factor_list);
+    printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
@@ -79,14 +84,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index,vector<int>& icfl_list,vector<int>& custom_icfl_list,int lenght_of_word,vector<int>& is_custom_vec,vector<int>& factor_list){
     //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
     custom_prefix_trie* opt_node=root;
-    int son_index;
-    while(current_suffix_len!=suffix_len){
-        //cout<<"current_suffix_len: "<<current_suffix_len<<", suffix[current_suffix_len]: "<<suffix[current_suffix_len]<<", suffix[current_suffix_len]-'A': "<<suffix[current_suffix_len]-'A'<<"\n";
-        son_index=suffix[current_suffix_len]-'A';
-        if(!opt_node->sons.at(son_index)) opt_node->sons.at(son_index) = init_custom_prefix_trie();
-        opt_node=opt_node->sons.at(son_index);
-        current_suffix_len++;
-    }
+    while(current_suffix_len!=suffix_len)
+        opt_node=&opt_node->sons[suffix[current_suffix_len++]];
 
     if(!opt_node->node)
         //Il padre è null tanto verrà gestito con custom_prefix_trie
@@ -95,8 +94,6 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
 
     if(is_custom_vec[suffix_index]) opt_node->node->custom_array_of_indexes.push_back(suffix_index);
     else opt_node->node->array_of_indexes.push_back(suffix_index);
-
-    //cout<<"Inserito: "<<suffix_index<<"\n";
     return;
 }
 
@@ -115,15 +112,34 @@ void compute_i_phase_alberello_custom_prefix_trie(const char*S,int lenght_of_wor
 
 void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int>& icfl_list,custom_prefix_trie* root,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list){
     
-    //std::map<char,custom_prefix_trie>::iterator it;
+    std::map<char,custom_prefix_trie>::iterator it;
     //#pragma omp parallel for
-    for(int i=0;i<root->sons.capacity();++i){
-        if(root->sons.at(i) && root->sons.at(i)->node){
-            quicksort_of_indexes_2(S,root->sons.at(i)->node->custom_array_of_indexes,0,root->sons.at(i)->node->custom_array_of_indexes.size()-1,root->sons.at(i)->node->suffix_len);
-            root->sons.at(i)->node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),root->sons.at(i)->node->array_of_indexes,root->sons.at(i)->node->custom_array_of_indexes,is_custom_suffix,root->sons.at(i)->node->suffix_len,factor_list);
+    for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it){
+        if(it->second.node){
+            quicksort_of_indexes_2(S,it->second.node->custom_array_of_indexes,0,it->second.node->custom_array_of_indexes.size()-1,it->second.node->suffix_len);
+            it->second.node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),it->second.node->array_of_indexes,it->second.node->custom_array_of_indexes,is_custom_suffix,it->second.node->suffix_len,factor_list);
         }
     }
 
-    for(int i=0;i<root->sons.capacity();++i)
-        if(root->sons.at(i)) merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root->sons.at(i),is_custom_suffix,factor_list);
+    for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it)
+        merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,&it->second,is_custom_suffix,factor_list);
+}
+
+
+//per prefix_trie
+void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    bool flag=true;
+    //std::vector<int> temp=father_vector;
+    if(root->node){
+        root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
+        //temp=root->node->common_chain_of_suffiexes;
+        flag=false;
+        //printVec(temp);
+    }
+    
+    for(std::map<char,custom_prefix_trie>::iterator it = root->sons.begin(); it != root->sons.end();++it){
+        if(flag) get_chain_from_root_2(S,icfl_list,icfl_list_size,&it->second,father_vector,is_custom_suffix,factor_list);
+        else get_chain_from_root_2(S,icfl_list,icfl_list_size,&it->second,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+    }
+    return;
 }

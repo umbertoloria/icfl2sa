@@ -9,7 +9,6 @@
 #include "check.h"
 #include <string.h>
 #include <omp.h>
-#include "custom_prefix_trie.h"
 
 #define CONTROLLO_OUTPUT 0
 
@@ -44,17 +43,28 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
     custom_prefix_trie* root = creazione_albero_custom_prefix_trie(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size,n_threads);
     printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //vector<int> SA;
-    //for(int i=0;i<root->sons.size();i++){
-    //    SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
-    //}
+
+    itime = omp_get_wtime();
+    vector<vector<int>> group_ranking; 
+
+    std::map<char,custom_prefix_trie>::iterator it;
+    for(it = root->sons.begin(); it != root->sons.end();++it)
+        group_ranking.push_back(get_common_prefix_merge_4_multihreading_3(&it->second,root->node->array_of_indexes));
+    printf("get_common_prefix_merge_4_multihreading_3, Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    vector<int> SA;
+    for(int i=0;i<group_ranking.size();i++){
+        SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
+    }
+
+    //printVec(SA);
 
 
-    //if(CONTROLLO_OUTPUT){
-    //    tStart = clock();
-    //    if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
-    //    printf("Testing, Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-    //}
+    if(CONTROLLO_OUTPUT){
+        itime = omp_get_wtime();
+        if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
+        printf("check_suffix_array, Time taken: %.2fs\n", omp_get_wtime() - itime);
+    }
 
 
     return icfl_list;
