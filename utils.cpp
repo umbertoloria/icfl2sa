@@ -132,8 +132,8 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
     
     if(start<end){
 
-        //pivot=start;
-        pivot = rand()%(end-start)+start;
+        pivot=start;
+        //pivot = rand()%(end-start)+start;
         
         i=start;
         j=end;     

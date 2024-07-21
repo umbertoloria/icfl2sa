@@ -3,7 +3,7 @@
 using namespace std;
 
 //per il prefix trie è buono bassp
-int offset = 10000;
+int offset = 5;
 
 vector<int> get_custom_factor(vector<int>& icfl,int word_size){
     int j,z;

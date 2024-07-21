@@ -1,6 +1,7 @@
 #include <map>
 #include <iostream>
 #include "first_phase.h"
+#include "thread_pool.h"
 
 typedef struct custom_prefix_trie{
 
@@ -17,3 +18,4 @@ void compute_i_phase_alberello_custom_prefix_trie(const char*S,int lenght_of_wor
 custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,vector<int>& custom_icfl_list,const char* S,int lenght_of_word,int max_size,int custom_max_size,int n_threads);
 void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int>& icfl_list,custom_prefix_trie* root,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list);
 void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list);
+void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list);

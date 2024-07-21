@@ -111,18 +111,20 @@ void compute_i_phase_alberello_custom_prefix_trie(const char*S,int lenght_of_wor
 }
 
 void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int>& icfl_list,custom_prefix_trie* root,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list){
-    
+    std::vector<std::thread> threads;
     std::map<char,custom_prefix_trie>::iterator it;
     //#pragma omp parallel for
     for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it){
         if(it->second.node){
-            quicksort_of_indexes_2(S,it->second.node->custom_array_of_indexes,0,it->second.node->custom_array_of_indexes.size()-1,it->second.node->suffix_len);
-            it->second.node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),it->second.node->array_of_indexes,it->second.node->custom_array_of_indexes,is_custom_suffix,it->second.node->suffix_len,factor_list);
+            //merge_single_node(S,it->second,icfl_list,is_custom_suffix,factor_list);
+            threads.emplace_back(merge_single_node,S,it->second,std::ref(icfl_list),std::ref(is_custom_suffix),std::ref(factor_list));
         }
     }
-    
+    //cout<<"aaa\n";
+
+    for (std::thread & th : threads){if (th.joinable())th.join();}
+
     for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it)
-    //for (const auto& kv : (*root).sons) {
         merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,&it->second,is_custom_suffix,factor_list);
 }
 
@@ -132,8 +134,7 @@ void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_si
     bool flag=true;
     //std::vector<int> temp=father_vector;
     if(root->node){
-        //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
-        in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
         //temp=root->node->common_chain_of_suffiexes;
         flag=false;
         //printVec(temp);
@@ -144,4 +145,9 @@ void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_si
         else get_chain_from_root_2(S,icfl_list,icfl_list_size,&it->second,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
     }
     return;
+}
+
+void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list){
+    quicksort_of_indexes_2(S,trie_node.node->custom_array_of_indexes,0,trie_node.node->custom_array_of_indexes.size()-1,trie_node.node->suffix_len);
+    trie_node.node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),trie_node.node->array_of_indexes,trie_node.node->custom_array_of_indexes,is_custom_suffix,trie_node.node->suffix_len,factor_list);
 }
