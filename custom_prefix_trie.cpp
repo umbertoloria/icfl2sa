@@ -120,8 +120,9 @@ void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int
             it->second.node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),it->second.node->array_of_indexes,it->second.node->custom_array_of_indexes,is_custom_suffix,it->second.node->suffix_len,factor_list);
         }
     }
-
+    
     for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it)
+    //for (const auto& kv : (*root).sons) {
         merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,&it->second,is_custom_suffix,factor_list);
 }
 
@@ -131,7 +132,8 @@ void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_si
     bool flag=true;
     //std::vector<int> temp=father_vector;
     if(root->node){
-        root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
+        //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
+        in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //temp=root->node->common_chain_of_suffiexes;
         flag=false;
         //printVec(temp);

@@ -190,6 +190,39 @@ std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, vector<int>& icfl
     return result;
 }
 
+
+void in_prefix_merge_bit_vector_5_4(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, vector<int>& child,vector<int>& result,std::vector<int>& is_custom_suffix,vector<int>& factor_list){
+    result.reserve(father.size()+child.size());
+    int i=0,j=0;
+
+    while( i<father.size() && j<child.size()){
+        if(is_custom_suffix[father[i]] || is_custom_suffix[child[j]] ){
+            if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+            else result.push_back(father[i++]);
+        }
+
+        else if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1])result.push_back(father[i++]);
+        else if(factor_list[father[i]]==factor_list[child[j]])result.push_back(child[j++]);
+        else{
+            if(father[i] >= icfl_list[icfl_list_size-1])result.push_back(father[i++]);
+            else if(child[j] >= icfl_list[icfl_list_size-1]){
+                if(strcmp(S+child[j],S+father[i])<0)result.push_back(child[j++]);
+                else result.push_back(father[i++]);
+            }
+            else{
+                if(father[i] > child[j])result.push_back(child[j++]);
+                else{
+                    if(strcmp(S+child[j],S+father[i])<0)result.push_back(child[j++]);
+                    else result.push_back(father[i++]);
+                }
+            }
+        }
+
+    }
+    while(j<child.size())result.push_back(child[j++]);
+    while(i<father.size())result.push_back(father[i++]);
+}
+
 std::vector<int> in_prefix_merge_bit_vector_6(const char* S, vector<int> icfl_list, int icfl_list_size, vector<int> father, vector<int> child){
     std::vector<int> result;
     result.reserve(father.size()+child.size());
