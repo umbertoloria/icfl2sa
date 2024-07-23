@@ -125,8 +125,9 @@ char* experiment_given_word_by_input_file(int n_threads) {
 int main(int argc, char** argv) {
     int n_threads=1;
     srand(time(NULL));
-    if(argc== 2){
-        n_threads=atoi(argv[1]);
+    if(argc== 3){
+        set_offset(atoi(argv[1]));
+        n_threads=atoi(argv[2]);
     }
     cout<<"N. threads: "<<n_threads<<"\n";
 

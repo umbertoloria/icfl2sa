@@ -9,7 +9,7 @@ typedef struct custom_index{
 }custom_index;
 
 
-
+void set_offset(int x);
 vector<int> get_custom_factor(vector<int>& icfl,int word_size);
 bool check_if_custom_index(vector<int>& icfl,int word_size,int index);
 bool check_if_normal_index(vector<int>& icfl,int word_size,int index);
