@@ -131,9 +131,10 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
     int i, j, pivot, temp;
     
     if(start<end){
-
+        
         pivot=start;
-        //pivot = rand()%(end-start)+start;
+        //pivot = (rand()%(end-start))+start;
+        //cout<<"pivot: "<<pivot<<", start: "<<start<<", end:"<<end<<"\n";
         
         i=start;
         j=end;     
@@ -154,6 +155,71 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
         indexes[j]=temp;
         quicksort_of_indexes_2(S,indexes,start,j-1,start_offset);
         quicksort_of_indexes_2(S,indexes,j+1,end,start_offset);
+    }
+}
+
+void quicksort_of_indexes_3(const char* S,vector<int>& indexes, int start, int end,int start_offset,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){
+    int i, j, pivot, temp;
+    int piccolo,grande;
+    //decide se continuare a ciclare
+    bool flag;
+    
+    if(start<end){
+        
+        pivot=start;
+        //pivot = (rand()%(end-start))+start;
+        //cout<<"pivot: "<<pivot<<", start: "<<start<<", end:"<<end<<"\n";
+        
+        i=start;
+        j=end;     
+
+        while(i<j){
+
+            while(flag){
+                if (i>=end) flag = false;
+                else if(indexes[i] == indexes[pivot]) ++i;
+                else if(indexes[i] > indexes[pivot]){
+                    piccolo = indexes[pivot];
+                    grande = indexes[i];
+                    if(!(*ord[grande-piccolo])[piccolo]) flag = false;
+                    else ++i;
+                }
+                else if(indexes[i] < indexes[pivot]){
+                    grande = indexes[pivot];
+                    piccolo = indexes[i];
+                    if((*ord[grande-piccolo])[piccolo]) flag = false;
+                    else ++i;
+                }
+            }
+            flag=true;
+            while(flag){
+                if(indexes[j] == indexes[pivot]) flag = false;
+                else if(indexes[j] > indexes[pivot]){
+                    piccolo = indexes[pivot];
+                    grande = indexes[j];
+                    if((*ord[grande-piccolo])[piccolo]) flag = false;
+                    else --j;
+                }
+                else if(indexes[j] < indexes[pivot]){
+                    grande = indexes[pivot];
+                    piccolo = indexes[j];
+                    if(!(*ord[grande-piccolo])[piccolo]) flag = false;
+                    else --j;
+                }
+            }
+
+            if(i<j){   
+               temp=indexes[i];
+               indexes[i]=indexes[j];
+               indexes[j]=temp;
+            }
+        }
+
+        temp=indexes[pivot];
+        indexes[pivot]=indexes[j];
+        indexes[j]=temp;
+        quicksort_of_indexes_3(S,indexes,start,j-1,start_offset,ord);
+        quicksort_of_indexes_3(S,indexes,j+1,end,start_offset,ord);
     }
 }
 
