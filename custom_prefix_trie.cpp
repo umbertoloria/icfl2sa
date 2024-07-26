@@ -1,5 +1,8 @@
 #include "custom_prefix_trie.h"
 
+std::unordered_map<suffix_tree_node*,bool> nodes_map;
+std::vector<suffix_tree_node*> nodes_list;
+
 custom_prefix_trie* init_custom_prefix_trie(){
     custom_prefix_trie* x = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
     //cout<<"Dict vuoto: "<<x.sons.empty()<<"\n";
@@ -53,16 +56,18 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
     std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
+    
+    nodes_list.reserve(lenght_of_word);
+
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
-
 
     //cout<<"creato root\n";
     //for(int i=0;i<max_size;++i)
     //    compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),&root,i);   
 
     itime = omp_get_wtime();
-    #pragma omp parallel for //shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
+    //#pragma omp parallel for //shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
     for(int i=0;i<custom_max_size;++i)
         compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),root,i,is_custom_vec,factor_list,indice_nodo);
     printf("tot compute_i_phase_alberello_custom_prefix_trie Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -70,17 +75,27 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //stampa_prefix_trie(root);
     //cout<<"\n";
 
-    itime = omp_get_wtime();
-    for(int i=0;i<lenght_of_word;++i) 
-        compute_ord(ord,S,indice_nodo,is_custom_vec,i,lenght_of_word);
-    printf("tot compute_ord Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //itime = omp_get_wtime();
+    //#pragma omp parallel for
+    //for(int i=0;i<lenght_of_word;++i) 
+    //    compute_ord(ord,S,indice_nodo,is_custom_vec,i,lenght_of_word);
+    //printf("tot compute_ord Time taken: %.2fs\n", omp_get_wtime() - itime);
+//
+    ////stampa_ord(ord);
+    ////for(int i=0;i<indice_nodo.size();++i) cout<<"i: "<<i<<", ref: "<<indice_nodo.at(i)<<"\n";
+//
+    //itime = omp_get_wtime();
+    //merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list,ord);
+    //printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //stampa_ord(ord);
-    //for(int i=0;i<indice_nodo.size();++i) cout<<"i: "<<i<<", ref: "<<indice_nodo.at(i)<<"\n";
-
+    cout<<"nodes_list.size(): "<<nodes_list.size()<<"\n";
+    //Merge di ogni singolo nodo
     itime = omp_get_wtime();
-    merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list,ord);
-    printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
+    #pragma omp parallel for
+    for(int i=0;i<nodes_list.size();++i)
+        merge_single_node_2(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord);
+    printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
@@ -110,6 +125,10 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
     else opt_node->node->array_of_indexes.push_back(suffix_index);
 
     indice_nodo.at(suffix_index) = opt_node->node;
+    if(nodes_map.find(opt_node->node) == nodes_map.end()){
+        nodes_list.push_back(opt_node->node);
+        nodes_map[opt_node->node]=true;
+    }
     return;
 }
 
@@ -164,9 +183,15 @@ void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_si
 }
 
 void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){
-    //quicksort_of_indexes_2(S,trie_node.node->custom_array_of_indexes,0,trie_node.node->custom_array_of_indexes.size()-1,trie_node.node->suffix_len);
-    quicksort_of_indexes_3(S,trie_node.node->custom_array_of_indexes,0,trie_node.node->custom_array_of_indexes.size()-1,trie_node.node->suffix_len,ord);
+    quicksort_of_indexes_2(S,trie_node.node->custom_array_of_indexes,0,trie_node.node->custom_array_of_indexes.size()-1,trie_node.node->suffix_len);
+    //quicksort_of_indexes_3(S,trie_node.node->custom_array_of_indexes,0,trie_node.node->custom_array_of_indexes.size()-1,trie_node.node->suffix_len,ord);
     trie_node.node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),trie_node.node->array_of_indexes,trie_node.node->custom_array_of_indexes,is_custom_suffix,trie_node.node->suffix_len,factor_list);
+}
+
+void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){
+    quicksort_of_indexes_2(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len);
+    //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
+    node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }
 
 //0 se il primo, 1 se il secondo
@@ -184,20 +209,20 @@ void compute_ord(std::unordered_map<int,std::unordered_map<int,bool>*>& ord,cons
     bool rule=true;
     bool rush=false;
     for(int i=0;(i+distanza)<lenght_of_word;++i){
-        if(indice_nodo[i]==indice_nodo[i+distanza]){
+        if(indice_nodo.at(i)==indice_nodo.at(i+distanza)){
             if(!rush){
-                if(!is_custom_vec[i]&&!is_custom_vec[i+distanza]){
-                    if(!who_comes_first(indice_nodo[i],i,i+distanza)) rule=false;
+                if(!is_custom_vec.at(i)&&!is_custom_vec.at(i+distanza)){
+                    if(!who_comes_first(indice_nodo.at(i),i,i+distanza)) rule=false;
                     else rule=true;
                 }
                 else{
                     //viene inserito prima l'indice più grande
-                    if(strcmp(S+i+indice_nodo[i]->suffix_len,S+i+distanza+indice_nodo[i]->suffix_len)>0) rule = true;
+                    if(strcmp(S+i+indice_nodo.at(i)->suffix_len,S+i+distanza+indice_nodo.at(i)->suffix_len)>0) rule = true;
                     else rule = false;
                 }
                 rush=true;
             }
-            if(is_custom_vec[i]&&is_custom_vec[i+distanza]) (*ord[distanza])[i] = rule;
+            if(is_custom_vec.at(i)&&is_custom_vec.at(i+distanza)) (*ord[distanza])[i] = rule;
         }
         else rush=false;
     }

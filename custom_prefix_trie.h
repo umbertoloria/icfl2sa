@@ -19,5 +19,6 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
 void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int>& icfl_list,custom_prefix_trie* root,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*> ord);
 void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list);
 void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord);
+void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord);
 void compute_ord(std::unordered_map<int,std::unordered_map<int,bool>*>& ord,const char* S, std::vector<suffix_tree_node*>& indice_nodo,std::vector<int>& is_custom_vec,int distanza,int lenght_of_word);
 void stampa_ord(std::unordered_map<int,std::unordered_map<int,bool>*>& ord);
