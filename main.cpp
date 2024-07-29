@@ -10,7 +10,7 @@
 #include <string.h>
 #include <omp.h>
 
-#define CONTROLLO_OUTPUT 0
+#define CONTROLLO_OUTPUT 1
 
 using namespace std;
 
@@ -57,7 +57,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
         SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }
 
-    //printVec(SA);
+    printVec(SA);
 
 
     if(CONTROLLO_OUTPUT){

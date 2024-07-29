@@ -1,9 +1,15 @@
 
 #include "utils.h"
 
+
 using namespace std;
 
 std::unordered_map<size_t,std::mutex> mut_map_3;
+
+int pstrcmp( const void* a, const void* b )
+{
+  return strcmp( *(const char**)a, *(const char**)b );
+}
 
 void print(string word){
     cout<<word<<endl;
@@ -223,6 +229,42 @@ void quicksort_of_indexes_3(const char* S,vector<int>& indexes, int start, int e
     }
 }
 
+void quicksort_of_indexes_4(const char* S,vector<int>& indexes){
+    int n_elements = indexes.size();
+    std::vector<const char*> strings;
+    for(int i=0;i<n_elements;++i) strings.push_back(S+i);
+    std::sort(strings.begin(),strings.end());
+    for(int i=0;i<n_elements;++i) indexes.at(i)=strings.at(i)-S;
+}
+
+//Questo è fortissimo
+void quicksort_of_indexes_5(const char* S,vector<int>& indexes){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    int n_elements = indexes.size();
+    const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
+    for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
+    //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+    qsort(strings,n_elements,sizeof(strings[0]),pstrcmp);
+    for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
+    //printVec(indexes);
+    //cout<<"\n";
+}
+
+void quicksort_of_indexes_6(const char* S,vector<int>& indexes){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    int n_elements = indexes.size();
+    if (!n_elements) return;
+    const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
+    cout<<"Vector to order: \n";
+    printVec(indexes);
+    cout<<"\n";
+    for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
+    //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+    radixsort(strings,n_elements);
+    for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
+    //printVec(indexes);
+    //cout<<"\n";
+}
 
 void print_substring(const char* str,int n){
     for (int i = 0; i < n; ++i) {
