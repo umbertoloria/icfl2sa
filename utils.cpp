@@ -241,7 +241,7 @@ void quicksort_of_indexes_4(const char* S,vector<int>& indexes){
 void quicksort_of_indexes_5(const char* S,vector<int>& indexes){
     //cout<<"S: "<<(std::uintptr_t)S<<"\n";
     int n_elements = indexes.size();
-    const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
+    const char** strings = (const char**)malloc(sizeof(*strings)*n_elements);
     for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
     //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
     qsort(strings,n_elements,sizeof(strings[0]),pstrcmp);

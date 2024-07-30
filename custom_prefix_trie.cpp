@@ -2,6 +2,7 @@
 
 std::unordered_map<suffix_tree_node*,bool> nodes_map;
 std::vector<suffix_tree_node*> nodes_list;
+std::mutex mut_nodes_map;
 
 custom_prefix_trie* init_custom_prefix_trie(){
     custom_prefix_trie* x = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
@@ -88,11 +89,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list,ord);
     //printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    cout<<"nodes_list.size(): "<<nodes_list.size()<<"\n";
+    int node_list_size=nodes_list.size();
+    cout<<"nodes_list.size(): "<<node_list_size<<"\n";
     //Merge di ogni singolo nodo
     itime = omp_get_wtime();
-    #pragma omp parallel for
-    for(int i=0;i<nodes_list.size();++i)
+    #pragma omp parallel for shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+    for(int i=0;i<node_list_size;++i)
         merge_single_node_2(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord);
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
@@ -100,9 +102,19 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //stampa_prefix_trie(root);
     //cout<<"\n";
 
+    //itime = omp_get_wtime();
+    //get_chain_from_root_2(S,icfl_list,icfl_list.size(),root,root->node->array_of_indexes,is_custom_vec,factor_list);
+    //printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+    std::vector<custom_prefix_trie*> sons_of_root;
+    for(std::map<char,custom_prefix_trie>::iterator it = root->sons.begin(); it != root->sons.end();++it)
+        sons_of_root.push_back(&it->second);
+
     itime = omp_get_wtime();
-    get_chain_from_root_2(S,icfl_list,icfl_list.size(),root,root->node->array_of_indexes,is_custom_vec,factor_list);
+    #pragma omp parallel for
+    for(int i=0;i<sons_of_root.size();++i)
+        get_chain_from_root_2(S,icfl_list,icfl_list.size(),sons_of_root.at(i),root->node->array_of_indexes,is_custom_vec,factor_list);
     printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
@@ -125,10 +137,13 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
     else opt_node->node->array_of_indexes.push_back(suffix_index);
 
     indice_nodo.at(suffix_index) = opt_node->node;
+
+    //mut_nodes_map.lock();
     if(nodes_map.find(opt_node->node) == nodes_map.end()){
         nodes_list.push_back(opt_node->node);
         nodes_map[opt_node->node]=true;
     }
+    //mut_nodes_map.unlock();
     return;
 }
 
@@ -191,8 +206,8 @@ void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<in
 void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){
     //quicksort_of_indexes_2(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len);
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
-    //quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
-    quicksort_of_indexes_6(S,node->custom_array_of_indexes);
+    quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
+    //quicksort_of_indexes_6(S,node->custom_array_of_indexes);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }
 

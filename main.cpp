@@ -10,7 +10,7 @@
 #include <string.h>
 #include <omp.h>
 
-#define CONTROLLO_OUTPUT 1
+#define CONTROLLO_OUTPUT 0
 
 using namespace std;
 
@@ -57,8 +57,9 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
         SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }
 
+#if 0 
     printVec(SA);
-
+#endif
 
     if(CONTROLLO_OUTPUT){
         itime = omp_get_wtime();
@@ -138,12 +139,11 @@ int main(int argc, char** argv) {
     //experiment_given_word_by_cli(string(argv[1]));
 
     clock_t tStart = clock();
+    double itime = itime = omp_get_wtime();
 
     experiment_given_word_by_input_file(n_threads);
-
-    printf("\n\n Total time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
     
-
+    printf("\n\n Total time taken: %.2fs\n", omp_get_wtime() - itime);
 
     return 0;
 
