@@ -266,6 +266,23 @@ void quicksort_of_indexes_6(const char* S,vector<int>& indexes){
     //cout<<"\n";
 }
 
+void quicksort_of_indexes_7(const char* S,vector<int>& indexes,int lenght_of_word){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    int n_elements = indexes.size();
+    if (!n_elements) return;
+    const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
+    //cout<<"Vector to order: \n";
+    //printVec(indexes);
+    //cout<<"\n";
+    for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
+    //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+    radixsort_msd(strings,n_elements,S,lenght_of_word);
+    for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
+    //cout<<"Ordered: \n";
+    //printVec(indexes);
+    //cout<<"\n";
+}
+
 void print_substring(const char* str,int n){
     for (int i = 0; i < n; ++i) {
         putchar(str[i]);

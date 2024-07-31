@@ -26,6 +26,7 @@ void quicksort_of_indexes_3(const char* S,vector<int>& indexes, int start, int e
 void quicksort_of_indexes_4(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_5(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_6(const char* S,vector<int>& indexes);
+void quicksort_of_indexes_7(const char* S,vector<int>& indexes,int lenght_of_word);
 void print_substring(const char* str,int n);
 int fast_compare( const char *ptr0, const char *ptr1, int len );
 

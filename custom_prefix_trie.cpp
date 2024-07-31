@@ -95,7 +95,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     itime = omp_get_wtime();
     #pragma omp parallel for shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
     for(int i=0;i<node_list_size;++i)
-        merge_single_node_2(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord);
+        //merge_single_node_2(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord);
+        merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
@@ -208,6 +209,11 @@ void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
     quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
     //quicksort_of_indexes_6(S,node->custom_array_of_indexes);
+    node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
+}
+
+void merge_single_node_3(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord,int lenght_of_word){
+    quicksort_of_indexes_7(S,node->custom_array_of_indexes,lenght_of_word);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }
 
