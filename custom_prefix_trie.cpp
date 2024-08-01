@@ -15,7 +15,7 @@ custom_prefix_trie* init_custom_prefix_trie(){
 
 void stampa_prefix_trie(custom_prefix_trie* root){
 
-    std::map<char,custom_prefix_trie>::iterator it;
+    std::map<char,custom_prefix_trie*>::iterator it;
 
     if (!root->sons.size() && root->node){
         cout<<"(";
@@ -32,7 +32,7 @@ void stampa_prefix_trie(custom_prefix_trie* root){
     if(root->node){
         print_substring(root->node->suffix,root->node->suffix_len);
         cout<<"(";
-        for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(&it->second);
+        for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(it->second);
         cout<<"[";
         for(size_t j = 0; j<root->node->array_of_indexes.size();j++)cout<<root->node->array_of_indexes[j]<<",";
         cout<<"]";
@@ -41,7 +41,7 @@ void stampa_prefix_trie(custom_prefix_trie* root){
         cout<<"])";
     }
 
-    else for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(&it->second);
+    else for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(it->second);
     return;
 }
 
@@ -107,8 +107,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //get_chain_from_root_2(S,icfl_list,icfl_list.size(),root,root->node->array_of_indexes,is_custom_vec,factor_list);
     //printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
     std::vector<custom_prefix_trie*> sons_of_root;
-    for(std::map<char,custom_prefix_trie>::iterator it = root->sons.begin(); it != root->sons.end();++it)
-        sons_of_root.push_back(&it->second);
+    for(std::map<char,custom_prefix_trie*>::iterator it = root->sons.begin(); it != root->sons.end();++it)
+        sons_of_root.push_back(it->second);
 
     itime = omp_get_wtime();
     #pragma omp parallel for
@@ -126,8 +126,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index,vector<int>& icfl_list,vector<int>& custom_icfl_list,int lenght_of_word,vector<int>& is_custom_vec,vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo){
     //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
     custom_prefix_trie* opt_node=root;
-    while(current_suffix_len!=suffix_len)
-        opt_node=&opt_node->sons[suffix[current_suffix_len++]];
+    while(current_suffix_len!=suffix_len){
+        if(opt_node->sons.find(suffix[current_suffix_len]) == opt_node->sons.end())
+            opt_node->sons[suffix[current_suffix_len]] = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
+        
+        opt_node=opt_node->sons[suffix[current_suffix_len++]];
+    }
 
     if(!opt_node->node)
         //Il padre è null tanto verrà gestito con custom_prefix_trie
@@ -163,12 +167,12 @@ void compute_i_phase_alberello_custom_prefix_trie(const char*S,int lenght_of_wor
 
 void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int>& icfl_list,custom_prefix_trie* root,std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*> ord){
     std::vector<std::thread> threads;
-    std::map<char,custom_prefix_trie>::iterator it;
+    std::map<char,custom_prefix_trie*>::iterator it;
     //#pragma omp parallel for
     for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it){
-        if(it->second.node){
+        if(it->second->node){
             //merge_single_node(S,it->second,icfl_list,is_custom_suffix,factor_list);
-            threads.emplace_back(merge_single_node,S,it->second,std::ref(icfl_list),std::ref(is_custom_suffix),std::ref(factor_list),std::ref(ord));
+            threads.emplace_back(merge_single_node,S,*(it->second),std::ref(icfl_list),std::ref(is_custom_suffix),std::ref(factor_list),std::ref(ord));
         }
     }
     //cout<<"aaa\n";
@@ -176,26 +180,25 @@ void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int
     for (std::thread & th : threads){if (th.joinable())th.join();}
 
     for(it = (*root).sons.begin(); it != (*root).sons.end(); ++it)
-        merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,&it->second,is_custom_suffix,factor_list,ord);
+        merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,it->second,is_custom_suffix,factor_list,ord);
 }
 
 
 //per prefix_trie
-void get_chain_from_root_2(const char* S,vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
-    bool flag=true;
-    //std::vector<int> temp=father_vector;
-    if(root->node){
-        root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
-        //temp=root->node->common_chain_of_suffiexes;
-        flag=false;
-        //printVec(temp);
-    }
-    
-    for(std::map<char,custom_prefix_trie>::iterator it = root->sons.begin(); it != root->sons.end();++it){
-        if(flag) get_chain_from_root_2(S,icfl_list,icfl_list_size,&it->second,father_vector,is_custom_suffix,factor_list);
-        else get_chain_from_root_2(S,icfl_list,icfl_list_size,&it->second,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
-    }
-    return;
+void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    if(root->node)
+        //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
+        in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+
+    std::map<char,custom_prefix_trie*>::iterator it;
+
+    if(!root->node)
+        for(it = root->sons.begin(); it != root->sons.end();++it)
+            get_chain_from_root_2(S,icfl_list,icfl_list_size,it->second,father_vector,is_custom_suffix,factor_list);
+    else
+        for(it = root->sons.begin(); it != root->sons.end();++it)
+            get_chain_from_root_2(S,icfl_list,icfl_list_size,it->second,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+
 }
 
 void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){

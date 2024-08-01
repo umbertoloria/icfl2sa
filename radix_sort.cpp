@@ -1,8 +1,11 @@
 #include "radix_sort.h"
 
 #define ALPHABET_SIZE 30
+#define MIN_SIZE 5
 
 using namespace std;
+
+int pstrcmp1( const void* a, const void* b ){return strcmp( *(const char**)a, *(const char**)b );}
  
 // A utility function to get maximum value in arr[]
 const char* getMax(const char** arr, int n)
@@ -106,14 +109,20 @@ void radixsort_msd(const char** arr, int n,const char* S, int lenght_of_word){
         if(words_lenght[arr[i]]>max_lengt) max_lengt=words_lenght[arr[i]];
     }
 
-    //cout<<"b\n";
+    if(max_lengt>MIN_SIZE){
+        const char** strings = (const char**)malloc(sizeof(*strings)*n);
+        for(int i=0;i<n;++i) strings[i]=arr[i]+MIN_SIZE;
+        //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+        qsort(strings,n,sizeof(strings[0]),pstrcmp1);
+        for(int i=0;i<n;++i) arr[i]=strings[i]-MIN_SIZE;
+        max_lengt=MIN_SIZE;
+    }
+    
 
-    // Do counting sort for every digit. Note that instead
-    // of passing digit number, exp is passed. exp is 10^i
-    // where i is current digit number
-    //cout<<"max_lengt: "<<max_lengt<<"\n";
     for (int exp = max_lengt; exp >= 0; --exp){
         //cout<<"exp: "<<exp<<"\n";
         countSort_msd(arr, n, exp,words_lenght);
     }
+
+    //printf("tot countSort_msd Time taken: %.2fs\n", omp_get_wtime() - itime);
 }

@@ -104,7 +104,7 @@ std::vector<int> common_prefix_merge_4_multithreading_3(std::vector<int>& x,std:
 
 
 
-vector<int> get_common_prefix_merge_4_multihreading_3(custom_prefix_trie* root,vector<int>& common){
+std::vector<int> get_common_prefix_merge_4_multihreading_3(custom_prefix_trie* root,std::vector<int>& common){
     //if(root->node){
     //cout<<"Nodo :";
     //print_substring(root->node->suffix,root->node->suffix_len);
@@ -118,14 +118,14 @@ vector<int> get_common_prefix_merge_4_multihreading_3(custom_prefix_trie* root,v
     if(root->sons.empty())
         return root->node->common_chain_of_suffiexes;
 
-    vector<vector<int>> vectors_to_join;
-    std::map<char,custom_prefix_trie>::iterator it;
+    std::vector<vector<int>> vectors_to_join;
+    std::map<char,custom_prefix_trie*>::iterator it;
 
     for(it = root->sons.begin(); it != root->sons.end();++it){
-       if(flag) vectors_to_join.push_back(get_common_prefix_merge_4_multihreading_3(&it->second,common));
-       else vectors_to_join.push_back(get_common_prefix_merge_4_multihreading_3(&it->second,root->node->common_chain_of_suffiexes));
+       if(flag) vectors_to_join.push_back(get_common_prefix_merge_4_multihreading_3(it->second,common));
+       else vectors_to_join.push_back(get_common_prefix_merge_4_multihreading_3(it->second,root->node->common_chain_of_suffiexes));
     }
-    vector<int> res=vectors_to_join.at(0);
+    std::vector<int> res=vectors_to_join.at(0);
 
     for(int i=1;i<vectors_to_join.size();++i){
         if(flag) res=common_prefix_merge_4_multithreading_3(res,vectors_to_join.at(i),common);

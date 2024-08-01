@@ -10,7 +10,7 @@
 #include <string.h>
 #include <omp.h>
 
-#define CONTROLLO_OUTPUT 1
+#define CONTROLLO_OUTPUT 0
 
 using namespace std;
 
@@ -45,14 +45,14 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
 
 
     itime = omp_get_wtime();
-    vector<vector<int>> group_ranking; 
+    std::vector<std::vector<int>> group_ranking; 
 
-    std::map<char,custom_prefix_trie>::iterator it;
+    std::map<char,custom_prefix_trie*>::iterator it;
     for(it = root->sons.begin(); it != root->sons.end();++it)
-        group_ranking.push_back(get_common_prefix_merge_4_multihreading_3(&it->second,root->node->array_of_indexes));
+        group_ranking.push_back(get_common_prefix_merge_4_multihreading_3(it->second,root->node->array_of_indexes));
     printf("get_common_prefix_merge_4_multihreading_3, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    vector<int> SA;
+    std::vector<int> SA;
     for(int i=0;i<group_ranking.size();i++){
         SA.insert( SA.end(), group_ranking[i].begin(), group_ranking[i].end() );
     }

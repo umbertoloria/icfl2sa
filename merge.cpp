@@ -154,7 +154,7 @@ std::vector<int> in_prefix_merge_bit_vector_5_2(const char* S, vector<int>& icfl
     return result;
 }
 
-std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, vector<int>& child,std::vector<int>& is_custom_suffix,vector<int>& factor_list){
+std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     std::vector<int> result;
     result.resize(father.size()+child.size());
     int i=0,j=0,temp_res;
@@ -191,7 +191,7 @@ std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, vector<int>& icfl
 }
 
 
-void in_prefix_merge_bit_vector_5_4(const char* S, vector<int>& icfl_list, int icfl_list_size, vector<int>& father, vector<int>& child,vector<int>& result,std::vector<int>& is_custom_suffix,vector<int>& factor_list){
+void in_prefix_merge_bit_vector_5_4(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     result.reserve(father.size()+child.size());
     int i=0,j=0;
 
