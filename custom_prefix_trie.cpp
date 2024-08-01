@@ -186,19 +186,23 @@ void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int
 
 //per prefix_trie
 void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
-    if(root->node)
-        //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
-        in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
-
     std::map<char,custom_prefix_trie*>::iterator it;
-
-    if(!root->node)
-        for(it = root->sons.begin(); it != root->sons.end();++it)
-            get_chain_from_root_2(S,icfl_list,icfl_list_size,it->second,father_vector,is_custom_suffix,factor_list);
-    else
+    if(root->node){
+        //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
+        
+        if(root->node->array_of_indexes.size()<1000) alternative_prefix_merge_bit_vector(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        else in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        
+        //usa qsort, non migliore
+        //alternative_prefix_merge_bit_vector_2(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+    
         for(it = root->sons.begin(); it != root->sons.end();++it)
             get_chain_from_root_2(S,icfl_list,icfl_list_size,it->second,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
-
+        return;
+    }
+    for(it = root->sons.begin(); it != root->sons.end();++it)
+        get_chain_from_root_2(S,icfl_list,icfl_list_size,it->second,father_vector,is_custom_suffix,factor_list);
+        
 }
 
 void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){

@@ -1,7 +1,7 @@
 #include "radix_sort.h"
 
 #define ALPHABET_SIZE 30
-#define MIN_SIZE 5
+#define MIN_SIZE 3
 
 using namespace std;
 

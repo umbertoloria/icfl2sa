@@ -193,6 +193,10 @@ std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, std::vector<int>&
 
 void in_prefix_merge_bit_vector_5_4(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     result.reserve(father.size()+child.size());
+    //cout<<"father.size(): "<<father.size()<<"\n";
+    //cout<<"child.size(): "<<child.size()<<"\n";
+    //cout<<"tot reserved: "<<child.size()+father.size()<<"\n\n";
+
     int i=0,j=0;
 
     while( i<father.size() && j<child.size()){
@@ -219,8 +223,10 @@ void in_prefix_merge_bit_vector_5_4(const char* S, std::vector<int>& icfl_list, 
         }
 
     }
-    while(j<child.size())result.push_back(child[j++]);
-    while(i<father.size())result.push_back(father[i++]);
+    //while(j<child.size())result.push_back(child[j++]);
+    result.insert(result.end(),child.begin()+j,child.end());
+    //while(i<father.size())result.push_back(father[i++]);
+    result.insert(result.end(),father.begin()+i,father.end());
 }
 
 std::vector<int> in_prefix_merge_bit_vector_6(const char* S, vector<int> icfl_list, int icfl_list_size, vector<int> father, vector<int> child){
@@ -475,4 +481,46 @@ std::vector<int> in_prefix_merge_bit_vector_9(const char* S, vector<int>& icfl_l
     while(i<father.size()) {result.at(i+j)=father[i];++i;}
 
     return result;
+}
+
+int binarySearch_for_prefix(const char* S, std::vector<int>& father,int child) {
+    int low=0,high=father.size()-1;
+    if(high==-1) return -1;
+    int mid,temp_res;
+    while(high>=low){
+        mid=(low+high)/2;
+        temp_res = std::strcmp(S+child,S+father[mid]);
+
+        if(high == low){
+            if (temp_res>0) return mid;
+            else return mid-1;
+        }
+
+        if (temp_res < 0) high=mid;
+        else low=mid+1;
+    }
+    return -1;
+}
+
+void alternative_prefix_merge_bit_vector(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    result=father;
+    int best_fit,i=0;
+    if(result.empty()){ result.push_back(child.at(0));i=1;}
+    for(;i<child.size();++i){
+        best_fit=binarySearch_for_prefix(S,result,child.at(i));
+        result.insert(result.begin()+best_fit+1,child.at(i));
+    }
+}
+
+int pstrcmp2( const void* a, const void* b ){return strcmp( *(const char**)a, *(const char**)b );}
+
+
+void alternative_prefix_merge_bit_vector_2(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    result=father;
+    result.insert(result.end(),child.begin(),child.end());
+    int n_elements=result.size();
+    const char** strings = (const char**)malloc(sizeof(*strings)*n_elements);
+    for(int i=0;i<n_elements;++i) strings[i]=S+result.at(i);
+    qsort(strings,n_elements,sizeof(strings[0]),pstrcmp2);
+    for(int i=0;i<n_elements;++i) result.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
 }
