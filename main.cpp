@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
 
     //experiment_given_word_by_cli(string(argv[1]));
 
-    clock_t tStart = clock();
+    //clock_t tStart = clock();
     double itime = itime = omp_get_wtime();
 
     experiment_given_word_by_input_file(n_threads);

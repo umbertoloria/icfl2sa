@@ -11,6 +11,8 @@ int pstrcmp( const void* a, const void* b )
   return strcmp( *(const char**)a, *(const char**)b );
 }
 
+bool comparisonFunc(const char *c1, const char *c2){return strcmp(c1, c2) < 0;}
+
 void print(string word){
     cout<<word<<endl;
 }
@@ -291,7 +293,7 @@ void quicksort_of_indexes_8(const char* S,vector<int>& indexes){
     strings.resize(n_elements);
     //const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
     for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
-    std::sort(std::begin(strings), std::end(strings)); 
+    std::sort(strings.begin(), strings.end(), comparisonFunc);
     for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
 }
 
