@@ -283,6 +283,18 @@ void quicksort_of_indexes_7(const char* S,vector<int>& indexes,int lenght_of_wor
     //cout<<"\n";
 }
 
+void quicksort_of_indexes_8(const char* S,vector<int>& indexes){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    int n_elements = indexes.size();
+    if (!n_elements) return;
+    vector<const char*> strings;
+    strings.resize(n_elements);
+    //const char** strings = (const char**)malloc(sizeof(*strings)*indexes.size());
+    for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i);
+    std::sort(std::begin(strings), std::end(strings)); 
+    for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
+}
+
 void print_substring(const char* str,int n){
     for (int i = 0; i < n; ++i) {
         putchar(str[i]);
