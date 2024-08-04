@@ -189,8 +189,10 @@ void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,int icfl_li
     std::map<char,custom_prefix_trie*>::iterator it;
     if(root->node){
         //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);
-        in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
-
+        
+        //canonico
+        //in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //if(root->node->array_of_indexes.size()<1000) alternative_prefix_merge_bit_vector(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //else in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         

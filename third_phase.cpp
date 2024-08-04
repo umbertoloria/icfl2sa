@@ -82,6 +82,7 @@ std::vector<int> common_prefix_merge_4_multithreading_3(std::vector<int>& x,std:
     //cout<<"b\n";
 
     std::vector<int> res;
+    res.reserve(x.size()+y.size());
 
     int i,j,z;
     i=j=z=0;
