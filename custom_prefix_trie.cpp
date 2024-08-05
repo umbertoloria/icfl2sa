@@ -53,15 +53,15 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //omp_set_num_threads(std::thread::hardware_concurrency());
     omp_set_num_threads(n_threads);
 
+    itime = omp_get_wtime();
     std::vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
     std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
-    
     nodes_list.reserve(lenght_of_word);
-
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
+    printf("tot strutture d'appoggio Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"creato root\n";
     //for(int i=0;i<max_size;++i)
@@ -215,6 +215,7 @@ void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<in
 }
 
 void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord){
+    //cout<<"Number of indexes: "<<node->custom_array_of_indexes.size()<<"\n";
     //quicksort_of_indexes_2(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len);
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
     quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo

@@ -161,10 +161,11 @@ void add_node_in_suffix_tree_alberello_3(const char* S,vector<int> icfl_list,int
 
 vector<int> get_is_custom_vec(vector<int>icfl ,int lenght_of_word){
     vector<int> is_custom_vec;
-    is_custom_vec.reserve(lenght_of_word);
+    is_custom_vec.resize(lenght_of_word);
     // 0 = fattore ICFL
     // 1 = fattore custom
+    #pragma omp parallel for
     for(int i=0;i<lenght_of_word;++i)
-        is_custom_vec.push_back(check_if_custom_index(icfl,lenght_of_word,i));
+        is_custom_vec.at(i)=check_if_custom_index(icfl,lenght_of_word,i);
     return is_custom_vec;
 }

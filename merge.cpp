@@ -36,8 +36,9 @@ int get_factor(vector<int>& icfl_list,int index){
 
 std::vector<int> get_factor_list(vector<int>& icfl_list,int str_len){
     std::vector<int> res;
-    res.reserve(str_len);
-    for(int i=0;i<str_len;++i) res.push_back(get_factor(icfl_list,i));
+    res.resize(str_len);
+    #pragma omp parallel for
+    for(int i=0;i<str_len;++i) res.at(i)=get_factor(icfl_list,i);
     return res;
 }
 
