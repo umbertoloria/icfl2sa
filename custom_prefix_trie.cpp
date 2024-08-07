@@ -185,7 +185,7 @@ void merge_custom_array_of_indexes_prefix_trie_recurive(const char* S,vector<int
 
 
 //per prefix_trie
-void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,int icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,const int& icfl_list_size,custom_prefix_trie * root,std::vector<int>& father_vector,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     std::map<char,custom_prefix_trie*>::iterator it;
     if(root->node){
         //root->node->common_chain_of_suffiexes = in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,is_custom_suffix,factor_list);

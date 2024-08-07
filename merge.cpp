@@ -251,7 +251,7 @@ void in_prefix_merge_bit_vector_5_4(const char* S, std::vector<int>& icfl_list, 
     result.insert(result.end(),father.begin()+i,father.end());
 }
 
-void in_prefix_merge_bit_vector_5_5(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+void in_prefix_merge_bit_vector_5_5(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     result.reserve(father.size()+child.size());
 
     //cout<<"father: \n";
