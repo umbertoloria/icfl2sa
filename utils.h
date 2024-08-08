@@ -25,6 +25,7 @@ void quicksort_of_indexes_2(const char* S,vector<int>& indexes, int start, int e
 void quicksort_of_indexes_3(const char* S,vector<int>& indexes, int start, int end,int start_offset,std::unordered_map<int,std::unordered_map<int,bool>*>& ord);
 void quicksort_of_indexes_4(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_5(const char* S,vector<int>& indexes);
+void quicksort_of_indexes_5_2(const char* S,vector<int>& indexes,int starting_offset);
 void quicksort_of_indexes_6(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_7(const char* S,vector<int>& indexes,int lenght_of_word);
 void quicksort_of_indexes_8(const char* S,vector<int>& indexes);

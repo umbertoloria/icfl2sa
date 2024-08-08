@@ -13,6 +13,14 @@ custom_prefix_trie* init_custom_prefix_trie(){
     return x;
 }
 
+void
+delete_custom_prefix_trie(custom_prefix_trie* x){
+    delete_suffix_tree_node(x->node);
+    cout<<"c\n";
+    x->sons.clear();
+    free(x);
+}
+
 void stampa_prefix_trie(custom_prefix_trie* root){
 
     std::map<char,custom_prefix_trie*>::iterator it;
@@ -54,7 +62,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     omp_set_num_threads(n_threads);
 
     itime = omp_get_wtime();
-    std::vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
+    //std::vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
+    std::vector<int> is_custom_vec = get_is_custom_vec_random(icfl_list,custom_icfl_list,lenght_of_word);
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
     std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
@@ -192,6 +201,7 @@ void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,const int& 
         
         //canonico
         //in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        //canonico con ricerca binaria
         in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //if(root->node->array_of_indexes.size()<1000) alternative_prefix_merge_bit_vector(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //else in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
@@ -218,7 +228,8 @@ void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &
     //cout<<"Number of indexes: "<<node->custom_array_of_indexes.size()<<"\n";
     //quicksort_of_indexes_2(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len);
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
-    quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
+    //quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
+    quicksort_of_indexes_5_2(S,node->custom_array_of_indexes,node->suffix_len);
     //quicksort_of_indexes_8(S,node->custom_array_of_indexes);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }

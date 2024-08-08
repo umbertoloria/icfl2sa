@@ -252,6 +252,18 @@ void quicksort_of_indexes_5(const char* S,vector<int>& indexes){
     //cout<<"\n";
 }
 
+void quicksort_of_indexes_5_2(const char* S,vector<int>& indexes,int starting_offset){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    int n_elements = indexes.size();
+    const char** strings = (const char**)malloc(sizeof(*strings)*n_elements);
+    for(int i=0;i<n_elements;++i) strings[i]=S+indexes.at(i)+starting_offset;
+    //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+    qsort(strings,n_elements,sizeof(strings[0]),pstrcmp);
+    for(int i=0;i<n_elements;++i) indexes.at(i)=((std::uintptr_t)strings[i]-starting_offset)-(std::uintptr_t)S;
+    //printVec(indexes);
+    //cout<<"\n";
+}
+
 void quicksort_of_indexes_6(const char* S,vector<int>& indexes){
     //cout<<"S: "<<(std::uintptr_t)S<<"\n";
     int n_elements = indexes.size();

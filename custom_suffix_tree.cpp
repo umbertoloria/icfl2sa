@@ -54,12 +54,35 @@ suffix_tree_node* build_suffix_tree_node(suffix_tree_node* father,const char* su
     x->suffix=suffix;
 
     x->suffix_len=suffix_len;
-    x->sons.reserve(10);
+    x->sons.reserve(1);
     x->array_of_indexes.reserve(1);
     x->common_chain_of_suffiexes.reserve(1);
     x->bit_vec.reserve(1);
     
     return x;
+}
+
+void
+delete_suffix_tree_node(suffix_tree_node* x){
+    cout<<"a\n"<<x->sons.empty()<<"\n";
+    x->sons.clear();
+    cout<<"a\n";
+    x->sons.shrink_to_fit();
+    cout<<"a\n";
+    x->array_of_indexes.clear();
+    cout<<"a\n";
+    x->array_of_indexes.shrink_to_fit();
+    cout<<"a\n";
+    x->common_chain_of_suffiexes.clear();
+    cout<<"a\n";
+    x->common_chain_of_suffiexes.shrink_to_fit();
+    cout<<"a\n";
+    x->bit_vec.clear();
+    cout<<"a\n";
+    x->bit_vec.shrink_to_fit();
+    cout<<"a\n";
+    free(x);
+    cout<<"b\n";
 }
 
 //prealloca e inizializza i figli 

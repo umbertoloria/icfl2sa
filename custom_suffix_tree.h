@@ -34,7 +34,7 @@ suffix_tree_node* build_suffix_tree_orphan_node(const char* suffix,int suffix_le
 //Non fa i return(cosa bella)
 void stampa_suffix_tree(suffix_tree_node* root);
 
-
+void delete_suffix_tree_node(suffix_tree_node* x);
 
 nodes_vector* init_nodes_vector(size_t size);
 bool add_in_nodes_vector(nodes_vector* x,suffix_tree_node* element);
