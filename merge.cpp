@@ -178,6 +178,8 @@ std::vector<int> in_prefix_merge_bit_vector_5_2(const char* S, vector<int>& icfl
 
 std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     std::vector<int> result;
+    result.reserve(father.size()+child.size());
+    //cerchiamo la posizione migliore per il primo elemento dei figli
     int best_fit,i=0,j=0;
     best_fit=binarySearch_for_prefix(S,father,child.at(0));
     //if(best_fit>=0) result.insert(result.end(),father.begin(),father.begin()+best_fit);
@@ -185,33 +187,39 @@ std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, std::vector<int>&
     result.push_back(child.at(0));
     j++;
     i=best_fit+1;
+    
+    //cout<<"best_fit: "<<best_fit<<"\n";
 
     while( i<father.size() && j<child.size()){
         if(is_custom_suffix[father[i]] || is_custom_suffix[child[j]] ){
-            if(strcmp(S+child[j],S+father[i])<0){result.at(i+j)=child[j];++j;}
-            else{result.at(i+j)=father[i];++i;}
+            if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+            else result.push_back(father[i++]);
         }
 
-        else if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1]){result.at(i+j)=father[i];++i;}
-        else if(factor_list[father[i]]==factor_list[child[j]]){result.at(i+j)=child[j];++j;}
+        else if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1])result.push_back(father[i++]);
+        else if(factor_list[father[i]]==factor_list[child[j]])result.push_back(child[j++]);
         else{
-            if(father[i] >= icfl_list[icfl_list_size-1]){result.at(i+j)=father[i];++i;}
+            if(father[i] >= icfl_list[icfl_list_size-1])result.push_back(father[i++]);
             else if(child[j] >= icfl_list[icfl_list_size-1]){
-                if(strcmp(S+child[j],S+father[i])<0){result.at(i+j)=child[j];++j;}
-                else{result.at(i+j)=father[i];++i;}
+                if(strcmp(S+child[j],S+father[i])<0)result.push_back(child[j++]);
+                else result.push_back(father[i++]);
             }
             else{
-                if(father[i] > child[j]){result.at(i+j)=child[j];++j;}
+                if(father[i] > child[j])result.push_back(child[j++]);
                 else{
-                    if(strcmp(S+child[j],S+father[i])<0){result.at(i+j)=child[j];++j;}
-                    else{result.at(i+j)=father[i];++i;}
+                    if(strcmp(S+child[j],S+father[i])<0)result.push_back(child[j++]);
+                    else result.push_back(father[i++]);
                 }
             }
         }
 
     }
-    while(j<child.size()){result.at(i+j)=child[j];++j;}
-    while(i<father.size()){result.at(i+j)=father[i];++i;}
+    result.insert(result.end(),child.begin()+j,child.end());
+    result.insert(result.end(),father.begin()+i,father.end());
+
+    //cout<<"result: \n";
+    //printVec(result);
+    //cout<<"\n\n";
 
     return result;
 }

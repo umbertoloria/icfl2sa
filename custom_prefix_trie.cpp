@@ -1,7 +1,7 @@
 #include "custom_prefix_trie.h"
 
-std::unordered_map<suffix_tree_node*,bool> nodes_map;
-std::vector<suffix_tree_node*> nodes_list;
+std::map<int,std::unordered_map<suffix_tree_node*,bool>> nodes_map;
+std::map<int,std::vector<suffix_tree_node*>> nodes_list;
 std::mutex mut_nodes_map;
 
 custom_prefix_trie* init_custom_prefix_trie(){
@@ -67,7 +67,6 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
     std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
-    nodes_list.reserve(lenght_of_word);
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
     printf("tot strutture d'appoggio Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -77,7 +76,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //    compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),&root,i);   
 
     itime = omp_get_wtime();
-    //#pragma omp parallel for //shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
+    #pragma omp parallel for //shared(S,lenght_of_word,icfl_list,custom_icfl_list,roots,mutex_m) schedule(static) 
     for(int i=0;i<custom_max_size;++i)
         compute_i_phase_alberello_custom_prefix_trie(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),root,i,is_custom_vec,factor_list,indice_nodo);
     printf("tot compute_i_phase_alberello_custom_prefix_trie Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -98,13 +97,15 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list,ord);
     //printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    int node_list_size=nodes_list.size();
-    cout<<"nodes_list.size(): "<<node_list_size<<"\n";
+    //int node_list_size=nodes_list.size();
+    //cout<<"nodes_list.size(): "<<node_list_size<<"\n";
     //Merge di ogni singolo nodo
     itime = omp_get_wtime();
-    #pragma omp parallel for shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
-    for(int i=0;i<node_list_size;++i)
-        merge_single_node_2(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord);
+
+    for(int i=1;i<=custom_max_size;++i)
+        #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+        for(int j=0;j<nodes_list[i].size();++j)
+            merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
         //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
@@ -127,13 +128,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
-    itime = omp_get_wtime();
-    #pragma omp parallel for
-    for(int i=0;i<node_list_size;++i){
-        while(nodes_list.at(i)->father->common_chain_of_suffiexes.empty() && nodes_list.at(i)->father->suffix_len!=0);
+    for(int i=1;i<=custom_max_size;++i)
+        #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+        for(int j=0;j<nodes_list[i].size();++j)
+        //while(nodes_list.at(i)->father->common_chain_of_suffiexes.empty() && nodes_list.at(i)->father->suffix_len!=0);
         //in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,nodes_list.at(i)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-        nodes_list.at(i)->common_chain_of_suffiexes=in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,is_custom_vec,factor_list);
-    }
+            nodes_list[i].at(j)->common_chain_of_suffiexes=in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,is_custom_vec,factor_list);
     printf("tot in_prefix_merge_bit_vector_5_5 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
@@ -172,9 +172,9 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
     indice_nodo.at(suffix_index) = opt_node->node;
 
     //mut_nodes_map.lock();
-    if(nodes_map.find(opt_node->node) == nodes_map.end()){
-        nodes_list.push_back(opt_node->node);
-        nodes_map[opt_node->node]=true;
+    if(nodes_map[suffix_len].find(opt_node->node) == nodes_map[suffix_len].end()){
+        nodes_list[suffix_len].push_back(opt_node->node);
+        nodes_map[suffix_len][opt_node->node]=true;
     }
     //mut_nodes_map.unlock();
     return;
