@@ -232,10 +232,10 @@ void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
     //altrettando bello, usa std::sort par
     //quicksort_of_indexes_4(S,node->custom_array_of_indexes);
-    quicksort_of_indexes_4_2(S,node->custom_array_of_indexes,node->suffix_len);
+    //quicksort_of_indexes_4_2(S,node->custom_array_of_indexes,node->suffix_len);
     //molto bellissimo
     //quicksort_of_indexes_5(S,node->custom_array_of_indexes); 
-    //quicksort_of_indexes_5_2(S,node->custom_array_of_indexes,node->suffix_len);
+    quicksort_of_indexes_5_2(S,node->custom_array_of_indexes,node->suffix_len);
     //quicksort_of_indexes_8(S,node->custom_array_of_indexes);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }
