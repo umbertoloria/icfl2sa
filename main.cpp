@@ -10,7 +10,7 @@
 #include <string.h>
 #include <omp.h>
 
-#define CONTROLLO_OUTPUT 0
+#define CONTROLLO_OUTPUT 1
 
 using namespace std;
 

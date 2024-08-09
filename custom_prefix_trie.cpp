@@ -115,15 +115,23 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //itime = omp_get_wtime();
     //get_chain_from_root_2(S,icfl_list,icfl_list.size(),root,root->node->array_of_indexes,is_custom_vec,factor_list);
     //printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
-    std::vector<custom_prefix_trie*> sons_of_root;
-    for(std::map<char,custom_prefix_trie*>::iterator it = root->sons.begin(); it != root->sons.end();++it)
-        sons_of_root.push_back(it->second);
+    
+    //std::vector<custom_prefix_trie*> sons_of_root;
+    //for(std::map<char,custom_prefix_trie*>::iterator it = root->sons.begin(); it != root->sons.end();++it)
+    //    sons_of_root.push_back(it->second);
+//
+    //itime = omp_get_wtime();
+    //#pragma omp parallel for
+    //for(int i=0;i<sons_of_root.size();++i)
+    //    get_chain_from_root_2(S,icfl_list,icfl_list.size(),sons_of_root.at(i),root->node->array_of_indexes,is_custom_vec,factor_list);
+    //printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+
 
     itime = omp_get_wtime();
-    #pragma omp parallel for
-    for(int i=0;i<sons_of_root.size();++i)
-        get_chain_from_root_2(S,icfl_list,icfl_list.size(),sons_of_root.at(i),root->node->array_of_indexes,is_custom_vec,factor_list);
-    printf("tot get_chain_from_root_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //#pragma omp parallel for
+    for(int i=0;i<node_list_size;++i)
+        in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,nodes_list.at(i)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    printf("tot in_prefix_merge_bit_vector_5_5 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
     //stampa_prefix_trie(root);
@@ -135,10 +143,15 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index,vector<int>& icfl_list,vector<int>& custom_icfl_list,int lenght_of_word,vector<int>& is_custom_vec,vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo){
     //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
     custom_prefix_trie* opt_node=root;
+    suffix_tree_node* father=NULL;
     while(current_suffix_len!=suffix_len){
+        
         if(opt_node->sons.find(suffix[current_suffix_len]) == opt_node->sons.end())
             opt_node->sons[suffix[current_suffix_len]] = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
-        
+
+        //controllo se è un possibile padre
+        if(current_suffix_len<suffix_len && opt_node->node) father=opt_node->node;
+
         opt_node=opt_node->sons[suffix[current_suffix_len++]];
     }
 
@@ -146,6 +159,9 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
         //Il padre è null tanto verrà gestito con custom_prefix_trie
         //Anche i figli
         opt_node->node = build_suffix_tree_node_2(NULL,suffix,suffix_len);
+
+    //aggiungo il padre
+    opt_node->node->father=father;
 
     if(is_custom_vec[suffix_index]) opt_node->node->custom_array_of_indexes.push_back(suffix_index);
     else opt_node->node->array_of_indexes.push_back(suffix_index);
