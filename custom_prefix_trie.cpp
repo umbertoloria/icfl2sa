@@ -128,9 +128,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
 
 
     itime = omp_get_wtime();
-    //#pragma omp parallel for
-    for(int i=0;i<node_list_size;++i)
-        in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,nodes_list.at(i)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    #pragma omp parallel for
+    for(int i=0;i<node_list_size;++i){
+        while(nodes_list.at(i)->father->common_chain_of_suffiexes.empty() && nodes_list.at(i)->father->suffix_len!=0);
+        //in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,nodes_list.at(i)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+        nodes_list.at(i)->common_chain_of_suffiexes=in_prefix_merge_bit_vector_5_3(S,icfl_list,icfl_list.size(),nodes_list.at(i)->father->common_chain_of_suffiexes,nodes_list.at(i)->array_of_indexes,is_custom_vec,factor_list);
+    }
     printf("tot in_prefix_merge_bit_vector_5_5 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
