@@ -178,13 +178,17 @@ std::vector<int> in_prefix_merge_bit_vector_5_2(const char* S, vector<int>& icfl
 
 std::vector<int> in_prefix_merge_bit_vector_5_3(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     std::vector<int> result;
-    result.resize(father.size()+child.size());
-    int i=0,j=0,temp_res;
+    int best_fit,i=0,j=0;
+    best_fit=binarySearch_for_prefix(S,father,child.at(0));
+    //if(best_fit>=0) result.insert(result.end(),father.begin(),father.begin()+best_fit);
+    for(int z=0;z<=best_fit;z++) result.push_back(father.at(z));
+    result.push_back(child.at(0));
+    j++;
+    i=best_fit+1;
 
     while( i<father.size() && j<child.size()){
         if(is_custom_suffix[father[i]] || is_custom_suffix[child[j]] ){
-            temp_res = strcmp(S+child[j],S+father[i]);
-            if(temp_res<0){result.at(i+j)=child[j];++j;}
+            if(strcmp(S+child[j],S+father[i])<0){result.at(i+j)=child[j];++j;}
             else{result.at(i+j)=father[i];++i;}
         }
 
