@@ -97,8 +97,9 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
     //merge_custom_array_of_indexes_prefix_trie_recurive(S,icfl_list,root,is_custom_vec,factor_list,ord);
     //printf("tot merge_custom_array_of_indexes_prefix_trie_recurive Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //int node_list_size=nodes_list.size();
-    //cout<<"nodes_list.size(): "<<node_list_size<<"\n";
+    int node_list_size=0;
+    for(int i=1;i<=custom_max_size;++i) node_list_size+=nodes_list[i].size();
+    cout<<"nodes_list.size(): "<<node_list_size<<"\n";
     //Merge di ogni singolo nodo
     itime = omp_get_wtime();
 
