@@ -235,7 +235,7 @@ void quicksort_of_indexes_4(const char* S,vector<int>& indexes){
     int n_elements = indexes.size();
     std::vector<const char*> strings;
     for(int i=0;i<n_elements;++i) strings.push_back(S+indexes.at(i));
-    std::sort(std::execution::par,strings.begin(),strings.end(),comparisonFunc);
+    std::sort(std::execution::par_unseq,strings.begin(),strings.end(),comparisonFunc);
     for(int i=0;i<n_elements;++i) indexes.at(i)=(std::uintptr_t)strings.at(i)-(std::uintptr_t)S;
 }
 
@@ -243,7 +243,7 @@ void quicksort_of_indexes_4_2(const char* S,vector<int>& indexes,int starting_of
     int n_elements = indexes.size();
     std::vector<const char*> strings;
     for(int i=0;i<n_elements;++i) strings.push_back(S+indexes.at(i)+starting_offset);
-    std::sort(std::execution::par,strings.begin(),strings.end(),comparisonFunc);
+    std::sort(std::execution::par_unseq,strings.begin(),strings.end(),comparisonFunc);
     for(int i=0;i<n_elements;++i) indexes.at(i)=((std::uintptr_t)strings.at(i)-starting_offset)-(std::uintptr_t)S;
 }
 
