@@ -302,6 +302,70 @@ void in_prefix_merge_bit_vector_5_5(const char* S, std::vector<int>& icfl_list, 
     //cout<<"\n\n";
 }
 
+void in_prefix_merge_bit_vector_5_6(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    result.reserve(father.size()+child.size());
+    //cerchiamo la posizione migliore per il primo elemento dei figli
+    int best_fit,i=0,j=0;
+    best_fit=binarySearch_for_prefix(S,father,child.at(0));
+    //if(best_fit>=0) result.insert(result.end(),father.begin(),father.begin()+best_fit);
+    for(int z=0;z<=best_fit;z++) result.push_back(father.at(z));
+    result.push_back(child.at(0));
+    j++;
+    i=best_fit+1;
+    
+    //cout<<"best_fit: "<<best_fit<<"\n";
+
+    while( i<father.size() && j<child.size()){
+        if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]]){
+            if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+            else result.push_back(father[i++]);
+        }
+        //A questo punto solo uno o nessuno dei due è arificiale
+        //Se il primo è artificiale allora si inverte la regola
+        else if (is_custom_suffix[father[i]]){
+            if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1]) result.push_back(child[j++]);
+            else if(factor_list[father[i]]==factor_list[child[j]]) result.push_back(father[i++]);
+            else{
+                if(father[i] >= icfl_list[icfl_list_size-1]) result.push_back(child[j++]);
+                else if(child[j] >= icfl_list[icfl_list_size-1]){
+                    if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+                    else result.push_back(father[i++]);
+                }
+                else{
+                    if(father[i] > child[j]) result.push_back(father[i++]);
+                    else{
+                        //Questo uguale all'originale, c'è la strcmp 
+                        if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+                        else result.push_back(father[i++]);
+                    }
+
+                }
+            }
+        }
+        //Se nessuno dei due è custom:
+        else if(father[i] >= icfl_list[icfl_list_size-1] && child[j] >= icfl_list[icfl_list_size-1]) result.push_back(father[i++]);
+        else if(factor_list[father[i]]==factor_list[child[j]]) result.push_back(child[j++]);
+        else{
+            if(father[i] >= icfl_list[icfl_list_size-1]) result.push_back(father[i++]);
+            else if(child[j] >= icfl_list[icfl_list_size-1]){
+                if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+                else result.push_back(father[i++]);
+            }
+            else{
+                if(father[i] > child[j]) result.push_back(child[j++]);
+                else{
+                    if(strcmp(S+child[j],S+father[i])<0) result.push_back(child[j++]);
+                    else result.push_back(father[i++]);
+                }
+
+            }
+        }
+
+    }
+    result.insert(result.end(),child.begin()+j,child.end());
+    result.insert(result.end(),father.begin()+i,father.end());
+}
+
 std::vector<int> in_prefix_merge_bit_vector_6(const char* S, vector<int> icfl_list, int icfl_list_size, vector<int> father, vector<int> child){
     std::vector<int> result;
     result.reserve(father.size()+child.size());

@@ -203,6 +203,8 @@ void get_chain_from_root_2(const char* S,std::vector<int>& icfl_list,const int& 
         //in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //canonico con ricerca binaria
         in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
+        //sperimentale
+        //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //if(root->node->array_of_indexes.size()<1000) alternative_prefix_merge_bit_vector(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         //else in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list_size,father_vector,root->node->array_of_indexes,root->node->common_chain_of_suffiexes,is_custom_suffix,factor_list);
         
@@ -228,8 +230,12 @@ void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &
     //cout<<"Number of indexes: "<<node->custom_array_of_indexes.size()<<"\n";
     //quicksort_of_indexes_2(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len);
     //quicksort_of_indexes_3(S,node->custom_array_of_indexes,0,node->custom_array_of_indexes.size()-1,node->suffix_len,ord);
-    //quicksort_of_indexes_5(S,node->custom_array_of_indexes); //molto bellissimo
-    quicksort_of_indexes_5_2(S,node->custom_array_of_indexes,node->suffix_len);
+    //altrettando bello, usa std::sort par
+    //quicksort_of_indexes_4(S,node->custom_array_of_indexes);
+    quicksort_of_indexes_4_2(S,node->custom_array_of_indexes,node->suffix_len);
+    //molto bellissimo
+    //quicksort_of_indexes_5(S,node->custom_array_of_indexes); 
+    //quicksort_of_indexes_5_2(S,node->custom_array_of_indexes,node->suffix_len);
     //quicksort_of_indexes_8(S,node->custom_array_of_indexes);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
 }
