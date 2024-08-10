@@ -18,8 +18,11 @@ using namespace std;
 
 
 // sorting_suffixes_via_icfl_trie
-vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n_threads) {
+vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool par) {
     //cout<<"###################### sorting_suffixes_via_icfl_trie"<<endl;
+    custom_prefix_trie* root;
+
+    if(par) omp_set_num_threads(std::thread::hardware_concurrency());
 
     cout<<"Numero caratteri: "<<lenght_of_word<<endl;
 
@@ -42,7 +45,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,int n
     double itime;
 
     itime = omp_get_wtime();
-    custom_prefix_trie* root = creazione_albero_custom_prefix_trie(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size,n_threads);
+    if(par) root = creazione_albero_custom_prefix_trie_par(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size);
+    else root = creazione_albero_custom_prefix_trie_seq(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size);
     printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
@@ -108,7 +112,7 @@ void experiment_given_word_by_cli(string word) {
 }
 
 */
-char* experiment_given_word_by_input_file(int n_threads) {
+char* experiment_given_word_by_input_file(bool par) {
     //cout<<"###################### experiment_given_word"<<endl;
     char * word = NULL;
     size_t len = 0;
@@ -125,20 +129,22 @@ char* experiment_given_word_by_input_file(int n_threads) {
 
     std::string x(word);
 
-    vector<int> suffix_array = sorting_suffixes_via_icfl_trie(&x,word_size,n_threads);
+    vector<int> suffix_array = sorting_suffixes_via_icfl_trie(&x,word_size,par);
 
     return word;
 }
 
 int main(int argc, char** argv) {
-    int n_threads=1;
+    bool par=false;
     srand(time(NULL));
     if(argc== 2) set_offset(atoi(argv[1]));
     else if(argc== 3){
         set_offset(atoi(argv[1]));
-        n_threads=atoi(argv[2]);
+        par=atoi(argv[2]);
     }
-    cout<<"N. threads: "<<n_threads<<"\n";
+
+    if(par) cout<<"Parallelo\n";
+    else cout<<"Sequenziale\n";
 
     //experiment_given_word();
     //experiment_generate_word();
@@ -148,7 +154,7 @@ int main(int argc, char** argv) {
     //clock_t tStart = clock();
     double itime = itime = omp_get_wtime();
 
-    experiment_given_word_by_input_file(n_threads);
+    experiment_given_word_by_input_file(par);
     
     printf("\n\n Total time taken: %.2fs\n", omp_get_wtime() - itime);
 
