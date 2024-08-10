@@ -115,7 +115,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie(vector<int>& icfl_list,v
         #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            in_prefix_merge_bit_vector_5_4(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
         }
         //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
     printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
