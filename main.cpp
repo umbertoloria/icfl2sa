@@ -30,7 +30,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
 
     printVector(icfl_list, "Stampa ICFL");
     
-    vector<int> custom_icfl_list = get_custom_factor_random(icfl_list,lenght_of_word);
+    //vector<int> custom_icfl_list = get_custom_factor_random(icfl_list,lenght_of_word);
+    vector<int> custom_icfl_list = get_custom_factor(icfl_list,lenght_of_word);
 
     //printVector(custom_icfl_list, "Stampa custom_icfl_list");
 

@@ -10,7 +10,7 @@ void set_offset(int x){
 }
 
 vector<int> get_custom_factor(vector<int>& icfl,int word_size){
-    int j,z,custom_offset;
+    int j,z;
     vector<int> temp,res;
 
     //Il primo indice sarà sempre 0, possiamo iniziare da i=1.
@@ -18,8 +18,8 @@ vector<int> get_custom_factor(vector<int>& icfl,int word_size){
     //per ogni fattore icfl
     for(int i=1;i<icfl.size();i++){
         //vedo se posso creare un suffisso artificiale
-        for(j=1;i>0 && icfl[i]-(custom_offset*j) > icfl[i-1];j++)
-            temp.push_back(icfl[i]-(custom_offset*j));
+        for(j=1;icfl[i]-(offset*j) > icfl[i-1];j++)
+            temp.push_back(icfl[i]-(offset*j));
         
         //reverse
         for(z=temp.size()-1;z>=0;z--)
