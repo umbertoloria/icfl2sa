@@ -409,8 +409,6 @@ void in_prefix_merge_bit_vector_5_7(const char* S, std::vector<int>& icfl_list, 
 
     //creo un vettore che di interi che hanno i primi child->suffix_len caratteri uguali al padre
     std::vector<int> temp_father,temp_res;
-    temp_father.reserve(father.size());
-    temp_res.reserve(father.size()+child.size());
     int best_fit,starting_position,min_father=-1,max_father=-1,child_offset=child_node->suffix_len;
     //parto da un punto ragionevole
     best_fit=binarySearch_for_prefix(S,father,child.at(0));
@@ -451,7 +449,7 @@ void in_prefix_merge_bit_vector_5_7(const char* S, std::vector<int>& icfl_list, 
     //cout<<"temp_father_size:"<<temp_father.size()<<"\n";
     //cerchiamo la posizione migliore per il primo elemento dei figli
     int i=0,j=0,father_offset=father_node->suffix_len;
-    
+    temp_res.reserve(father.size()+child.size());
     //operiamo sui risultati temporanei (padre e risultati, i figli rimangono uguali)
     while( i<temp_father.size() && j<child.size()){
         if(is_custom_suffix[temp_father[i]] && is_custom_suffix[child[j]] ){
@@ -477,6 +475,8 @@ void in_prefix_merge_bit_vector_5_7(const char* S, std::vector<int>& icfl_list, 
                 temp_res.push_back(child.at(j));
                 j++;
                 i=best_fit+1;
+                //if(strcmp(S+child[j]+child_offset,S+temp_father[i]+child_offset)<0) temp_res.push_back(child[j++]);
+                //else temp_res.push_back(temp_father[i++]);
             }
         }
 
@@ -485,13 +485,14 @@ void in_prefix_merge_bit_vector_5_7(const char* S, std::vector<int>& icfl_list, 
                 if(temp_father[i] >= icfl_list[icfl_list_size-1]) temp_res.push_back(temp_father[i++]);
                 else temp_res.push_back(child[j++]);
             }
-
             else{
                 best_fit=binarySearch_for_prefix_3(S,temp_father,child.at(j),i,temp_father.size()-1,child_offset);
                 temp_res.insert(temp_res.end(),temp_father.begin()+i,temp_father.begin()+best_fit+1);
                 temp_res.push_back(child.at(j));
                 j++;
                 i=best_fit+1;
+                //if(strcmp(S+child[j]+child_offset,S+temp_father[i]+child_offset)<0) temp_res.push_back(child[j++]);
+                //else temp_res.push_back(temp_father[i++]);
             }
         }
 
