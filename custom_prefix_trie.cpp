@@ -116,7 +116,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
             //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            in_prefix_merge_bit_vector_5_7(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
+            in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
         }
     
         //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
@@ -184,28 +184,27 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     
     itime = omp_get_wtime();
 
-    //for(int i=1;i<=custom_max_size;++i){
-    //    for(int j=0;j<nodes_list[i].size();++j){
-    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-    //        //in_prefix_merge_bit_vector_5_5(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-    //        in_prefix_merge_bit_vector_5_7(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
-    //    }
-    //}
-    //printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
-
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+            in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
         }
     }
-    printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+    printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    for(int i=1;i<=custom_max_size;++i){
-        for(int j=0;j<nodes_list[i].size();++j){
-            in_prefix_merge_bit_vector_5_7(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
-        }
-    }
-    printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+    //    }
+    //}
+    //printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+//
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
+    //    }
+    //}
+    //printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
