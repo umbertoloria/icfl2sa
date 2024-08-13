@@ -568,9 +568,9 @@ void in_prefix_merge_bit_vector_5_8(const char* S, std::vector<int>& icfl_list, 
     }
     else{
         //finché non ne trovo uno diverso
-        for(int i=min_father+1;i<father.size();i++) if(strncmp(S+child.at(0),S+father.at(i),child_offset)!=0){max_father=i;break;}
-        if(max_father==-1) max_father=father.size();
-        //max_father=binarySearch_for_prefix(S,father,child.at(child.size()-1))+1;
+        //for(int i=min_father+1;i<father.size();i++) if(strncmp(S+child.at(0),S+father.at(i),child_offset)!=0){max_father=i;break;}
+        //if(max_father==-1) max_father=father.size();
+        max_father=binarySearch_for_prefix(S,father,child.at(child.size()-1))+1;
     }
     //cout<<"min_father: "<<min_father<<", max_father: "<<max_father<<"\n";
 
