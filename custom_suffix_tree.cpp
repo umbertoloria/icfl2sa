@@ -94,7 +94,7 @@ suffix_tree_node* build_suffix_tree_node_2(suffix_tree_node* father,const char* 
     x->suffix=suffix;
 
     x->suffix_len=suffix_len;
-    x->sons.resize(30);
+    x->sons.reserve(30);
     x->array_of_indexes.reserve(1);
     x->common_chain_of_suffiexes.reserve(1);
     x->bit_vec.reserve(1);

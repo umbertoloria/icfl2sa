@@ -23,6 +23,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     custom_prefix_trie* root;
 
     if(par) omp_set_num_threads(std::thread::hardware_concurrency());
+    else omp_set_num_threads(1);
 
     cout<<"Numero caratteri: "<<lenght_of_word<<endl;
 
@@ -52,17 +53,21 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
 
 
     itime = omp_get_wtime();
-    std::vector<std::vector<int>> group_ranking; 
-    std::vector<custom_prefix_trie*> sons_of_root;
-    for(std::map<char,custom_prefix_trie*>::iterator it = root->sons.begin(); it != root->sons.end();++it)
-        sons_of_root.push_back(it->second);
+    std::vector<std::vector<int>> group_ranking;
+    group_ranking.resize(root->node->sons.size());
+    //std::vector<custom_prefix_trie*> sons_of_root;
+    //for(std::map<char,custom_prefix_trie*>::iterator it = root->sons.begin(); it != root->sons.end();++it)
+    //    sons_of_root.push_back(it->second);
 
-    group_ranking.resize(sons_of_root.size());
+    //#pragma omp parallel for
+    //for(int i=0;i<sons_of_root.size();++i)
+    //    group_ranking.at(i)=get_common_prefix_merge_4_multihreading_3(sons_of_root.at(i),root->node->array_of_indexes);
+    //printf("get_common_prefix_merge_4_multihreading_3, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    #pragma omp parallel for
-    for(int i=0;i<sons_of_root.size();++i)
-        group_ranking.at(i)=get_common_prefix_merge_4_multihreading_3(sons_of_root.at(i),root->node->array_of_indexes);
-    printf("get_common_prefix_merge_4_multihreading_3, Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //#pragma omp parallel for
+    for(int i=0;i<root->node->sons.size();i++){
+        group_ranking[i] = get_common_prefix_partition(root->node->sons[i]);
+    }
 
     std::vector<int> SA;
     for(int i=0;i<group_ranking.size();i++){

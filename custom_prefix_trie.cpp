@@ -2,6 +2,7 @@
 
 std::map<int,std::unordered_map<suffix_tree_node*,bool>> nodes_map;
 std::map<int,std::vector<suffix_tree_node*>> nodes_list;
+std::map<int,std::vector<custom_prefix_trie*>> nodes_list_trie;
 std::mutex mut_nodes_map;
 
 custom_prefix_trie* init_custom_prefix_trie(){
@@ -51,6 +52,44 @@ void stampa_prefix_trie(custom_prefix_trie* root){
 
     else for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie(it->second);
     return;
+}
+
+void stampa_prefix_trie_common(custom_prefix_trie* root){
+
+    std::map<char,custom_prefix_trie*>::iterator it;
+
+    if (!root->sons.size() && root->node){
+        cout<<"(";
+        print_substring(root->node->suffix,root->node->suffix_len);
+        cout<<"[";
+        for(size_t j = 0; j<root->node->common_chain_of_suffiexes.size();j++) cout<<root->node->common_chain_of_suffiexes[j]<<",";
+        cout<<"],min: "<<root->node->min_father<<",max: "<<root->node->max_father<<")";
+        return;
+    }
+
+    if(root->node){
+        print_substring(root->node->suffix,root->node->suffix_len);
+        cout<<"(";
+        for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie_common(it->second);
+        cout<<"[";
+        for(size_t j = 0; j<root->node->common_chain_of_suffiexes.size();j++)cout<<root->node->common_chain_of_suffiexes[j]<<",";
+        cout<<"],min: "<<root->node->min_father<<",max: "<<root->node->max_father<<")";
+    }
+
+    else for(it = root->sons.begin(); it != root->sons.end();++it) stampa_prefix_trie_common(it->second);
+    return;
+}
+
+void add_node_to_sons(custom_prefix_trie* trie_node,suffix_tree_node* father){
+    std::map<char,custom_prefix_trie*>::iterator it;
+    for(it = trie_node->sons.begin(); it != trie_node->sons.end();++it) {
+        if(it->second->node) {
+            father->sons.push_back(it->second->node);
+            add_node_to_sons(it->second,it->second->node);
+        }
+        else
+            add_node_to_sons(it->second,father);
+    }
 }
 
 custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_list,vector<int>& custom_icfl_list,const char* S,int lenght_of_word,int max_size,int custom_max_size){
@@ -116,7 +155,11 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
             //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
+            in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            nodes_list[i].at(j)->array_of_indexes.clear();
+            nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
+            nodes_list[i].at(j)->custom_array_of_indexes.clear();
+            nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
         }
     
         //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
@@ -187,7 +230,11 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
+            in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            nodes_list[i].at(j)->array_of_indexes.clear();
+            nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
+            nodes_list[i].at(j)->custom_array_of_indexes.clear();
+            nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
         }
     }
     printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -206,7 +253,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //}
     //printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    //stampa_prefix_trie(root);
+    add_node_to_sons(root,root->node);
+
+    //stampa_prefix_trie_common(root);
+    //cout<<"\n";
+    
+    //stampa_suffix_tree(root->node);
     //cout<<"\n";
 
     return root;
@@ -214,17 +266,21 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
 
 void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char* suffix,int current_suffix_len,int suffix_len,int suffix_index,vector<int>& icfl_list,vector<int>& custom_icfl_list,int lenght_of_word,vector<int>& is_custom_vec,vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo){
     //cout<<"Carattere: "<<suffix[current_suffix_len]<<", current_suffix_len: "<<current_suffix_len<<", suffix_len: "<<suffix_len<<"\n";
-    custom_prefix_trie* opt_node=root;
+    custom_prefix_trie* opt_node=root,*last_node=NULL;
     suffix_tree_node* father=NULL;
     while(current_suffix_len!=suffix_len){
+        opt_node->father=last_node;
         
         if(opt_node->sons.find(suffix[current_suffix_len]) == opt_node->sons.end())
             opt_node->sons[suffix[current_suffix_len]] = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
 
         //controllo se è un possibile padre
         if(current_suffix_len<suffix_len && opt_node->node) father=opt_node->node;
+        last_node=opt_node;
 
         opt_node=opt_node->sons[suffix[current_suffix_len++]];
+
+        opt_node->father=last_node;
     }
 
     if(!opt_node->node)
@@ -243,6 +299,7 @@ void add_in_custom_prefix_trie(custom_prefix_trie* root,const char* S,const char
     //mut_nodes_map.lock();
     if(nodes_map[suffix_len].find(opt_node->node) == nodes_map[suffix_len].end()){
         nodes_list[suffix_len].push_back(opt_node->node);
+        nodes_list_trie[suffix_len].push_back(opt_node);
         nodes_map[suffix_len][opt_node->node]=true;
     }
     //mut_nodes_map.unlock();

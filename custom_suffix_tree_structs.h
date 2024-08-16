@@ -27,6 +27,9 @@ typedef struct suffix_tree_node{
     //bit_vector del nodo
     std::vector<bool> bit_vec;
 
+    //posizione dove cambia l'array degli indici rispetto al padre
+    int min_father=-1,max_father=-1;
+
 }suffix_tree_node;
 
 

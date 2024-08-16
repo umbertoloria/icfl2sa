@@ -134,3 +134,37 @@ std::vector<int> get_common_prefix_merge_4_multihreading_3(custom_prefix_trie* r
     return res;
 
 }
+
+
+std::vector<int> get_common_prefix_partition(suffix_tree_node* root){
+    //cout<<"Node: \n";
+    //print_substring(root->suffix,root->suffix_len);
+    //cout<<"\n";
+    std::vector<int> result,temp,common=root->common_chain_of_suffiexes;
+    int position=0;
+    //cout<<"common: \n";
+    //printVec(common);
+    if(root->sons.empty()){
+        //cout<<"result: \n";
+        //printVec(common);
+        return common;
+    }
+    for(int i=0;i<root->sons.size();i++){
+        temp=get_common_prefix_partition(root->sons[i]);
+        if(root->sons[i]->min_father==-1){
+            result.insert(result.end(),common.begin()+position,common.end());
+            result.insert(result.end(),temp.begin(),temp.end());
+            position=common.size();
+        }
+        else{
+            result.insert(result.end(),common.begin()+position,common.begin()+root->sons[i]->min_father);
+            result.insert(result.end(),temp.begin(),temp.end());
+            if(root->sons[i]->max_father==-1) position=root->sons[i]->min_father;
+            else position=root->sons[i]->max_father;
+        }
+    }
+    result.insert(result.end(),common.begin()+position,common.end());
+    //cout<<"result: \n";
+    //printVec(result);
+    return result;
+}
