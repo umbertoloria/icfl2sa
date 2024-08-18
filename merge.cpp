@@ -806,6 +806,8 @@ void in_prefix_merge_bit_vector_5_10(const char* S, std::vector<int>& icfl_list,
     int i=min_father,j=0,father_offset=father_node->suffix_len;
     
     result.reserve((max_father-min_father)+1+child.size());
+    //cout<<"number of indexes in chain: "<<(max_father-min_father)+1+child.size()<<"\n";
+    //cout<<"number of indexes in child: "<<child.size()<<"\n";
 
     while( i<max_father && j<child.size()){
         if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]] ){

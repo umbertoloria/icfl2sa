@@ -149,22 +149,30 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
     //printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
+    //for(int i=1;i<=custom_max_size;++i)
+    //    //omp_set_num_threads(nodes_list[i].size());
+    //    #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+    //        //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        //nodes_list[i].at(j)->array_of_indexes.clear();
+    //        //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
+    //        //nodes_list[i].at(j)->custom_array_of_indexes.clear();
+    //        //nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
+    //    }
+    //
+    //    //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
+    //printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+
     for(int i=1;i<=custom_max_size;++i)
-        //omp_set_num_threads(nodes_list[i].size());
-        #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+        #pragma omp parallel for schedule(dynamic)//shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            //nodes_list[i].at(j)->array_of_indexes.clear();
-            //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
-            //nodes_list[i].at(j)->custom_array_of_indexes.clear();
-            //nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
         }
-    
-        //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
     printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
-
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
@@ -232,7 +240,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
             in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            cout<<"numeber of indexes in node: "<<nodes_list[i].at(j)->array_of_indexes.size()<<"\n";
+            //if(nodes_list[i].at(j)->suffix_len == 1) cout<<"numeber of indexes in node: "<<nodes_list[i].at(j)->array_of_indexes.size()<<"\n";
             //nodes_list[i].at(j)->array_of_indexes.clear();
             //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
             //nodes_list[i].at(j)->custom_array_of_indexes.clear();
