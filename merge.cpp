@@ -44,7 +44,7 @@ int binarySearch_for_prefix_3(const char* S, std::vector<int>& father,int child,
     int mid,temp_res;
     while(high>=low){
         mid=(low+high)/2;
-        temp_res = std::strcmp(S+child+child_offset,S+father[mid]+child_offset);
+        temp_res = strcmp(S+child+child_offset,S+father[mid]+child_offset);
 
         if(high == low){
             if (temp_res>0) return mid;
@@ -691,13 +691,14 @@ void in_prefix_merge_bit_vector_5_9(const char* S, std::vector<int>& icfl_list, 
     
     
     
-    //i figli non vanno messi in coda ma da min_father in poi
-    int finish_position;
-    //da questo punto in poi c'è almeno una stringa in father che ha almeno child_offset caratteri uguali
-    finish_position=binarySearch_for_prefix(S,father,child.at(child.size()-1))+1;
-    //finché non ne trovo uno diverso
-    for(int i=finish_position;i<father.size();i++) if(strncmp(S+child.at(0),S+father.at(i),child_offset)!=0){ max_father=i;break;}
-    if(max_father==-1) max_father=father.size();
+    ////i figli non vanno messi in coda ma da min_father in poi
+    //int finish_position;
+    ////da questo punto in poi c'è almeno una stringa in father che ha almeno child_offset caratteri uguali
+    //finish_position=binarySearch_for_prefix(S,father,child.at(child.size()-1))+1;
+    ////finché non ne trovo uno diverso
+    //for(int i=finish_position;i<father.size();i++) if(strncmp(S+child.at(0),S+father.at(i),child_offset)!=0){ max_father=i;break;}
+    //if(max_father==-1) max_father=father.size();
+    max_father=binarySearch_for_prefix(S,father,child.at(child.size()-1))+1;
     
     //cout<<"result size: "<<father.size()+child.size()<<"\n";
     //cout<<"min_father: "<<min_father<<", max_father: "<<max_father<<", difference: "<<max_father-min_father<<"\n";
@@ -713,11 +714,13 @@ void in_prefix_merge_bit_vector_5_9(const char* S, std::vector<int>& icfl_list, 
 
     while( i<max_father && j<child.size()){
         if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]] ){
-            best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
-            result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
-            result.push_back(child.at(j));
-            j++;
-            i=best_fit+1;
+            //best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
+            //result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
+            //result.push_back(child.at(j));
+            //j++;
+            //i=best_fit+1;
+            while(strcmp(S+child[j]+child_offset,S+father[i]+child_offset)<0) result.push_back(child[j++]);
+            result.push_back(father[i++]);
         }
         else if(is_custom_suffix[father[i]]){
             if(factor_list[father[i]]<=factor_list[child[j]]){
@@ -725,11 +728,13 @@ void in_prefix_merge_bit_vector_5_9(const char* S, std::vector<int>& icfl_list, 
                 else result.push_back(father[i++]);
             } 
             else{
-                best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
-                result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
-                result.push_back(child.at(j));
-                j++;
-                i=best_fit+1;
+                //best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
+                //result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
+                //result.push_back(child.at(j));
+                //j++;
+                //i=best_fit+1;
+                while(strcmp(S+child[j]+child_offset,S+father[i]+child_offset)<0) result.push_back(child[j++]);
+                result.push_back(father[i++]);
             }
         }
 
@@ -739,11 +744,13 @@ void in_prefix_merge_bit_vector_5_9(const char* S, std::vector<int>& icfl_list, 
                 else result.push_back(child[j++]);
             }
             else{
-                best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
-                result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
-                result.push_back(child.at(j));
-                j++;
-                i=best_fit+1;
+                //best_fit=binarySearch_for_prefix_3(S,father,child.at(j),i,max_father-1,child_offset);
+                //result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
+                //result.push_back(child.at(j));
+                //j++;
+                //i=best_fit+1;
+                while(strcmp(S+child[j]+child_offset,S+father[i]+child_offset)<0) result.push_back(child[j++]);
+                result.push_back(father[i++]);
             }
         }
 

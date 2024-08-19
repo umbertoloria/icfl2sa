@@ -138,46 +138,52 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
     int node_list_size=0;
     for(int i=1;i<=custom_max_size;++i) node_list_size+=nodes_list[i].size();
     cout<<"nodes_list.size(): "<<node_list_size<<"\n";
-    //Merge di ogni singolo nodo
+    
+
     itime = omp_get_wtime();
-
-    //for(int i=1;i<=custom_max_size;++i)
-    //    #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
-    //    for(int j=0;j<nodes_list[i].size();++j)
-    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-    //    //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
-    //printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
-
-
-    //for(int i=1;i<=custom_max_size;++i)
-    //    //omp_set_num_threads(nodes_list[i].size());
-    //    #pragma omp parallel for //shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+    //#pragma omp parallel for schedule(dynamic)
+    //for(int i=1;i<=custom_max_size;++i){
     //    for(int j=0;j<nodes_list[i].size();++j){
-    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-    //        //in_prefix_merge_bit_vector_5_6(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father->common_chain_of_suffiexes,nodes_list[i].at(j)->array_of_indexes,nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-    //        in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-    //        //nodes_list[i].at(j)->array_of_indexes.clear();
-    //        //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
-    //        //nodes_list[i].at(j)->custom_array_of_indexes.clear();
-    //        //nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
+    //        //merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+    //        merge_single_node_4(S,nodes_list[i].at(j));
     //    }
-    //
-    //    //merge_single_node_3(S,nodes_list.at(i),icfl_list,is_custom_vec,factor_list,ord,lenght_of_word);
-    //printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //}
+    std::vector<suffix_tree_node*> all_nodes;
+    for(int i=1;i<=custom_max_size;++i) all_nodes.insert(all_nodes.end(),nodes_list[i].begin(),nodes_list[i].end());
+    #pragma omp parallel for schedule(dynamic)
+    for(int i=0;i<all_nodes.size();++i){
+        merge_single_node_4(S,all_nodes.at(i));
+    }
 
+    printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    for(int i=1;i<=custom_max_size;++i)
-        #pragma omp parallel for schedule(dynamic)//shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+    itime = omp_get_wtime();
+    for(int i=1;i<=custom_max_size;++i){
+        #pragma omp parallel for schedule(dynamic)
         for(int j=0;j<nodes_list[i].size();++j){
-            merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
                 //ricerca binaria
                 in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             else
                 //ricerca lineare
                 in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
         }
-    printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+    }
+    printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    //itime = omp_get_wtime();
+    //for(int i=1;i<=custom_max_size;++i)
+    //    #pragma omp parallel for schedule(dynamic)//shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+    //        if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+    //            //ricerca binaria
+    //            in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        else
+    //            //ricerca lineare
+    //            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //    }
+    //printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //stampa_prefix_trie(root);
     //cout<<"\n";
@@ -239,39 +245,46 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     for(int i=1;i<=custom_max_size;++i) node_list_size+=nodes_list[i].size();
     cout<<"nodes_list.size(): "<<node_list_size<<"\n";
     
-    itime = omp_get_wtime();
+    //itime = omp_get_wtime();
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+    //        if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+    //            //ricerca binaria
+    //            in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        else
+    //            //ricerca lineare
+    //            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        //if(nodes_list[i].at(j)->suffix_len == 1) cout<<"numeber of indexes in node: "<<nodes_list[i].at(j)->array_of_indexes.size()<<"\n";
+    //        //nodes_list[i].at(j)->array_of_indexes.clear();
+    //        //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
+    //        //nodes_list[i].at(j)->custom_array_of_indexes.clear();
+    //        //nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
+    //    }
+    //}
+    //printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    itime = omp_get_wtime();
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+            //merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+            merge_single_node_4(S,nodes_list[i].at(j));
+        }
+    }
+    printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    itime = omp_get_wtime();
+    for(int i=1;i<=custom_max_size;++i){
+        for(int j=0;j<nodes_list[i].size();++j){
+            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
                 //ricerca binaria
                 in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             else
                 //ricerca lineare
                 in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            //if(nodes_list[i].at(j)->suffix_len == 1) cout<<"numeber of indexes in node: "<<nodes_list[i].at(j)->array_of_indexes.size()<<"\n";
-            //nodes_list[i].at(j)->array_of_indexes.clear();
-            //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
-            //nodes_list[i].at(j)->custom_array_of_indexes.clear();
-            //nodes_list[i].at(j)->custom_array_of_indexes.shrink_to_fit();
         }
     }
-    printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
-
-    //for(int i=1;i<=custom_max_size;++i){
-    //    for(int j=0;j<nodes_list[i].size();++j){
-    //        merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-    //    }
-    //}
-    //printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
-//
-    //for(int i=1;i<=custom_max_size;++i){
-    //    for(int j=0;j<nodes_list[i].size();++j){
-    //        in_prefix_merge_bit_vector_5_8(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,indice_nodo);
-    //    }
-    //}
-    //printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+    printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     add_node_to_sons(root,root->node);
 
@@ -408,6 +421,11 @@ void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &
 void merge_single_node_3(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord,int lenght_of_word){
     quicksort_of_indexes_7(S,node->custom_array_of_indexes,lenght_of_word);
     node->array_of_indexes = in_prefix_merge_bit_vector_9(S,icfl_list,icfl_list.size(),node->array_of_indexes,node->custom_array_of_indexes,is_custom_suffix,node->suffix_len,factor_list);
+}
+
+void merge_single_node_4(const char* S,suffix_tree_node* node){
+    node->array_of_indexes.insert(node->array_of_indexes.end(),node->custom_array_of_indexes.begin(),node->custom_array_of_indexes.end());
+    quicksort_of_indexes_5_2(S,node->array_of_indexes,node->suffix_len);
 }
 
 //0 se il primo, 1 se il secondo
