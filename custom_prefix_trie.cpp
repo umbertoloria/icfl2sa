@@ -170,7 +170,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
         #pragma omp parallel for schedule(dynamic)//shared(S,nodes_list,icfl_list,is_custom_vec,factor_list,ord)
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+                //ricerca binaria
+                in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            else
+                //ricerca lineare
+                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
         }
     printf("tot merge_single_node_2 + in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
@@ -239,7 +244,12 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
             merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 50)
+                //ricerca binaria
+                in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            else
+                //ricerca lineare
+                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             //if(nodes_list[i].at(j)->suffix_len == 1) cout<<"numeber of indexes in node: "<<nodes_list[i].at(j)->array_of_indexes.size()<<"\n";
             //nodes_list[i].at(j)->array_of_indexes.clear();
             //nodes_list[i].at(j)->array_of_indexes.shrink_to_fit();
