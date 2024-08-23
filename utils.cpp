@@ -11,6 +11,14 @@ int pstrcmp( const void* a, const void* b )
   return strcmp( *(const char**)a, *(const char**)b );
 }
 
+
+void printUnorderedSet(std::unordered_set<int>& mySet) {
+    for (const int& elem : mySet) {
+        std::cout << elem << " ";
+    }
+    std::cout << std::endl;
+}
+
 void printDict(std::map<int,std::vector<int>>& index_to_nodes){
 
     for (const auto &[k, v] : index_to_nodes){

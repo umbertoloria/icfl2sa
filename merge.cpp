@@ -3,62 +3,130 @@
 int tot_n_confronti=0,tot_n_confronti_evitati=0,tot_n_confronti_regola=0,tot_n_confronti_strcmp=0;
 int tot_two_custom=0,tot_one_custom=0;
 
+int n_suffissi_clacolati_sinistra=0,n_suffissi_clacolati_destra=0;
+
+int custom_strcmp_skip=0;
+
 //0 -> x<y
 //1 -> y<x
+
+int custom_strcmp(const char *S,int x, int y,std::vector<std::unordered_set<int>>& is_less_then) {
+    while (*(S+x) && (*(S+x) == *(S+y))) {
+        if(is_less_then[x].find(y) != is_less_then[x].end()) {custom_strcmp_skip++;return -1;}
+        if(is_less_then[y].find(x) != is_less_then[y].end()) {custom_strcmp_skip++;return 1;}
+        x++;
+        y++;
+    }
+    return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
+}
+
+
 int rules(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     
-        if(is_custom_suffix[x] && is_custom_suffix[y] ){
-            tot_two_custom++;
+    if(is_custom_suffix[x] && is_custom_suffix[y] ){
+        tot_two_custom++;
+        tot_n_confronti_strcmp++;
+        if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
+        else return 0;
+    }
+    else if(is_custom_suffix[x]){
+        tot_one_custom++;
+        if(factor_list[x]<=factor_list[y]){
+            tot_n_confronti_regola++;
+            if(y >= icfl_list[icfl_list_size-1])return 1;
+            else return 0;
+        } 
+        else{
             tot_n_confronti_strcmp++;
             if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
             else return 0;
         }
-        else if(is_custom_suffix[x]){
-            tot_one_custom++;
-            if(factor_list[x]<=factor_list[y]){
-                tot_n_confronti_regola++;
-                if(y >= icfl_list[icfl_list_size-1])return 1;
-                else return 0;
-            } 
-            else{
-                tot_n_confronti_strcmp++;
-                if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
-                else return 0;
-            }
+    }
+    else if(is_custom_suffix[y]){
+        tot_one_custom++;
+        if(factor_list[y]<=factor_list[x]){
+            tot_n_confronti_regola++;
+            if(x >= icfl_list[icfl_list_size-1]) return 0;
+            else return 1;
         }
-
-        else if(is_custom_suffix[y]){
-            tot_one_custom++;
-            if(factor_list[y]<=factor_list[x]){
-                tot_n_confronti_regola++;
-                if(x >= icfl_list[icfl_list_size-1]) return 0;
-                else return 1;
-            }
-            else{
-                tot_n_confronti_strcmp++;
-                if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
-                else return 0;
-            }
-        }
-
-        else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
-        else if(factor_list[x]==factor_list[y]){tot_n_confronti_regola++;return 1;}
         else{
-            if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
-            else if(y >= icfl_list[icfl_list_size-1]){
+            tot_n_confronti_strcmp++;
+            if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
+            else return 0;
+        }
+    }
+    else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+    else if(factor_list[x]==factor_list[y]){tot_n_confronti_regola++;return 1;}
+    else{
+        if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+        else if(y >= icfl_list[icfl_list_size-1]){
+            tot_n_confronti_strcmp++;
+            if(strcmp(S+y+child_offset,S+x+child_offset)<0)return 1;
+            else return 0;
+        }
+        else{
+            if(x > y){tot_n_confronti_regola++;return 1;}
+            else{
                 tot_n_confronti_strcmp++;
                 if(strcmp(S+y+child_offset,S+x+child_offset)<0)return 1;
                 else return 0;
             }
+        }
+    }
+}
+
+int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<std::unordered_set<int>>& is_less_then){
+    
+    if(is_custom_suffix[x] && is_custom_suffix[y] ){
+        tot_two_custom++;
+        tot_n_confronti_strcmp++;
+        if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+        else return 0;
+    }
+    else if(is_custom_suffix[x]){
+        tot_one_custom++;
+        if(factor_list[x]<=factor_list[y]){
+            tot_n_confronti_regola++;
+            if(y >= icfl_list[icfl_list_size-1])return 1;
+            else return 0;
+        } 
+        else{
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            else return 0;
+        }
+    }
+    else if(is_custom_suffix[y]){
+        tot_one_custom++;
+        if(factor_list[y]<=factor_list[x]){
+            tot_n_confronti_regola++;
+            if(x >= icfl_list[icfl_list_size-1]) return 0;
+            else return 1;
+        }
+        else{
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            else return 0;
+        }
+    }
+    else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+    else if(factor_list[x]==factor_list[y]){tot_n_confronti_regola++;return 1;}
+    else{
+        if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+        else if(y >= icfl_list[icfl_list_size-1]){
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+            else return 0;
+        }
+        else{
+            if(x > y){tot_n_confronti_regola++;return 1;}
             else{
-                if(x > y){tot_n_confronti_regola++;return 1;}
-                else{
-                    tot_n_confronti_strcmp++;
-                    if(strcmp(S+y+child_offset,S+x+child_offset)<0)return 1;
-                    else return 0;
-                }
+                tot_n_confronti_strcmp++;
+                if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+                else return 0;
             }
         }
+    }
 }
 
 int pstrcmp2( const void* a, const void* b ){return strcmp( *(const char**)a, *(const char**)b );}
@@ -1285,7 +1353,7 @@ std::vector<int> in_prefix_merge_bit_vector_9(const char* S, vector<int>& icfl_l
 
 
 //non funziona
-void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::unordered_map<int,std::set<int>>& is_less_then){
+void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<std::unordered_set<int>>& is_less_then){
     
     std::vector<int>& father=father_node->common_chain_of_suffiexes,&child=child_node->array_of_indexes;
     if(father.empty()){result=child;return;}
@@ -1325,20 +1393,25 @@ void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, c
         if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]]){
             if(is_less_then[father[i]].find(child[j]) != is_less_then[father[i]].end())
                 {result.push_back(father[i++]);check_rules=false;}
-            else if(is_less_then[child[j]].find(father[i]) != is_less_then[father[i]].end())
+            else if(is_less_then[child[j]].find(father[i]) != is_less_then[child[j]].end())
                 {result.push_back(child[j++]);check_rules=false;}
             if(check_rules==false) n_confronti_evitati++;
         }
         if(check_rules){
-            if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0){
-                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
-                    is_less_then[father[i]-equal_offset].insert(child[j]-equal_offset);
+            //if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0){
+            if(rules_2(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list,is_less_then)==0){
+                for (equal_offset=0;father[i]-equal_offset>=0 && child[j]-equal_offset>=0 && *(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && is_less_then[father[i]-equal_offset].find(child[j]-equal_offset) == is_less_then[father[i]-equal_offset].end();equal_offset++)
+                    {is_less_then[father[i]-equal_offset].insert(child[j]-equal_offset);n_suffissi_clacolati_sinistra++;}
+                for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[father[i]+equal_offset].find(child[j]+equal_offset) == is_less_then[father[i]+equal_offset].end();equal_offset++)
+                    {is_less_then[father[i]+equal_offset].insert(child[j]+equal_offset);n_suffissi_clacolati_destra++;}
 
                 result.push_back(father[i++]);
             }
             else {
-                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
-                    is_less_then[child[j]-equal_offset].insert(father[i]-equal_offset);
+                for (equal_offset=0;father[i]-equal_offset>=0 && child[j]-equal_offset>=0 && *(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) &&  is_less_then[child[j]-equal_offset].find(father[i]-equal_offset) == is_less_then[child[j]-equal_offset].end();equal_offset++)
+                    {is_less_then[child[j]-equal_offset].insert(father[i]-equal_offset);n_suffissi_clacolati_sinistra++;}
+                for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[child[j]+equal_offset].find(father[i]+equal_offset) == is_less_then[child[j]+equal_offset].end();equal_offset++)
+                    {is_less_then[child[j]+equal_offset].insert(father[i]+equal_offset);n_suffissi_clacolati_destra++;}
                 result.push_back(child[j++]);
             }
         }
@@ -1350,6 +1423,10 @@ void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, c
     
     if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
     if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+
+    //cout<<"result: \n";
+    //printVec(result);
+    //cout<<"\n";
 }
 
 void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int> & is_less_then){
@@ -1449,4 +1526,7 @@ void printConfrontiEvitati(){
     cout<<"Numero confronti con strcmp: "<<tot_n_confronti_strcmp<<"\n";
     cout<<"Numero confronti tra due custom: "<<tot_two_custom<<"\n";
     cout<<"Numero confronti tra un custom e uno canonico: "<<tot_one_custom<<"\n";
+    cout<<"Numero coppie calolate verso sinistra:  "<<n_suffissi_clacolati_sinistra<<"\n";
+    cout<<"Numero coppie calolate verso destra:  "<<n_suffissi_clacolati_destra<<"\n";
+    cout<<"Numero skip della custom_strcmp:  "<<custom_strcmp_skip<<"\n";
 }

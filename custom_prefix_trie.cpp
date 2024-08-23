@@ -7,7 +7,7 @@ std::mutex mut_nodes_map;
 std::unordered_map<suffix_tree_node*,int> ordered_nodes_list;
 
 //mapping per tenere conto degli ordini tra gli indici
-std::unordered_map<int,std::set<int>> is_less_then;
+std::vector<std::unordered_set<int>> is_less_then;
 std::vector<int> is_less_then_2;
 
 custom_prefix_trie* init_custom_prefix_trie(){
@@ -256,8 +256,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
 
-    //is_less_then.reserve(lenght_of_word);
-    is_less_then_2.resize(lenght_of_word,-1);
+    is_less_then.resize(lenght_of_word,std::unordered_set<int>());
+    //is_less_then_2.resize(lenght_of_word,-1);
 
     printf("tot strutture d'appoggio Time taken: %.2fs\n", omp_get_wtime() - itime);
     
@@ -325,13 +325,20 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //SPERIMENTALE
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            //in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
-            in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
+            in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
+            //in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
         }
     }
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     printConfrontiEvitati();
+
+    //for(int i=0;i<is_less_then.size();++i){
+    //    if(!is_less_then[i].empty()){
+    //        cout<<" index: "<<i<<"\n";
+    //        printUnorderedSet(is_less_then[i]);
+    //    }
+    //}
 
     add_node_to_sons(root,root->node);
 

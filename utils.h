@@ -10,6 +10,7 @@
 #include "mutex"
 #include "radix_sort.h"
 #include <execution>
+#include <unordered_set>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ void print(string word);
 void printVector(vector<int> vec, string msg);
 void printVec(vector<int> vec);
 void printDict(std::map<int,std::vector<int>>& index_to_nodes);
+void printUnorderedSet(std::unordered_set<int>& mySet);
 void printBoolVec(vector<bool> vec);
 char* append(const char *s, char c);
 void quicksort(int_vector* x, int start, int end);
