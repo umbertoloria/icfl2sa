@@ -1,46 +1,59 @@
 #include "merge.h"
 
+int tot_n_confronti=0,tot_n_confronti_evitati=0,tot_n_confronti_regola=0,tot_n_confronti_strcmp=0;
+int tot_two_custom=0,tot_one_custom=0;
+
 //0 -> x<y
 //1 -> y<x
 int rules(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     
         if(is_custom_suffix[x] && is_custom_suffix[y] ){
+            tot_two_custom++;
+            tot_n_confronti_strcmp++;
             if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
             else return 0;
         }
         else if(is_custom_suffix[x]){
+            tot_one_custom++;
             if(factor_list[x]<=factor_list[y]){
+                tot_n_confronti_regola++;
                 if(y >= icfl_list[icfl_list_size-1])return 1;
                 else return 0;
             } 
             else{
+                tot_n_confronti_strcmp++;
                 if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
                 else return 0;
             }
         }
 
         else if(is_custom_suffix[y]){
+            tot_one_custom++;
             if(factor_list[y]<=factor_list[x]){
+                tot_n_confronti_regola++;
                 if(x >= icfl_list[icfl_list_size-1]) return 0;
                 else return 1;
             }
             else{
+                tot_n_confronti_strcmp++;
                 if(strcmp(S+y+child_offset,S+x+child_offset)<0) return 1;
                 else return 0;
             }
         }
 
-        else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1])return 0;
-        else if(factor_list[x]==factor_list[y])return 1;
+        else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+        else if(factor_list[x]==factor_list[y]){tot_n_confronti_regola++;return 1;}
         else{
-            if(x >= icfl_list[icfl_list_size-1])return 0;
+            if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
             else if(y >= icfl_list[icfl_list_size-1]){
+                tot_n_confronti_strcmp++;
                 if(strcmp(S+y+child_offset,S+x+child_offset)<0)return 1;
                 else return 0;
             }
             else{
-                if(x > y)return 1;
+                if(x > y){tot_n_confronti_regola++;return 1;}
                 else{
+                    tot_n_confronti_strcmp++;
                     if(strcmp(S+y+child_offset,S+x+child_offset)<0)return 1;
                     else return 0;
                 }
@@ -850,7 +863,7 @@ void in_prefix_merge_bit_vector_5_9_2(const char* S, std::vector<int>& icfl_list
 //salva nel risultato solo gli indici dove cambia l'array degli indici del padre e l'array,gang
 //riceca lineare degli indici
 void in_prefix_merge_bit_vector_5_10(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
-    std::vector<int> father=father_node->common_chain_of_suffiexes,child=child_node->array_of_indexes;
+    std::vector<int>& father=father_node->common_chain_of_suffiexes,&child=child_node->array_of_indexes;
     if(father.empty()){result=child;return;}
     
 
@@ -883,18 +896,12 @@ void in_prefix_merge_bit_vector_5_10(const char* S, std::vector<int>& icfl_list,
     //cout<<"number of indexes in child: "<<child.size()<<"\n";
 
     while( i<max_father && j<child.size()){
-        if(is_custom_suffix[father[i]] &&is_custom_suffix[child[j]]){
-            best_fit=binarySearch_for_prefix_4(S,father,child.at(j),i,max_father-1,child_offset,icfl_list,icfl_list_size,is_custom_suffix,factor_list);
-            result.insert(result.end(),father.begin()+i,father.begin()+best_fit+1);
-            result.push_back(child.at(j));
-            j++;
-            i=best_fit+1;
-        }
-        else{
-            if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0) result.push_back(father[i++]);
-            else result.push_back(child[j++]);
-        }
+        if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0) result.push_back(father[i++]);
+        else result.push_back(child[j++]);
     }
+
+    //cout<<"number of iterations: "<<num_of_iterations<<"\n";
+
     //cout<<"i: "<<i<<", j: "<<j<<"\n";
     if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
     if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
@@ -902,6 +909,50 @@ void in_prefix_merge_bit_vector_5_10(const char* S, std::vector<int>& icfl_list,
     //cout<<"result: \n";
     //printVec(result);
     //cout<<"\n";
+}
+
+//uas il merge
+void in_prefix_merge_bit_vector_5_10_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
+    std::vector<int> father=father_node->common_chain_of_suffiexes,child=child_node->array_of_indexes;
+    if(father.empty()){result=child;return;}
+    
+
+    //cout<<"father: \n";
+    //printVec(father);
+    //cout<<"child: \n";
+    //printVec(child);
+
+    //creo un vettore che di interi che hanno i primi child->suffix_len caratteri uguali al padre
+    int best_fit,starting_position,min_father=-1,max_father=-1,child_offset=child_node->suffix_len;
+    
+    //finché non ne trovo uno maggiore o uguale
+    for(int i=0;i<father.size();++i) if(strncmp(S+child.at(0),S+father.at(i),child_offset)<=0){min_father=i;break;}
+    if(min_father == -1 || strncmp(S+child.at(0),S+father.at(min_father),child_offset)<0){
+        child_node->min_father=min_father;
+        result=child;
+        return;
+    }
+    for(int i=min_father;i<father.size() && strncmp(S+child.at(0),S+father.at(i),child_offset)==0;++i) max_father=i+1;
+    
+    //qui max father potrebbe avere anche avere un valore effettivo
+    child_node->min_father=min_father;
+    child_node->max_father=max_father;
+
+    //cerchiamo la posizione migliore per il primo elemento dei figli
+    int i=min_father,j=0,father_offset=father_node->suffix_len;
+    
+    result.reserve((max_father-min_father)+1+child.size());
+
+    std::merge(
+           father.begin()+i,
+           father.begin()+max_father,
+           child.begin(),
+           child.end(),
+           std::back_inserter(result),
+           [S,&icfl_list,icfl_list_size,child_offset,&is_custom_suffix,&factor_list](int a, int b) {
+               return !rules(S,icfl_list,icfl_list_size,a,b,child_offset,is_custom_suffix,factor_list);  // Confronta per ordine crescente
+           });
+
 }
 
 //salva nel risultato solo gli indici dove cambia l'array degli indici del padre e l'array,gang
@@ -1232,6 +1283,144 @@ std::vector<int> in_prefix_merge_bit_vector_9(const char* S, vector<int>& icfl_l
     return result;
 }
 
+
+//non funziona
+void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::unordered_map<int,std::set<int>>& is_less_then){
+    
+    std::vector<int>& father=father_node->common_chain_of_suffiexes,&child=child_node->array_of_indexes;
+    if(father.empty()){result=child;return;}
+    
+
+    //cout<<"father: \n";
+    //printVec(father);
+    //cout<<"child: \n";
+    //printVec(child);
+
+    //creo un vettore che di interi che hanno i primi child->suffix_len caratteri uguali al padre
+    int best_fit,starting_position,min_father=-1,max_father=-1,child_offset=child_node->suffix_len;
+    
+    //finché non ne trovo uno maggiore o uguale
+    for(int i=0;i<father.size();++i) if(strncmp(S+child.at(0),S+father.at(i),child_offset)<=0){min_father=i;break;}
+    if(min_father == -1 || strncmp(S+child.at(0),S+father.at(min_father),child_offset)<0){
+        child_node->min_father=min_father;
+        result=child;
+        return;
+    }
+    for(int i=min_father;i<father.size() && strncmp(S+child.at(0),S+father.at(i),child_offset)==0;++i) max_father=i+1;
+    
+    //qui max father potrebbe avere anche avere un valore effettivo
+    child_node->min_father=min_father;
+    child_node->max_father=max_father;
+
+    int i=min_father,j=0,father_offset=father_node->suffix_len;
+    int equal_offset;
+    bool check_rules;
+    int n_confronti=0,n_confronti_evitati=0;
+    
+    result.reserve((max_father-min_father)+1+child.size());
+
+    while( i<max_father && j<child.size()){
+        n_confronti++;
+        check_rules=true;
+        if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]]){
+            if(is_less_then[father[i]].find(child[j]) != is_less_then[father[i]].end())
+                {result.push_back(father[i++]);check_rules=false;}
+            else if(is_less_then[child[j]].find(father[i]) != is_less_then[father[i]].end())
+                {result.push_back(child[j++]);check_rules=false;}
+            if(check_rules==false) n_confronti_evitati++;
+        }
+        if(check_rules){
+            if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0){
+                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
+                    is_less_then[father[i]-equal_offset].insert(child[j]-equal_offset);
+
+                result.push_back(father[i++]);
+            }
+            else {
+                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
+                    is_less_then[child[j]-equal_offset].insert(father[i]-equal_offset);
+                result.push_back(child[j++]);
+            }
+        }
+        
+    }
+    //cout<<"Numero confronti: "<<n_confronti<<", Numero confronti evitati: "<<n_confronti_evitati<<"\n";
+    tot_n_confronti+=n_confronti;
+    tot_n_confronti_evitati+=n_confronti_evitati;
+    
+    if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
+    if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+}
+
+void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int> & is_less_then){
+    
+    std::vector<int>& father=father_node->common_chain_of_suffiexes,&child=child_node->array_of_indexes;
+    if(father.empty()){result=child;return;}
+    
+
+    //cout<<"father: \n";
+    //printVec(father);
+    //cout<<"child: \n";
+    //printVec(child);
+
+    //creo un vettore che di interi che hanno i primi child->suffix_len caratteri uguali al padre
+    int best_fit,starting_position,min_father=-1,max_father=-1,child_offset=child_node->suffix_len;
+    
+    //finché non ne trovo uno maggiore o uguale
+    for(int i=0;i<father.size();++i) if(strncmp(S+child.at(0),S+father.at(i),child_offset)<=0){min_father=i;break;}
+    if(min_father == -1 || strncmp(S+child.at(0),S+father.at(min_father),child_offset)<0){
+        child_node->min_father=min_father;
+        result=child;
+        return;
+    }
+    for(int i=min_father;i<father.size() && strncmp(S+child.at(0),S+father.at(i),child_offset)==0;++i) max_father=i+1;
+    
+    //qui max father potrebbe avere anche avere un valore effettivo
+    child_node->min_father=min_father;
+    child_node->max_father=max_father;
+
+    int i=min_father,j=0,father_offset=father_node->suffix_len;
+    int equal_offset;
+    bool check_rules;
+    int n_confronti=0,n_confronti_evitati=0;
+    
+    result.reserve((max_father-min_father)+1+child.size());
+
+    while( i<max_father && j<child.size()){
+        n_confronti++;
+        check_rules=true;
+        if(is_custom_suffix[father[i]] && is_custom_suffix[child[j]]){
+            if(is_less_then[father[i]] == child[j])
+                {result.push_back(father[i++]);check_rules=false;}
+            else if(is_less_then[child[j]] == father[i])
+                {result.push_back(child[j++]);check_rules=false;}
+            if(check_rules==false) n_confronti_evitati++;
+        }
+        if(check_rules){
+            if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0){
+                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
+                    is_less_then[father[i]-equal_offset]=child[j]-equal_offset;
+
+                result.push_back(father[i++]);
+            }
+            else {
+                for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
+                    is_less_then[child[j]-equal_offset]=father[i]-equal_offset;
+                result.push_back(child[j++]);
+            }
+        }
+        
+    }
+    //cout<<"Numero confronti: "<<n_confronti<<", Numero confronti evitati: "<<n_confronti_evitati<<"\n";
+    tot_n_confronti+=n_confronti;
+    tot_n_confronti_evitati+=n_confronti_evitati;
+
+    if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
+    if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+}
+
+
+
 void alternative_prefix_merge_bit_vector(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     result=father;
     int best_fit,i=0;
@@ -1251,4 +1440,13 @@ void alternative_prefix_merge_bit_vector_2(const char* S, std::vector<int>& icfl
     for(int i=0;i<n_elements;++i) strings[i]=S+result.at(i);
     qsort(strings,n_elements,sizeof(strings[0]),pstrcmp2);
     for(int i=0;i<n_elements;++i) result.at(i)=(std::uintptr_t)strings[i]-(std::uintptr_t)S;
+}
+
+void printConfrontiEvitati(){
+    cout<<"Numero confronti: "<<tot_n_confronti<<"\n";
+    cout<<"Numero confronti evitati: "<<tot_n_confronti_evitati<<"\n";
+    cout<<"Numero confronti evitati con le regole: "<<tot_n_confronti_regola<<"\n";
+    cout<<"Numero confronti con strcmp: "<<tot_n_confronti_strcmp<<"\n";
+    cout<<"Numero confronti tra due custom: "<<tot_two_custom<<"\n";
+    cout<<"Numero confronti tra un custom e uno canonico: "<<tot_one_custom<<"\n";
 }

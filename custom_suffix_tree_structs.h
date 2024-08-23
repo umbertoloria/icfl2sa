@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -29,6 +30,9 @@ typedef struct suffix_tree_node{
 
     //posizione dove cambia l'array degli indici rispetto al padre
     int min_father=-1,max_father=-1;
+
+    //da vedere
+    std::map<int,std::vector<int>> index_to_nodes;
 
 }suffix_tree_node;
 

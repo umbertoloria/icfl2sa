@@ -6,6 +6,10 @@ std::map<int,std::vector<custom_prefix_trie*>> nodes_list_trie;
 std::mutex mut_nodes_map;
 std::unordered_map<suffix_tree_node*,int> ordered_nodes_list;
 
+//mapping per tenere conto degli ordini tra gli indici
+std::unordered_map<int,std::set<int>> is_less_then;
+std::vector<int> is_less_then_2;
+
 custom_prefix_trie* init_custom_prefix_trie(){
     custom_prefix_trie* x = new(malloc(sizeof(custom_prefix_trie))) custom_prefix_trie{};
     //cout<<"Dict vuoto: "<<x.sons.empty()<<"\n";
@@ -15,7 +19,7 @@ custom_prefix_trie* init_custom_prefix_trie(){
     return x;
 }
 
-void
+void 
 delete_custom_prefix_trie(custom_prefix_trie* x){
     delete_suffix_tree_node(x->node);
     cout<<"c\n";
@@ -117,6 +121,9 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
     indice_nodo.resize(lenght_of_word);
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
+
+    //is_less_then.reserve(lenght_of_word);
+    is_less_then_2.resize(lenght_of_word,-1);
     printf("tot strutture d'appoggio Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     //cout<<"creato root\n";
@@ -176,10 +183,14 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
             //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             //else
             //    //ricerca lineare
-                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            //    in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
         }
     }
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+
+    printConfrontiEvitati();
 
     //itime = omp_get_wtime();
     //for(int i=1;i<=custom_max_size;++i)
@@ -244,6 +255,10 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     indice_nodo.resize(lenght_of_word);
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
+
+    //is_less_then.reserve(lenght_of_word);
+    is_less_then_2.resize(lenght_of_word,-1);
+
     printf("tot strutture d'appoggio Time taken: %.2fs\n", omp_get_wtime() - itime);
     
     itime = omp_get_wtime(); 
@@ -256,6 +271,9 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //for(int i=0;i<custom_max_size;++i)
     //    compute_i_phase_alberello_custom_prefix_trie_2(S,lenght_of_word,icfl_list,icfl_list.size(),custom_icfl_list,custom_icfl_list.size(),root2,i,is_custom_vec,factor_list,indice_nodo);
     //printf("tot compute_i_phase_alberello_custom_prefix_trie_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
+
+    //stampa_prefix_trie(root);
+    //cout<<"\n";
 
     int node_list_size=0;
     for(int i=1;i<=custom_max_size;++i) node_list_size+=nodes_list[i].size();
@@ -286,26 +304,38 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     itime = omp_get_wtime();
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            //merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            merge_single_node_4(S,nodes_list[i].at(j));
+            merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+            //merge_single_node_4(S,nodes_list[i].at(j));
         }
     }
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     itime = omp_get_wtime();
+    //DA USARE
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        //if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
+    //        //    //ricerca binaria
+    //        //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //        //else
+    //            //ricerca lineare
+    //            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+    //    }
+    //}
+    //SPERIMENTALE
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            //if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
-            //    //ricerca binaria
-            //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            //else
-                //ricerca lineare
-                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            //in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
+            in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
         }
     }
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    printConfrontiEvitati();
+
     add_node_to_sons(root,root->node);
+
+    //for(int i=0;i<root->node->sons.size();i++){cout<<"a\n"; printDict(root->node->sons[i]->index_to_nodes);}
 
     //stampa_prefix_trie_common(root);
     //cout<<"\n";

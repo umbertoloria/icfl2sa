@@ -11,6 +11,16 @@ int pstrcmp( const void* a, const void* b )
   return strcmp( *(const char**)a, *(const char**)b );
 }
 
+void printDict(std::map<int,std::vector<int>>& index_to_nodes){
+
+    for (const auto &[k, v] : index_to_nodes){
+        std::cout << "m[" << k << "] = ";
+        printVec(v);
+        cout<<"\n";
+    }
+
+}
+
 bool comparisonFunc(const char *c1, const char *c2){return strcmp(c1, c2) < 0;}
 
 void print(string word){

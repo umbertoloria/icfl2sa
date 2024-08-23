@@ -17,6 +17,7 @@ using namespace std;
 void print(string word);
 void printVector(vector<int> vec, string msg);
 void printVec(vector<int> vec);
+void printDict(std::map<int,std::vector<int>>& index_to_nodes);
 void printBoolVec(vector<bool> vec);
 char* append(const char *s, char c);
 void quicksort(int_vector* x, int start, int end);
