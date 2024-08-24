@@ -20,6 +20,16 @@ int custom_strcmp(const char *S,int x, int y,std::vector<std::unordered_set<int>
     return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
 }
 
+int custom_strcmp_2(const char *S,int x, int y,std::vector<int>& is_less_then) {
+    while (*(S+x) && (*(S+x) == *(S+y))) {
+        if(is_less_then[x]==y) {custom_strcmp_skip++;return -1;}
+        if(is_less_then[y]==x) {custom_strcmp_skip++;return 1;}
+        x++;
+        y++;
+    }
+    return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
+}
+
 
 int rules(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     
@@ -123,6 +133,60 @@ int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
             else{
                 tot_n_confronti_strcmp++;
                 if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+                else return 0;
+            }
+        }
+    }
+}
+
+int rules_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int>& is_less_then){
+    
+    if(is_custom_suffix[x] && is_custom_suffix[y] ){
+        tot_two_custom++;
+        tot_n_confronti_strcmp++;
+        if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+        else return 0;
+    }
+    else if(is_custom_suffix[x]){
+        tot_one_custom++;
+        if(factor_list[x]<=factor_list[y]){
+            tot_n_confronti_regola++;
+            if(y >= icfl_list[icfl_list_size-1])return 1;
+            else return 0;
+        } 
+        else{
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            else return 0;
+        }
+    }
+    else if(is_custom_suffix[y]){
+        tot_one_custom++;
+        if(factor_list[y]<=factor_list[x]){
+            tot_n_confronti_regola++;
+            if(x >= icfl_list[icfl_list_size-1]) return 0;
+            else return 1;
+        }
+        else{
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            else return 0;
+        }
+    }
+    else if(x >= icfl_list[icfl_list_size-1] && y >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+    else if(factor_list[x]==factor_list[y]){tot_n_confronti_regola++;return 1;}
+    else{
+        if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
+        else if(y >= icfl_list[icfl_list_size-1]){
+            tot_n_confronti_strcmp++;
+            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+            else return 0;
+        }
+        else{
+            if(x > y){tot_n_confronti_regola++;return 1;}
+            else{
+                tot_n_confronti_strcmp++;
+                if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
                 else return 0;
             }
         }
@@ -1402,16 +1466,16 @@ void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, c
             if(rules_2(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list,is_less_then)==0){
                 for (equal_offset=0;father[i]-equal_offset>=0 && child[j]-equal_offset>=0 && *(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && is_less_then[father[i]-equal_offset].find(child[j]-equal_offset) == is_less_then[father[i]-equal_offset].end();equal_offset++)
                     {is_less_then[father[i]-equal_offset].insert(child[j]-equal_offset);n_suffissi_clacolati_sinistra++;}
-                for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[father[i]+equal_offset].find(child[j]+equal_offset) == is_less_then[father[i]+equal_offset].end();equal_offset++)
-                    {is_less_then[father[i]+equal_offset].insert(child[j]+equal_offset);n_suffissi_clacolati_destra++;}
+                //for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[father[i]+equal_offset].find(child[j]+equal_offset) == is_less_then[father[i]+equal_offset].end();equal_offset++)
+                //    {is_less_then[father[i]+equal_offset].insert(child[j]+equal_offset);n_suffissi_clacolati_destra++;}
 
                 result.push_back(father[i++]);
             }
             else {
                 for (equal_offset=0;father[i]-equal_offset>=0 && child[j]-equal_offset>=0 && *(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) &&  is_less_then[child[j]-equal_offset].find(father[i]-equal_offset) == is_less_then[child[j]-equal_offset].end();equal_offset++)
                     {is_less_then[child[j]-equal_offset].insert(father[i]-equal_offset);n_suffissi_clacolati_sinistra++;}
-                for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[child[j]+equal_offset].find(father[i]+equal_offset) == is_less_then[child[j]+equal_offset].end();equal_offset++)
-                    {is_less_then[child[j]+equal_offset].insert(father[i]+equal_offset);n_suffissi_clacolati_destra++;}
+                //for (equal_offset=father_node->suffix_len;*(S+father[i]+equal_offset)==*(S+child[j]+equal_offset) && is_less_then[child[j]+equal_offset].find(father[i]+equal_offset) == is_less_then[child[j]+equal_offset].end();equal_offset++)
+                //    {is_less_then[child[j]+equal_offset].insert(father[i]+equal_offset);n_suffissi_clacolati_destra++;}
                 result.push_back(child[j++]);
             }
         }
@@ -1421,8 +1485,20 @@ void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, c
     tot_n_confronti+=n_confronti;
     tot_n_confronti_evitati+=n_confronti_evitati;
     
-    if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
-    if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+    if(j<child.size()) {
+        result.insert(result.end(),child.begin()+j,child.end());
+        //for(;j<child.size();j++){
+        //    for (equal_offset=0;father[max_father-1]-equal_offset>=0 && child[j]-equal_offset>=0 && *(S+father[max_father-1]-equal_offset)==*(S+child[j]-equal_offset) && is_less_then[father[max_father-1]-equal_offset].find(child[j]-equal_offset) == is_less_then[father[max_father-1]-equal_offset].end();equal_offset++)
+        //        {is_less_then[father[max_father-1]-equal_offset].insert(child[j]-equal_offset);n_suffissi_clacolati_sinistra++;}
+        //}
+    }
+    if(i<max_father) {
+        result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+        //for(;i<max_father;++i){
+        //    for (equal_offset=0;father[i]-equal_offset>=0 && child[child.size()-1]-equal_offset>=0 && *(S+father[i]-equal_offset)==*(S+child[child.size()-1]-equal_offset) &&  is_less_then[child[child.size()-1]-equal_offset].find(father[i]-equal_offset) == is_less_then[child[child.size()-1]-equal_offset].end();equal_offset++)
+        //        {is_less_then[child[child.size()-1]-equal_offset].insert(father[i]-equal_offset);n_suffissi_clacolati_sinistra++;}
+        //}
+    }
 
     //cout<<"result: \n";
     //printVec(result);
@@ -1475,6 +1551,7 @@ void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list,
         }
         if(check_rules){
             if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0){
+            //if(rules_3(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list,is_less_then)==0){
                 for (equal_offset=1;*(S+father[i]-equal_offset)==*(S+child[j]-equal_offset) && father[i]-equal_offset>=0 && child[j]-equal_offset>=0 ;equal_offset++)
                     is_less_then[father[i]-equal_offset]=child[j]-equal_offset;
 
@@ -1493,7 +1570,7 @@ void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list,
     tot_n_confronti_evitati+=n_confronti_evitati;
 
     if(j<child.size()) result.insert(result.end(),child.begin()+j,child.end());
-    if(i<father.size()) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
+    if(i<max_father) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
 }
 
 
