@@ -168,3 +168,27 @@ std::vector<int> get_common_prefix_partition(suffix_tree_node* root){
     //printVec(result);
     return result;
 }
+
+std::vector<int> get_common_prefix_index_to_nodes(const char* S,suffix_tree_node* root){
+    //cout<<"Node: \n";
+    //print_substring(root->suffix,root->suffix_len);
+    //cout<<"\n";
+    std::vector<int> result,temp,rank=root->array_of_indexes;
+    int position=0;
+    //cout<<"common: \n";
+    //printVec(common);
+    std::map<int,std::vector<int>>::iterator it;
+    for (it = root->index_to_nodes.begin(); it != root->index_to_nodes.end() && it->first<rank.size(); it++){
+        result.insert(result.end(),rank.begin()+position,rank.begin()+it->first);
+        root->index_to_nodes[it->first].push_back(rank[it->first]);
+        quicksort_of_indexes_5_2(S,root->index_to_nodes[it->first],0);
+        result.insert(result.end(),root->index_to_nodes[it->first].begin(),root->index_to_nodes[it->first].end());
+        position=it->first+1;
+    }
+    result.insert(result.end(),rank.begin()+position,rank.end());
+    quicksort_of_indexes_5_2(S,root->index_to_nodes[rank.size()],0);
+    result.insert(result.end(),root->index_to_nodes[rank.size()].begin(),root->index_to_nodes[rank.size()].end());
+    //cout<<"result: \n";
+    //printVec(result);
+    return result;
+}

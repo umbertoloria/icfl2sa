@@ -13,3 +13,5 @@ std::vector<int> common_prefix_merge_4_multithreading_3(std::vector<int>& x,std:
 std::vector<int> get_common_prefix_merge_4_multihreading_3(custom_prefix_trie* root,std::vector<int>& common);
 
 std::vector<int> get_common_prefix_partition(suffix_tree_node* root);
+
+std::vector<int> get_common_prefix_index_to_nodes(const char* S,suffix_tree_node* root);

@@ -250,6 +250,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     itime = omp_get_wtime();
     std::vector<int> is_custom_vec = get_is_custom_vec(icfl_list,lenght_of_word);
     //std::vector<int> is_custom_vec = get_is_custom_vec_random(icfl_list,custom_icfl_list,lenght_of_word);
+    //std::vector<int> is_custom_vec = get_is_custom_vec_bigger_first_factor(icfl_list,lenght_of_word);
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
     std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
@@ -329,6 +330,13 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
             in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
         }
     }
+    //ANCORA PIÙ SPERIMETALE
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        //in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
+    //        in_prefix_merge_bit_vector_11(S,icfl_list,icfl_list.size(),nodes_list[i].at(j),is_custom_vec,factor_list,is_less_then_2);
+    //    }
+    //}
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     printConfrontiEvitati();

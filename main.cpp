@@ -22,6 +22,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     //cout<<"###################### sorting_suffixes_via_icfl_trie"<<endl;
     custom_prefix_trie* root;
 
+    const char* S=word->c_str();
+
     if(par) omp_set_num_threads(std::thread::hardware_concurrency());
     else omp_set_num_threads(1);
 
@@ -33,6 +35,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     
     //vector<int> custom_icfl_list = get_custom_factor_random(icfl_list,lenght_of_word);
     vector<int> custom_icfl_list = get_custom_factor(icfl_list,lenght_of_word);
+    //vector<int> custom_icfl_list = get_custom_factor_bigger_first_factor(icfl_list,lenght_of_word);
 
     //printVector(custom_icfl_list, "Stampa custom_icfl_list");
 
@@ -47,8 +50,8 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     double itime;
 
     itime = omp_get_wtime();
-    if(par) root = creazione_albero_custom_prefix_trie_par(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size);
-    else root = creazione_albero_custom_prefix_trie_seq(icfl_list,custom_icfl_list,word->c_str(),lenght_of_word,max_size,custom_max_size);
+    if(par) root = creazione_albero_custom_prefix_trie_par(icfl_list,custom_icfl_list,S,lenght_of_word,max_size,custom_max_size);
+    else root = creazione_albero_custom_prefix_trie_seq(icfl_list,custom_icfl_list,S,lenght_of_word,max_size,custom_max_size);
     printf("creazione_albero_custom_prefix_trie, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
@@ -59,6 +62,11 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     for(int i=0;i<root->node->sons.size();i++)
         group_ranking[i] = get_common_prefix_partition(root->node->sons[i]);
     printf("get_common_prefix_partition, Time taken: %.2fs\n", omp_get_wtime() - itime);
+    //SPERIMENTALE
+    //#pragma omp parallel for
+    //for(int i=0;i<root->node->sons.size();i++)
+    //    group_ranking[i] = get_common_prefix_index_to_nodes(S,root->node->sons[i]);
+    //printf("get_common_prefix_partition, Time taken: %.2fs\n", omp_get_wtime() - itime);
 
     std::vector<int> SA;
     for(int i=0;i<group_ranking.size();i++){
@@ -71,7 +79,7 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
 
     if(CONTROLLO_OUTPUT){
         itime = omp_get_wtime();
-        if(check_suffix_array(word->c_str(),SA)) cout<<"Il SA è valido."<<endl;
+        if(check_suffix_array(S,SA)) cout<<"Il SA è valido."<<endl;
         printf("check_suffix_array, Time taken: %.2fs\n", omp_get_wtime() - itime);
     }
 

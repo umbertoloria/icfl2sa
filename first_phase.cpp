@@ -180,3 +180,14 @@ vector<int> get_is_custom_vec_random(vector<int>& icfl,vector<int>& custom_icfl,
         is_custom_vec.at(i)=check_if_custom_index_random(icfl,custom_icfl,lenght_of_word,i);
     return is_custom_vec;
 }
+
+vector<int> get_is_custom_vec_bigger_first_factor(vector<int>&icfl ,int lenght_of_word){
+    vector<int> is_custom_vec;
+    is_custom_vec.resize(lenght_of_word);
+    // 0 = fattore ICFL
+    // 1 = fattore custom
+    #pragma omp parallel for
+    for(int i=0;i<lenght_of_word;++i)
+        is_custom_vec.at(i)=check_if_custom_index_bigger_first_factor(icfl,lenght_of_word,i);
+    return is_custom_vec;
+}

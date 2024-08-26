@@ -1573,6 +1573,70 @@ void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list,
     if(i<max_father) result.insert(result.end(),father.begin()+i,father.begin()+max_father);
 }
 
+//nuova implementazione
+//il padre ottimo è il nodo che condivide il primo o i primi caratteri con tutti i suoi figli
+void in_prefix_merge_bit_vector_11(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* child_node,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int> & is_less_then){
+    suffix_tree_node* opt_father=child_node;
+    while(opt_father->father->father!=NULL) opt_father=opt_father->father;
+    if(opt_father==child_node) return;
+    //da questo momento in poi è almeno un figlio dell'opt_node
+    std::vector<int>& father=opt_father->array_of_indexes,&child=child_node->array_of_indexes;
+
+    //cout<<"father: \n";
+    //printVec(father);
+    //cout<<"child: \n";
+    //printVec(child);
+    int starting_position=0;
+
+    if(child_node->father!=opt_father){
+        if(child_node->father->min_father==-1){
+            opt_father->index_to_nodes[father.size()].insert(opt_father->index_to_nodes[father.size()].end(),child.begin(),child.end());
+            return;
+        }
+        else if(child_node->father->max_father==-1){
+            opt_father->index_to_nodes[child_node->father->min_father].insert(opt_father->index_to_nodes[child_node->father->min_father].end(),child.begin(),child.end());
+            return;
+        }
+        else starting_position=child_node->father->min_father;
+
+    }
+
+    //creo un vettore che di interi che hanno i primi child->suffix_len caratteri uguali al padre
+    int best_fit,min_father=-1,max_father=-1,child_offset=child_node->suffix_len;
+    
+    //finché non ne trovo uno maggiore o uguale
+    for(int i=starting_position;i<father.size();++i) if(strncmp(S+child.at(0),S+father.at(i),child_offset)<=0){min_father=i;break;}
+    child_node->min_father=min_father;
+    if(min_father == -1){
+        opt_father->index_to_nodes[father.size()].insert(opt_father->index_to_nodes[father.size()].end(),child.begin(),child.end());
+        return;
+    }
+    if(strncmp(S+child.at(0),S+father.at(min_father),child_offset)<0){
+        opt_father->index_to_nodes[min_father].insert(opt_father->index_to_nodes[min_father].end(),child.begin(),child.end());
+        return;
+    }
+    for(int i=min_father;i<father.size() && strncmp(S+child.at(0),S+father.at(i),child_offset)==0;++i) max_father=i+1;
+    
+    //qui max father potrebbe avere anche avere un valore effettivo
+    child_node->min_father=min_father;
+    child_node->max_father=max_father;
+
+    int i=min_father,j=0;
+    int equal_offset;
+    bool check_rules;
+    int n_confronti=0,n_confronti_evitati=0;
+
+    while( i<max_father && j<child.size()){
+        if(rules(S,icfl_list,icfl_list_size,father[i],child[j],child_offset,is_custom_suffix,factor_list)==0) ++i;
+        else opt_father->index_to_nodes[i].push_back(child[j++]);
+    }
+
+    opt_father->index_to_nodes[i].insert(opt_father->index_to_nodes[i].end(),child.begin()+j,child.end());
+    //cout<<"Numero confronti: "<<n_confronti<<", Numero confronti evitati: "<<n_confronti_evitati<<"\n";
+    tot_n_confronti+=n_confronti;
+    tot_n_confronti_evitati+=n_confronti_evitati;
+}
+
 
 
 void alternative_prefix_merge_bit_vector(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){

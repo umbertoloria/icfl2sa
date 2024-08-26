@@ -16,3 +16,4 @@ void compute_i_phase_alberello_3(const char*S,int lenght_of_word,vector<int>icfl
 void add_node_in_suffix_tree_alberello_3(const char* S,vector<int> icfl_list,int icfl_size,suffix_tree_node* root,int i,int j,std::unordered_map<size_t,std::vector<suffix_tree_node*>>& m,std::mutex& mutex_m);
 vector<int> get_is_custom_vec(vector<int>&icfl ,int lenght_of_word);
 vector<int> get_is_custom_vec_random(vector<int>& icfl,vector<int>& custom_icfl,int lenght_of_word);
+vector<int> get_is_custom_vec_bigger_first_factor(vector<int>&icfl ,int lenght_of_word);

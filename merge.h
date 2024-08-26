@@ -31,5 +31,7 @@ std::vector<int> in_prefix_merge_bit_vector_9(const char* S, vector<int>& icfl_l
 void in_prefix_merge_bit_vector_10(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<std::unordered_set<int>>& is_less_then);
 void in_prefix_merge_bit_vector_10_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int>& is_less_then);
 
+void in_prefix_merge_bit_vector_11(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* child_node,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int> & is_less_then);
+
 void alternative_prefix_merge_bit_vector(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list);
 void alternative_prefix_merge_bit_vector_2(const char* S, std::vector<int>& icfl_list, int icfl_list_size, std::vector<int>& father, std::vector<int>& child,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list);
