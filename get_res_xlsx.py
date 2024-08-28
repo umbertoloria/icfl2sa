@@ -6,6 +6,7 @@ if __name__=="__main__":
     
     chr_num = sys.argv[1]
     max_size = sys.argv[2]
+    parallel = sys.argv[3]
 
     results=[]
 
@@ -14,7 +15,7 @@ if __name__=="__main__":
     with open("./output_xlsx","w") as output_xlsx:
 
         for i in range(1,int(max_size)+1):
-            os.system("./main "+str(i)+" > output")
+            os.system("./main "+str(i)+" "+str(parallel)+" > output")
 
             with open("./output") as file:
                 lines = [line.rstrip() for line in file]
