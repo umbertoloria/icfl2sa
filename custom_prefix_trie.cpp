@@ -311,6 +311,9 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     }
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
 
+    //stampa_prefix_trie(root);
+    //cout<<"\n";
+
     itime = omp_get_wtime();
     //DA USARE
     //for(int i=1;i<=custom_max_size;++i){
@@ -339,7 +342,7 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //}
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
-    printConfrontiEvitati();
+    //printConfrontiEvitati();
 
     //for(int i=0;i<is_less_then.size();++i){
     //    if(!is_less_then[i].empty()){

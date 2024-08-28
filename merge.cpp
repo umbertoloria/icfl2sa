@@ -1,7 +1,7 @@
 #include "merge.h"
 
-int tot_n_confronti=0,tot_n_confronti_evitati=0,tot_n_confronti_regola=0,tot_n_confronti_strcmp=0;
-int tot_two_custom=0,tot_one_custom=0;
+unsigned long int tot_n_confronti=0,tot_n_confronti_evitati=0,tot_n_confronti_regola=0,tot_n_confronti_strcmp=0;
+unsigned long int tot_two_custom=0,tot_one_custom=0;
 
 int n_suffissi_clacolati_sinistra=0,n_suffissi_clacolati_destra=0;
 
