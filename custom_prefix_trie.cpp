@@ -183,14 +183,14 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_par(vector<int>& icfl_li
             //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             //else
             //    //ricerca lineare
-            //    in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-            in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
+                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            //in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
         }
     }
     printf("tot in_prefix_merge Time taken: %.2fs\n", omp_get_wtime() - itime);
 
 
-    printConfrontiEvitati();
+    //printConfrontiEvitati();
 
     //itime = omp_get_wtime();
     //for(int i=1;i<=custom_max_size;++i)
@@ -316,23 +316,23 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
 
     itime = omp_get_wtime();
     //DA USARE
-    //for(int i=1;i<=custom_max_size;++i){
-    //    for(int j=0;j<nodes_list[i].size();++j){
-    //        //if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
-    //        //    //ricerca binaria
-    //        //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-    //        //else
-    //            //ricerca lineare
-    //            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
-    //    }
-    //}
-    //SPERIMENTALE
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            //in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
-            in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
+            //if(nodes_list[i].at(j)->father->common_chain_of_suffiexes.size() > 100)
+            //    //ricerca binaria
+            //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            //else
+                //ricerca lineare
+                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
         }
     }
+    //SPERIMENTALE
+    //for(int i=1;i<=custom_max_size;++i){
+    //    for(int j=0;j<nodes_list[i].size();++j){
+    //        //in_prefix_merge_bit_vector_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then);
+    //        in_prefix_merge_bit_vector_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list,is_less_then_2);
+    //    }
+    //}
     //ANCORA PIÙ SPERIMETALE
     //for(int i=1;i<=custom_max_size;++i){
     //    for(int j=0;j<nodes_list[i].size();++j){
