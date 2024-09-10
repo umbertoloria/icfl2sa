@@ -5,12 +5,12 @@
 #include<string.h>
 #include<unordered_map>
 #include "generic_vector.h"
-#include "custom_suffix_tree_structs.h"
 #include <algorithm>
 #include "mutex"
 #include "radix_sort.h"
 #include <execution>
 #include <unordered_set>
+#include "custom_strcmp.h"
 
 using namespace std;
 
@@ -31,6 +31,7 @@ void quicksort_of_indexes_4(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_4_2(const char* S,vector<int>& indexes,int starting_offset);
 void quicksort_of_indexes_5(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_5_2(const char* S,vector<int>& indexes,int starting_offset);
+void quicksort_of_indexes_5_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, vector<int>& indexes, int starting_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo);
 void quicksort_of_indexes_6(const char* S,vector<int>& indexes);
 void quicksort_of_indexes_7(const char* S,vector<int>& indexes,int lenght_of_word);
 void quicksort_of_indexes_8(const char* S,vector<int>& indexes);

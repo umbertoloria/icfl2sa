@@ -16,6 +16,28 @@ using namespace std;
 
 // STEP 1: COSTRUZIONE PREFIX TREE (in-prefix merge)
 
+vector<string> duval(string const& s) {
+    int n = s.size();
+    int i = 0;
+    vector<string> factorization;
+    while (i < n) {
+        int j = i + 1, k = i;
+        while (j < n && s[k] <= s[j]) {
+            if (s[k] < s[j])
+                k = i;
+            else
+                k++;
+            j++;
+        }
+        while (i <= k) {
+            factorization.push_back(s.substr(i, j - k));
+            i += j - k;
+        }
+    }
+    return factorization;
+}
+
+
 
 // sorting_suffixes_via_icfl_trie
 vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool par) {
@@ -23,6 +45,11 @@ vector<int> sorting_suffixes_via_icfl_trie(string* word,int lenght_of_word,bool 
     custom_prefix_trie* root;
 
     const char* S=word->c_str();
+
+    //vector<string> duval_fact = duval(*word);
+    //int max_lyndon_size=0;
+    //for(int i=0;i<duval_fact.size();++i) {if(duval_fact[i].length()>max_lyndon_size) max_lyndon_size=duval_fact[i].length();}
+    //cout<<"lyndon max_size: "<<max_lyndon_size<<"\n";
 
     if(par) omp_set_num_threads(std::thread::hardware_concurrency());
     else omp_set_num_threads(1);

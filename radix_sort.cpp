@@ -109,14 +109,14 @@ void radixsort_msd(const char** arr, int n,const char* S, int lenght_of_word){
         if(words_lenght[arr[i]]>max_lengt) max_lengt=words_lenght[arr[i]];
     }
 
-    if(max_lengt>MIN_SIZE){
-        const char** strings = (const char**)malloc(sizeof(*strings)*n);
-        for(int i=0;i<n;++i) strings[i]=arr[i]+MIN_SIZE;
-        //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
-        qsort(strings,n,sizeof(strings[0]),pstrcmp1);
-        for(int i=0;i<n;++i) arr[i]=strings[i]-MIN_SIZE;
-        max_lengt=MIN_SIZE;
-    }
+    //if(max_lengt>MIN_SIZE){
+    //    const char** strings = (const char**)malloc(sizeof(*strings)*n);
+    //    for(int i=0;i<n;++i) strings[i]=arr[i]+MIN_SIZE;
+    //    //for(int i=0;i<n_elements;++i) cout<<"S+i: "<<(std::uintptr_t)strings[i]<<"\n";;
+    //    qsort(strings,n,sizeof(strings[0]),pstrcmp1);
+    //    for(int i=0;i<n;++i) arr[i]=strings[i]-MIN_SIZE;
+    //    max_lengt=MIN_SIZE;
+    //}
     
 
     for (int exp = max_lengt; exp >= 0; --exp){

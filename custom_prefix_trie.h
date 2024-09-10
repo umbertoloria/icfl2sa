@@ -2,6 +2,7 @@
 #include <iostream>
 #include "first_phase.h"
 #include "thread_pool.h"
+#include "custom_suffix_tree_structs.h"
 
 typedef struct custom_prefix_trie{
 
@@ -25,5 +26,6 @@ void merge_single_node(const char* S,custom_prefix_trie trie_node,std::vector<in
 void merge_single_node_2(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord);
 void merge_single_node_3(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list,std::unordered_map<int,std::unordered_map<int,bool>*>& ord,int lenght_of_word);
 void merge_single_node_4(const char* S,suffix_tree_node* node);
+void merge_single_node_5(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, const int& icfl_list_size, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list);
 void compute_ord(std::unordered_map<int,std::unordered_map<int,bool>*>& ord,const char* S, std::vector<suffix_tree_node*>& indice_nodo,std::vector<int>& is_custom_vec,int distanza,int lenght_of_word);
 void stampa_ord(std::unordered_map<int,std::unordered_map<int,bool>*>& ord);

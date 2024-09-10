@@ -10,7 +10,7 @@ int custom_strcmp_skip=0;
 //0 -> x<y
 //1 -> y<x
 
-int custom_strcmp(const char *S,int x, int y,std::vector<std::unordered_set<int>>& is_less_then) {
+int custom_strcmp_is_less_then(const char *S,int x, int y,std::vector<std::unordered_set<int>>& is_less_then) {
     while (*(S+x) && (*(S+x) == *(S+y))) {
         if(is_less_then[x].find(y) != is_less_then[x].end()) {custom_strcmp_skip++;return -1;}
         if(is_less_then[y].find(x) != is_less_then[y].end()) {custom_strcmp_skip++;return 1;}
@@ -20,7 +20,7 @@ int custom_strcmp(const char *S,int x, int y,std::vector<std::unordered_set<int>
     return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
 }
 
-int custom_strcmp_2(const char *S,int x, int y,std::vector<int>& is_less_then) {
+int custom_strcmp_2_is_less_then(const char *S,int x, int y,std::vector<int>& is_less_then) {
     while (*(S+x) && (*(S+x) == *(S+y))) {
         if(is_less_then[x]==y) {custom_strcmp_skip++;return -1;}
         if(is_less_then[y]==x) {custom_strcmp_skip++;return 1;}
@@ -30,7 +30,7 @@ int custom_strcmp_2(const char *S,int x, int y,std::vector<int>& is_less_then) {
     return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
 }
 
-
+//regole standard
 int rules(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     
     if(is_custom_suffix[x] && is_custom_suffix[y] ){
@@ -85,12 +85,13 @@ int rules(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size,
     }
 }
 
+//uso della is less than
 int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<std::unordered_set<int>>& is_less_then){
     
     if(is_custom_suffix[x] && is_custom_suffix[y] ){
         tot_two_custom++;
         tot_n_confronti_strcmp++;
-        if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+        if(custom_strcmp_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
         else return 0;
     }
     else if(is_custom_suffix[x]){
@@ -102,7 +103,7 @@ int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         } 
         else{
             tot_n_confronti_strcmp++;
-            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            if(custom_strcmp_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
             else return 0;
         }
     }
@@ -115,7 +116,7 @@ int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         }
         else{
             tot_n_confronti_strcmp++;
-            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            if(custom_strcmp_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
             else return 0;
         }
     }
@@ -125,26 +126,27 @@ int rules_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
         else if(y >= icfl_list[icfl_list_size-1]){
             tot_n_confronti_strcmp++;
-            if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+            if(custom_strcmp_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
             else return 0;
         }
         else{
             if(x > y){tot_n_confronti_regola++;return 1;}
             else{
                 tot_n_confronti_strcmp++;
-                if(custom_strcmp(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+                if(custom_strcmp_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
                 else return 0;
             }
         }
     }
 }
 
+//uso della strcmp custom e is less than
 int rules_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<int>& is_less_then){
     
     if(is_custom_suffix[x] && is_custom_suffix[y] ){
         tot_two_custom++;
         tot_n_confronti_strcmp++;
-        if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+        if(custom_strcmp_2_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
         else return 0;
     }
     else if(is_custom_suffix[x]){
@@ -156,7 +158,7 @@ int rules_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         } 
         else{
             tot_n_confronti_strcmp++;
-            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            if(custom_strcmp_2_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
             else return 0;
         }
     }
@@ -169,7 +171,7 @@ int rules_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         }
         else{
             tot_n_confronti_strcmp++;
-            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
+            if(custom_strcmp_2_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0) return 1;
             else return 0;
         }
     }
@@ -179,19 +181,30 @@ int rules_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_siz
         if(x >= icfl_list[icfl_list_size-1]){tot_n_confronti_regola++;return 0;}
         else if(y >= icfl_list[icfl_list_size-1]){
             tot_n_confronti_strcmp++;
-            if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+            if(custom_strcmp_2_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
             else return 0;
         }
         else{
             if(x > y){tot_n_confronti_regola++;return 1;}
             else{
                 tot_n_confronti_strcmp++;
-                if(custom_strcmp_2(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
+                if(custom_strcmp_2_is_less_then(S,y+child_offset,x+child_offset,is_less_then)<0)return 1;
                 else return 0;
             }
         }
     }
 }
+
+int custom_strcmp_3(const char *S,int x, int y,std::vector<int>& is_less_then) {
+    while (*(S+x) && (*(S+x) == *(S+y))) {
+        if(is_less_then[x]==y) {custom_strcmp_skip++;return -1;}
+        if(is_less_then[y]==x) {custom_strcmp_skip++;return 1;}
+        x++;
+        y++;
+    }
+    return *(unsigned char *)(S+x) - *(unsigned char *)(S+y);
+}
+
 
 int pstrcmp2( const void* a, const void* b ){return strcmp( *(const char**)a, *(const char**)b );}
 
@@ -1043,7 +1056,7 @@ void in_prefix_merge_bit_vector_5_10(const char* S, std::vector<int>& icfl_list,
     //cout<<"\n";
 }
 
-//uas il merge
+//uas il merge, non funziona
 void in_prefix_merge_bit_vector_5_10_2(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, suffix_tree_node* father_node, suffix_tree_node* child_node,std::vector<int>& result,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list){
     std::vector<int> father=father_node->common_chain_of_suffiexes,child=child_node->array_of_indexes;
     if(father.empty()){result=child;return;}
@@ -1082,7 +1095,9 @@ void in_prefix_merge_bit_vector_5_10_2(const char* S, std::vector<int>& icfl_lis
            child.end(),
            std::back_inserter(result),
            [S,&icfl_list,icfl_list_size,child_offset,&is_custom_suffix,&factor_list](int a, int b) {
-               return !rules(S,icfl_list,icfl_list_size,a,b,child_offset,is_custom_suffix,factor_list);  // Confronta per ordine crescente
+               //int temp_res=custom_strcmp(S,icfl_list,icfl_list_size,a,b,child_offset,is_custom_suffix,factor_list,indice);
+               //if(temp_res<0) return 1;
+               return 0;
            });
 
 }

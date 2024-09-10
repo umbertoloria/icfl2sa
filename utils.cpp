@@ -290,6 +290,21 @@ void quicksort_of_indexes_5_2(const char* S,vector<int>& indexes,int starting_of
     //cout<<"\n";
 }
 
+void quicksort_of_indexes_5_3(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, vector<int>& indexes, int starting_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo){
+    //cout<<"S: "<<(std::uintptr_t)S<<"\n";
+    if (indexes.empty()) return;
+    std::sort(
+        //std::execution::par,
+        indexes.begin(), 
+        indexes.end(),
+        [S,&icfl_list,&icfl_list_size,&starting_offset,&is_custom_suffix,&factor_list,&indice_nodo](int x, int y){
+            int res=custom_strcmp(S,icfl_list,icfl_list_size,x,y,starting_offset,is_custom_suffix,factor_list,indice_nodo);
+            //cout<<"x: "<<x<<", y: "<<y<<", res: "<<res<<"\n";
+            if(res<0) return true;
+            return false;
+        });
+}
+
 void quicksort_of_indexes_6(const char* S,vector<int>& indexes){
     //cout<<"S: "<<(std::uintptr_t)S<<"\n";
     int n_elements = indexes.size();

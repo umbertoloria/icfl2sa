@@ -5,6 +5,7 @@ std::map<int,std::vector<suffix_tree_node*>> nodes_list;
 std::map<int,std::vector<custom_prefix_trie*>> nodes_list_trie;
 std::mutex mut_nodes_map;
 std::unordered_map<suffix_tree_node*,int> ordered_nodes_list;
+std::vector<suffix_tree_node*> indice_nodo;
 
 //mapping per tenere conto degli ordini tra gli indici
 std::vector<std::unordered_set<int>> is_less_then;
@@ -252,7 +253,6 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     //std::vector<int> is_custom_vec = get_is_custom_vec_random(icfl_list,custom_icfl_list,lenght_of_word);
     //std::vector<int> is_custom_vec = get_is_custom_vec_bigger_first_factor(icfl_list,lenght_of_word);
     std::vector<int> factor_list = get_factor_list(icfl_list,lenght_of_word);
-    std::vector<suffix_tree_node*> indice_nodo;
     indice_nodo.resize(lenght_of_word);
     //la chiave è sempre l'intero più piccolo della coppia, se il bool è false allora va inserito il più grande, il più piccolo altrimenti.
     std::unordered_map<int,std::unordered_map<int,bool>*> ord;
@@ -305,8 +305,11 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
     itime = omp_get_wtime();
     for(int i=1;i<=custom_max_size;++i){
         for(int j=0;j<nodes_list[i].size();++j){
-            merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
-            //merge_single_node_4(S,nodes_list[i].at(j));
+            //merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
+            //attuale
+            merge_single_node_4(S,nodes_list[i].at(j));
+            //sperim
+            //merge_single_node_5(S,nodes_list[i].at(j),icfl_list,icfl_list.size(),is_custom_vec,factor_list);
         }
     }
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);
@@ -323,7 +326,8 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
             //    in_prefix_merge_bit_vector_5_9(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
             //else
                 //ricerca lineare
-                in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            in_prefix_merge_bit_vector_5_10(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
+            //in_prefix_merge_bit_vector_5_10_2(S,icfl_list,icfl_list.size(),nodes_list[i].at(j)->father,nodes_list[i].at(j),nodes_list[i].at(j)->common_chain_of_suffiexes,is_custom_vec,factor_list);
         }
     }
     //SPERIMENTALE
@@ -537,6 +541,11 @@ void merge_single_node_4(const char* S,suffix_tree_node* node){
     quicksort_of_indexes_5_2(S,node->array_of_indexes,node->suffix_len);
 }
 
+//sort usa prop teoriche
+void merge_single_node_5(const char* S,suffix_tree_node* node,std::vector<int> &icfl_list, const int& icfl_list_size, std::vector<int> &is_custom_suffix, std::vector<int> &factor_list){
+    node->array_of_indexes.insert(node->array_of_indexes.end(),node->custom_array_of_indexes.begin(),node->custom_array_of_indexes.end());
+    quicksort_of_indexes_5_3(S,icfl_list,icfl_list_size,node->array_of_indexes,node->suffix_len,is_custom_suffix,factor_list,indice_nodo);
+}
 //0 se il primo, 1 se il secondo
 int who_comes_first(suffix_tree_node* root,int a,int b){
     for(int i=0;i<root->array_of_indexes.size();++i){

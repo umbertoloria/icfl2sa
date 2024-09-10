@@ -1,3 +1,6 @@
+#ifndef SUFFIX_TREE_STRUCTS
+#define SUFFIX_TREE_STRUCTS
+
 #include <vector>
 #include <map>
 
@@ -47,3 +50,5 @@ typedef struct alberello{
     nodes_vector* roots;
     nodes_vector* leaves;
 }alberello;
+
+#endif

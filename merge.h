@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <set>
 #include <unordered_set>
+#include "custom_strcmp.h"
 
 std::vector<int> get_factor_list(vector<int>& icfl_list,int str_len);
 void printConfrontiEvitati();
