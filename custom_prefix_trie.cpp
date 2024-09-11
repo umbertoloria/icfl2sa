@@ -307,9 +307,9 @@ custom_prefix_trie* creazione_albero_custom_prefix_trie_seq(vector<int>& icfl_li
         for(int j=0;j<nodes_list[i].size();++j){
             //merge_single_node_2(S,nodes_list[i].at(j),icfl_list,is_custom_vec,factor_list,ord);
             //attuale
-            merge_single_node_4(S,nodes_list[i].at(j));
+            //merge_single_node_4(S,nodes_list[i].at(j));
             //sperim
-            //merge_single_node_5(S,nodes_list[i].at(j),icfl_list,icfl_list.size(),is_custom_vec,factor_list);
+            merge_single_node_5(S,nodes_list[i].at(j),icfl_list,icfl_list.size(),is_custom_vec,factor_list);
         }
     }
     printf("tot merge_single_node_2 Time taken: %.2fs\n", omp_get_wtime() - itime);

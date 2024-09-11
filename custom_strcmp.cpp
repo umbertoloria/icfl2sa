@@ -2,12 +2,15 @@
 
 int custom_strcmp(const char* S, std::vector<int>& icfl_list, const int& icfl_list_size, int x, int y, int child_offset,std::vector<int>& is_custom_suffix,std::vector<int>& factor_list,std::vector<suffix_tree_node*>& indice_nodo) {
     int temp_res;
-    while (*(S+x) && (*(S+x) == *(S+y))) {
-        if((!is_custom_suffix[x] || !is_custom_suffix[y]) && (indice_nodo[x]==indice_nodo[y])){
-            //cout<<"x: "<<x<<", y:"<<y<<"\n";
+    while (*(S+x) == *(S+y) && indice_nodo[x]==indice_nodo[y]) {
+        if((!is_custom_suffix[x] || !is_custom_suffix[y])){
             temp_res=rules_custom_strcmp(S,icfl_list,icfl_list_size,x,y,child_offset,is_custom_suffix,factor_list,indice_nodo);
             if(temp_res!=0) return temp_res;
         }
+        x+=indice_nodo[x]->suffix_len;
+        y+=indice_nodo[y]->suffix_len;
+    }
+    while (*(S+x) == *(S+y)) {
         x++;
         y++;
     }

@@ -298,10 +298,7 @@ void quicksort_of_indexes_5_3(const char* S, std::vector<int>& icfl_list, const 
         indexes.begin(), 
         indexes.end(),
         [S,&icfl_list,&icfl_list_size,&starting_offset,&is_custom_suffix,&factor_list,&indice_nodo](int x, int y){
-            int res=custom_strcmp(S,icfl_list,icfl_list_size,x,y,starting_offset,is_custom_suffix,factor_list,indice_nodo);
-            //cout<<"x: "<<x<<", y: "<<y<<", res: "<<res<<"\n";
-            if(res<0) return true;
-            return false;
+            return custom_strcmp(S,icfl_list,icfl_list_size,x,y,starting_offset,is_custom_suffix,factor_list,indice_nodo) < 0;
         });
 }
 
